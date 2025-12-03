@@ -135,14 +135,42 @@ export function ShopBlock({
             {/* Category Items */}
             {expandedCategories[category] && (
               <div className="px-4 pb-3 space-y-2">
-                {categoryItems.map(item => (
-                  <div 
+                {categoryItems.map(item => {
+                  // Get source badge info
+                  const getSourceBadge = () => {
+                    if (item.isSwapped || item.source === 'savings') {
+                      return { text: 'Swapped', className: 'bg-emerald-100 text-emerald-700', icon: '↔️' }
+                    }
+                    switch (item.source) {
+                      case 'recipe':
+                        return { text: 'Recipe', className: 'bg-orange-100 text-orange-700', icon: '📖' }
+                      case 'essentials':
+                        return { text: 'Essential', className: 'bg-blue-100 text-blue-700', icon: '⭐' }
+                      case 'upsell':
+                        return { text: 'Suggested', className: 'bg-purple-100 text-purple-700', icon: '💡' }
+                      case 'reorder':
+                        return { text: 'Reorder', className: 'bg-amber-100 text-amber-700', icon: '🔄' }
+                      default:
+                        return null
+                    }
+                  }
+                  const badge = getSourceBadge()
+
+                  return (
+                  <div
                     key={item.sku}
                     className="flex items-center gap-3 p-2 bg-stone-50 rounded-lg group"
                   >
                     <span className="text-xl">{item.image}</span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-stone-800 truncate">{item.name}</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-medium text-stone-800 truncate">{item.name}</p>
+                        {badge && (
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${badge.className} flex-shrink-0`}>
+                            {badge.icon} {badge.text}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-stone-500">{formatPrice(item.price)}</p>
                     </div>
                     
@@ -181,7 +209,8 @@ export function ShopBlock({
                       Add
                     </button>
                   </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>
