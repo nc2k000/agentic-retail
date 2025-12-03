@@ -5,6 +5,7 @@ import { ShopBlock } from '@/components/blocks/ShopBlock'
 import { SavingsBlock } from '@/components/blocks/SavingsBlock'
 import { RecipeBlock } from '@/components/blocks/RecipeBlock'
 import { OrderBlock } from '@/components/blocks/OrderBlock'
+import { UpsellBlock } from '@/components/blocks/UpsellBlock'
 import { SuggestionChips } from '@/components/blocks/SuggestionChips'
 import { LoadingIndicator } from '@/components/ui/LoadingIndicator'
 import { extractTextContent } from '@/lib/parser'
@@ -128,7 +129,15 @@ export function MessageBubble({
                         data={block.data}
                       />
                     )
-                  // TODO: Add more block types (upsell, comparison, etc.)
+                  case 'upsell':
+                    return (
+                      <UpsellBlock
+                        key={i}
+                        data={block.data}
+                        onAddToCart={onAddToCart}
+                      />
+                    )
+                  // TODO: Add more block types (comparison, etc.)
                   default:
                     return null
                 }

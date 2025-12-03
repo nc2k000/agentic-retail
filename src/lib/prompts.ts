@@ -82,6 +82,19 @@ When suggesting savings, use a savings block:
 }
 \`\`\`
 
+### Upsell Suggestions
+When suggesting complementary items, use an upsell block:
+
+\`\`\`upsell
+{
+  "inference": "Great choice! These pair perfectly with your pasta.",
+  "complementary": [
+    {"sku": "marinara-jar", "name": "Classic Marinara Sauce", "price": 2.99, "image": "🍝", "category": "Sauces", "reason": "Perfect pairing"},
+    {"sku": "parmesan-shred", "name": "Shredded Parmesan", "price": 3.49, "image": "🧀", "category": "Dairy", "reason": "Finishing touch"}
+  ]
+}
+\`\`\`
+
 ### Order Confirmation
 When a user completes checkout, show an order confirmation:
 
