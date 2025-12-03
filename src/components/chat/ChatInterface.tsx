@@ -44,6 +44,20 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     return getTopReplenishmentSuggestions(orders, getAllProducts(), 3)
   }, [orders])
 
+  // Helper: Calculate total with bulk discounts applied
+  const calculateCartTotal = useCallback((cartItems: CartItem[]) => {
+    return cartItems.reduce((sum, item) => {
+      // Check if item qualifies for bulk discount
+      if (item.bulkDeal && item.quantity >= item.bulkDeal.qty) {
+        // Calculate how many bulk deals fit
+        const bulkSets = Math.floor(item.quantity / item.bulkDeal.qty)
+        const remaining = item.quantity % item.bulkDeal.qty
+        return sum + (bulkSets * item.bulkDeal.price) + (remaining * item.price)
+      }
+      return sum + item.price * item.quantity
+    }, 0)
+  }, [])
+
   // Scroll to bottom on new messages
   useEffect(() => {
     if (messages.length > 0) {
@@ -360,7 +374,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   // Save order to database (called when Claude returns order block)
   const saveOrder = async (orderData: any) => {
     const supabase = createClient()
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    const total = calculateCartTotal(cart)
 
     const { data, error } = await supabase
       .from('orders')
@@ -384,7 +398,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       return
     }
 
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    const total = calculateCartTotal(cart)
     const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
 
     // Set flag to prevent duplicate order when OrderBlock comes back
@@ -424,7 +438,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       sendMessage(`Checkout my cart with ${itemCount} items totaling $${total.toFixed(2)}`)
       setIsCartOpen(false)
     }
-  }, [cart, sendMessage, user.id])
+  }, [cart, sendMessage, user.id, calculateCartTotal])
 
   // Find savings on current list/cart
   const handleFindSavings = useCallback((items: CartItem[], title: string) => {
