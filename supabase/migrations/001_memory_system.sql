@@ -321,7 +321,7 @@ BEGIN
           'times_confirmed', times_confirmed
         )
         ORDER BY confidence DESC, times_confirmed DESC
-      ) as items
+      ) as pref_items
     FROM customer_preferences
     WHERE user_id = p_user_id AND confidence >= p_min_confidence
     GROUP BY preference_type
@@ -337,15 +337,15 @@ BEGIN
           'confidence', confidence
         )
         ORDER BY confidence DESC
-      ) as items
+      ) as insight_items
     FROM memory_insights
     WHERE user_id = p_user_id
       AND confidence >= p_min_confidence
       AND (expires_at IS NULL OR expires_at > NOW())
   )
-  SELECT preference_type::TEXT as category, items FROM preferences
+  SELECT preference_type::TEXT as category, pref_items as items FROM preferences
   UNION ALL
-  SELECT insight_type::TEXT as category, items FROM insights;
+  SELECT insight_type::TEXT as category, insight_items as items FROM insights;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
