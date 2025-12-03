@@ -412,20 +412,39 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         value: { name: item.name, category: item.category, price: item.price }
       }).catch(console.error)
 
-      // If item added multiple times, increase favorite confidence
-      if (existing) {
-        const newCount = existing.quantity + (enrichedItem.quantity || 1)
-        if (newCount >= 3) {
-          upsertPreference({
-            userId: user.id,
-            type: 'favorite',
-            key: item.sku,
-            confidence: Math.min(0.95, 0.50 + (newCount * 0.08)),
-            reason: `Added to cart ${newCount} times`,
-            source: 'pattern'
-          }).catch(console.error)
+      // Check if item should be marked as favorite (count across ALL sessions)
+      // Query interaction_history to see how many times this item has been added
+      const checkFavorite = async () => {
+        try {
+          const supabase = createClient()
+          const { data, error } = await supabase
+            .from('interaction_history')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('interaction_type', 'view_item')
+            .eq('interaction_key', item.sku)
+
+          if (!error && data) {
+            const totalViews = data.length
+            // After 3+ views across sessions, mark as favorite
+            if (totalViews >= 3) {
+              upsertPreference({
+                userId: user.id,
+                type: 'favorite',
+                key: item.sku,
+                confidence: Math.min(0.95, 0.50 + (totalViews * 0.08)),
+                reason: `Added to cart ${totalViews} times`,
+                source: 'pattern'
+              }).catch(console.error)
+            }
+          }
+        } catch (error) {
+          console.error('Failed to check favorite:', error)
         }
       }
+
+      // Run favorite check asynchronously (non-blocking)
+      checkFavorite()
 
       if (existing) {
         return prev.map(i =>
