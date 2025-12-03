@@ -12,7 +12,7 @@ import { parseBlocks } from '@/lib/parser'
 import { SYSTEM_PROMPT } from '@/lib/prompts'
 import { createClient } from '@/lib/supabase/client'
 import { getTopReplenishmentSuggestions } from '@/lib/replenishment'
-import { getAllProducts } from '@/lib/catalog'
+import { getAllProducts, getProductBySku } from '@/lib/catalog'
 
 interface ChatInterfaceProps {
   user: User
@@ -182,6 +182,21 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         }
         setActiveList(newList)
 
+        // Auto-add to cart if user said "add to cart"
+        const userMessage = messages[messages.length - 1]?.content?.toLowerCase() || ''
+        const isAddToCartIntent =
+          userMessage.includes('add') && userMessage.includes('cart') ||
+          userMessage.includes('add to my cart')
+
+        if (isAddToCartIntent) {
+          // Add all items from the shop block directly to cart
+          shopData.items?.forEach((item: CartItem) => {
+            addToCart(item)
+          })
+          // Open cart to show what was added
+          setIsCartOpen(true)
+        }
+
         // Save to Supabase
         saveListToDatabase(newList)
       }
@@ -285,16 +300,20 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
   // Add item to cart
   const addToCart = useCallback((item: CartItem) => {
+    // Enrich item with full catalog data (including bulkDeal)
+    const catalogItem = getProductBySku(item.sku)
+    const enrichedItem = catalogItem ? { ...catalogItem, ...item } : item
+
     setCart(prev => {
       const existing = prev.find(i => i.sku === item.sku)
       if (existing) {
-        return prev.map(i => 
-          i.sku === item.sku 
-            ? { ...i, quantity: i.quantity + (item.quantity || 1) }
+        return prev.map(i =>
+          i.sku === item.sku
+            ? { ...i, quantity: i.quantity + (enrichedItem.quantity || 1) }
             : i
         )
       }
-      return [...prev, { ...item, quantity: item.quantity || 1 }]
+      return [...prev, { ...enrichedItem, quantity: enrichedItem.quantity || 1 }]
     })
   }, [])
 
