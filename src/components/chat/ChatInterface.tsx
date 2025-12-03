@@ -34,6 +34,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const [recentLists, setRecentLists] = useState<ShoppingList[]>(initialLists)
   const [voiceEnabled, setVoiceEnabled] = useState(false)
   const [isCheckingOut, setIsCheckingOut] = useState(false)
+  const [lastUserIntent, setLastUserIntent] = useState<string>('')
   
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -54,6 +55,22 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const sendMessage = useCallback(async (content: string, multimodalContent?: MessageContent) => {
     const isSystemMessage = content.startsWith('[SYSTEM]')
     const displayContent = content
+
+    // Capture user intent for auto-add to cart
+    if (!isSystemMessage) {
+      const lowerContent = content.toLowerCase()
+      const hasAdd = lowerContent.includes('add')
+      const hasCart = lowerContent.includes('cart') || lowerContent.includes('my cart')
+      const hasItemKeywords = lowerContent.includes('milk') || lowerContent.includes('egg') ||
+                              lowerContent.includes('bread') || lowerContent.includes('item') ||
+                              lowerContent.includes('cheese') || lowerContent.includes('yogurt')
+
+      if (hasAdd && (hasCart || hasItemKeywords)) {
+        setLastUserIntent('add-to-cart')
+      } else {
+        setLastUserIntent('')
+      }
+    }
 
     // Add user message to UI (skip system messages)
     if (!isSystemMessage) {
@@ -182,29 +199,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         }
         setActiveList(newList)
 
-        // Auto-add to cart if user said "add to cart"
-        // Find the last user message (not assistant message)
-        const lastUserMessage = messages.filter(m => m.role === 'user').pop()
-        const userMessage = lastUserMessage?.content?.toLowerCase() || ''
-
-        // More lenient detection - check for "add" + "cart" OR "add" + item mentions
-        const hasAdd = userMessage.includes('add')
-        const hasCart = userMessage.includes('cart') || userMessage.includes('my cart')
-        const hasItemKeywords = userMessage.includes('milk') || userMessage.includes('egg') ||
-                                userMessage.includes('bread') || userMessage.includes('item')
-
-        const isAddToCartIntent = hasAdd && (hasCart || hasItemKeywords)
-
-        console.log('🔍 Auto-add detection:', {
-          userMessage,
-          hasAdd,
-          hasCart,
-          hasItemKeywords,
-          isAddToCartIntent,
-          shopItemCount: shopData.items?.length
-        })
-
-        if (isAddToCartIntent) {
+        // Auto-add to cart if user intent was detected
+        if (lastUserIntent === 'add-to-cart') {
           console.log('✅ Auto-adding items to cart:', shopData.items)
           // Add all items from the shop block directly to cart
           shopData.items?.forEach((item: CartItem) => {
@@ -212,6 +208,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
           })
           // Open cart to show what was added
           setIsCartOpen(true)
+          // Clear intent after using it
+          setLastUserIntent('')
         }
 
         // Save to Supabase
