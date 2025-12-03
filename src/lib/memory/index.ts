@@ -27,6 +27,8 @@ export async function upsertPreference(params: UpsertPreferenceParams): Promise<
     confidence = 0.50,
     reason = null,
     source = 'inferred',
+    memberId = null,
+    memberName = null,
   } = params
 
   try {
@@ -37,6 +39,8 @@ export async function upsertPreference(params: UpsertPreferenceParams): Promise<
       p_confidence: confidence,
       p_reason: reason,
       p_source: source,
+      p_member_id: memberId,
+      p_member_name: memberName,
     } as any)
 
     if (error) {
@@ -57,7 +61,7 @@ export async function upsertPreference(params: UpsertPreferenceParams): Promise<
  */
 export async function updatePattern(params: UpdatePatternParams): Promise<string | null> {
   const supabase = createClient()
-  const { userId, type, key, value = null } = params
+  const { userId, type, key, value = null, memberId = null, memberName = null } = params
 
   try {
     const { data, error } = await supabase.rpc('update_pattern', {
@@ -65,6 +69,8 @@ export async function updatePattern(params: UpdatePatternParams): Promise<string
       p_type: type,
       p_key: key,
       p_value: value,
+      p_member_id: memberId,
+      p_member_name: memberName,
     } as any)
 
     if (error) {
@@ -85,7 +91,15 @@ export async function updatePattern(params: UpdatePatternParams): Promise<string
  */
 export async function recordInteraction(params: RecordInteractionParams): Promise<string | null> {
   const supabase = createClient()
-  const { userId, type, key = null, value = null, sessionId = null } = params
+  const {
+    userId,
+    type,
+    key = null,
+    value = null,
+    sessionId = null,
+    memberId = null,
+    memberName = null,
+  } = params
 
   try {
     const { data, error } = await supabase.rpc('record_interaction', {
@@ -94,6 +108,8 @@ export async function recordInteraction(params: RecordInteractionParams): Promis
       p_key: key,
       p_value: value,
       p_session_id: sessionId,
+      p_member_id: memberId,
+      p_member_name: memberName,
     } as any)
 
     if (error) {

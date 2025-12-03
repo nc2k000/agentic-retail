@@ -73,6 +73,7 @@ export type BlockType =
   | 'cart'
   | 'upsell'
   | 'comparison'
+  | 'compare'
   | 'products'
   | 'suggestions'
   | 'order'
@@ -202,10 +203,13 @@ export interface Household {
 }
 
 export interface HouseholdMember {
+  id: string // unique ID for attribution
   name: string
-  relationship: 'self' | 'spouse' | 'child' | 'parent' | 'other'
+  relationship: 'self' | 'partner' | 'spouse' | 'child' | 'parent' | 'other'
   age?: number
-  dietaryRestrictions?: string[]
+  dietary?: string[] // quick reference for dietary preferences
+  allergies?: string[] // critical reference for allergies
+  dietaryRestrictions?: string[] // backward compatibility
 }
 
 export interface Pet {

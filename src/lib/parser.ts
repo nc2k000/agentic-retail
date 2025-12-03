@@ -37,7 +37,8 @@ export function parseBlocks(content: string): Block[] {
           blocks.push({ type: 'upsell', data })
           break
         case 'comparison':
-          blocks.push({ type: 'comparison', data })
+        case 'compare':
+          blocks.push({ type: 'compare', data })
           break
         case 'products':
           blocks.push({ type: 'products', data })

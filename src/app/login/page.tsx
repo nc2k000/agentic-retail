@@ -17,6 +17,7 @@ export default function LoginPage() {
   const router = useRouter()
 
   const handleAuth = async (e: React.FormEvent) => {
+    console.log('handleAuth called', { isSignUp, email })
     const supabase = createClient()
     e.preventDefault()
     setLoading(true)
@@ -25,6 +26,7 @@ export default function LoginPage() {
 
     try {
       if (isSignUp) {
+        console.log('Attempting signup...')
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -32,6 +34,7 @@ export default function LoginPage() {
             emailRedirectTo: `${window.location.origin}/api/auth/callback`,
           },
         })
+        console.log('Signup result:', { error })
         if (error) throw error
         setMessage('Check your email for a confirmation link!')
       } else {

@@ -17,6 +17,17 @@ export default async function ChatPage() {
     .eq('id', user.id)
     .single()
 
+  // Check if user needs to complete onboarding
+  // Check if they have any preferences set (only created during onboarding)
+  const { count: preferencesCount } = await supabase
+    .from('customer_preferences')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+
+  if (!preferencesCount || preferencesCount === 0) {
+    redirect('/onboarding')
+  }
+
   // Get recent orders for context
   const { data: orders } = await supabase
     .from('orders')

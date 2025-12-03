@@ -127,6 +127,12 @@ export function Header({
                   <p className="text-sm font-medium text-stone-800">{profile?.name || 'User'}</p>
                   <p className="text-xs text-stone-500 truncate">{user.email}</p>
                 </div>
+                <a
+                  href="/profile"
+                  className="block w-full px-4 py-2 text-left text-sm text-stone-700 hover:bg-stone-50"
+                >
+                  Profile & Household
+                </a>
                 <button
                   onClick={onSignOut}
                   className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"

@@ -7,6 +7,7 @@ import { RecipeBlock } from '@/components/blocks/RecipeBlock'
 import { OrderBlock } from '@/components/blocks/OrderBlock'
 import { UpsellBlock } from '@/components/blocks/UpsellBlock'
 import { BulkDealBlock } from '@/components/blocks/BulkDealBlock'
+import { CompareBlock } from '@/components/blocks/CompareBlock'
 import { SuggestionChips } from '@/components/blocks/SuggestionChips'
 import { LoadingIndicator, SkeletonShopBlock } from '@/components/ui/LoadingIndicator'
 import { extractTextContent } from '@/lib/parser'
@@ -165,7 +166,14 @@ export function MessageBubble({
                         }}
                       />
                     )
-                  // TODO: Add more block types (comparison, etc.)
+                  case 'compare':
+                    return (
+                      <CompareBlock
+                        key={i}
+                        data={block.data}
+                        onAddToCart={onAddToCart}
+                      />
+                    )
                   default:
                     return null
                 }

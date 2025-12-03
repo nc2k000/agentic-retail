@@ -13,6 +13,8 @@ export interface CustomerPreference {
   confidence: number
   reason?: string
   source: PreferenceSource
+  member_id?: string // household member attribution
+  member_name?: string // denormalized for display
   created_at: string
   updated_at: string
   last_confirmed_at?: string
@@ -30,6 +32,8 @@ export interface ShoppingPattern {
   confidence: number
   occurrence_count: number
   last_occurrence: string
+  member_id?: string // household member attribution
+  member_name?: string // denormalized for display
   created_at: string
   updated_at: string
 }
@@ -44,6 +48,8 @@ export interface InteractionHistory {
   interaction_value?: Record<string, any>
   session_id?: string
   message_id?: string
+  member_id?: string // household member attribution
+  member_name?: string // denormalized for display
   created_at: string
 }
 
@@ -110,6 +116,8 @@ export interface UpsertPreferenceParams {
   confidence?: number
   reason?: string
   source?: PreferenceSource
+  memberId?: string // household member attribution
+  memberName?: string
 }
 
 export interface UpdatePatternParams {
@@ -117,6 +125,8 @@ export interface UpdatePatternParams {
   type: PatternType
   key: string
   value?: Record<string, any>
+  memberId?: string // household member attribution
+  memberName?: string
 }
 
 export interface RecordInteractionParams {
@@ -125,9 +135,29 @@ export interface RecordInteractionParams {
   key?: string
   value?: Record<string, any>
   sessionId?: string
+  memberId?: string // household member attribution
+  memberName?: string
 }
 
 export interface FetchMemoryContextParams {
   userId: string
   minConfidence?: number
+  memberId?: string // filter by household member
+}
+
+// Profile statistics types
+export interface ProfileStats {
+  totalOrders: number
+  totalPreferences: number
+  avgConfidence: number
+  maturityScore: number
+}
+
+export interface MemberStats {
+  memberId: string
+  memberName: string
+  totalPreferences: number
+  totalPatterns: number
+  totalInteractions: number
+  avgConfidence: number
 }
