@@ -2,6 +2,12 @@
 
 AI-powered shopping assistant built with Next.js, Supabase, and Claude.
 
+**Status:** 🟢 Active Development - Phase 0 (Memory System)
+**Feature Parity:** ~76%
+**Last Updated:** December 3, 2024
+
+📊 [View Full Project Status](docs/PROJECT-STATUS.md) | 📖 [Sprint 3 Complete](docs/SPRINT-3-COMPLETE.md) | 🗺️ [Enhanced Roadmap](docs/ROADMAP-ENHANCED.md)
+
 ## Tech Stack
 
 - **Framework**: Next.js 14 (App Router)
@@ -65,13 +71,20 @@ src/
 
 ## Database Schema
 
+### Core Tables
 - **profiles**: User profile with household & preferences
 - **shopping_lists**: Saved shopping lists
 - **orders**: Order history
 - **missions**: Shopping session tracking
 - **chat_sessions**: Chat history
 
-See `supabase/schema.sql` for full schema.
+### Memory System Tables (Migration 001)
+- **customer_preferences**: Dietary, brand, favorite, allergy preferences
+- **shopping_patterns**: Time, frequency, category patterns
+- **interaction_history**: Questions, views, swaps, feature usage
+- **memory_insights**: High-level personas, goals, constraints
+
+See `supabase/schema.sql` for base schema and `supabase/migrations/001_memory_system.sql` for memory tables.
 
 ## Deployment
 
