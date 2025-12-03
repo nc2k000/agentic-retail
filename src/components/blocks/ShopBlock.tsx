@@ -39,7 +39,14 @@ export function ShopBlock({
     categories[cat].push(item)
   })
 
-  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({})
+  // Initialize all categories as expanded by default
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>(() => {
+    const initialState: Record<string, boolean> = {}
+    Object.keys(categories).forEach(cat => {
+      initialState[cat] = true
+    })
+    return initialState
+  })
   
   const toggleCategory = (cat: string) => {
     setExpandedCategories(prev => ({ ...prev, [cat]: !prev[cat] }))
