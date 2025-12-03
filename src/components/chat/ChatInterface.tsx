@@ -66,6 +66,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
                               lowerContent.includes('cheese') || lowerContent.includes('yogurt')
 
       if (hasAdd && (hasCart || hasItemKeywords)) {
+        console.log('🎯 Intent captured: add-to-cart', { content, hasAdd, hasCart, hasItemKeywords })
         setLastUserIntent('add-to-cart')
       } else {
         setLastUserIntent('')
@@ -200,6 +201,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         setActiveList(newList)
 
         // Auto-add to cart if user intent was detected
+        console.log('📦 ShopBlock received. Intent:', lastUserIntent, 'Items:', shopData.items?.length)
         if (lastUserIntent === 'add-to-cart') {
           console.log('✅ Auto-adding items to cart:', shopData.items)
           // Add all items from the shop block directly to cart
@@ -210,6 +212,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
           setIsCartOpen(true)
           // Clear intent after using it
           setLastUserIntent('')
+        } else {
+          console.log('❌ No auto-add (intent was:', lastUserIntent, ')')
         }
 
         // Save to Supabase
