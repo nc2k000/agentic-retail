@@ -234,7 +234,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       .single()
 
     if (!error && data) {
-      setOrders(prev => [data, ...prev])
+      setOrders(prev => [data as Order, ...prev])
     }
   }
 
@@ -265,10 +265,10 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       if (error) throw error
 
       if (data) {
-        setOrders(prev => [data, ...prev])
+        setOrders(prev => [data as Order, ...prev])
 
         // Request order confirmation from Claude
-        sendMessage(`Confirm my order with ${itemCount} items totaling $${total.toFixed(2)}. Generate an order confirmation block with order number ${data.id}.`)
+        sendMessage(`Confirm my order with ${itemCount} items totaling $${total.toFixed(2)}. Generate an order confirmation block with order number ${(data as any).id}.`)
 
         // Clear cart
         setCart([])
