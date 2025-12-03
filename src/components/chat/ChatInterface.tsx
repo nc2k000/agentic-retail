@@ -238,9 +238,10 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     try {
       const supabase = createClient()
 
-      // @ts-ignore - Supabase type inference has issues with JSONB update
+      // @ts-expect-error - Supabase type inference has issues with JSONB update
       await supabase
         .from('shopping_lists')
+        // @ts-expect-error
         .update({
           items: list.items,
           updated_at: new Date().toISOString(),
