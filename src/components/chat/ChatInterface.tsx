@@ -33,6 +33,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const [orders, setOrders] = useState<Order[]>(initialOrders)
   const [recentLists, setRecentLists] = useState<ShoppingList[]>(initialLists)
   const [voiceEnabled, setVoiceEnabled] = useState(false)
+  const [isCheckingOut, setIsCheckingOut] = useState(false)
   
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -188,10 +189,15 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       // Handle order blocks - save to DB
       const orderBlocks = blocks.filter(b => b.type === 'order')
       if (orderBlocks.length > 0) {
-        // Checkout was completed
-        const orderData = orderBlocks[0].data
-        await saveOrder(orderData)
-        setCart([]) // Clear cart
+        // Only save order if not already saved by handleCheckout
+        if (!isCheckingOut) {
+          const orderData = orderBlocks[0].data
+          await saveOrder(orderData)
+          setCart([]) // Clear cart
+        } else {
+          // Reset flag - order was already saved by handleCheckout
+          setIsCheckingOut(false)
+        }
       }
 
       // Voice output if enabled
@@ -343,6 +349,9 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
     const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
 
+    // Set flag to prevent duplicate order when OrderBlock comes back
+    setIsCheckingOut(true)
+
     // Save order to database
     try {
       const supabase = createClient()
@@ -372,6 +381,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       }
     } catch (error: any) {
       console.error('Checkout failed:', error)
+      setIsCheckingOut(false)
       // Still show confirmation even if DB save failed (for demo purposes)
       sendMessage(`Checkout my cart with ${itemCount} items totaling $${total.toFixed(2)}`)
       setIsCartOpen(false)
