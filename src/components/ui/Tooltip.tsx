@@ -11,58 +11,60 @@ interface TooltipProps {
 export function Tooltip({ content, children }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [position, setPosition] = useState({ top: 0, left: 0 })
-  const triggerRef = useRef<HTMLButtonElement>(null)
-  const timeoutRef = useRef<NodeJS.Timeout>()
-
-  const showTooltip = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    timeoutRef.current = setTimeout(() => {
-      setIsVisible(true)
-      updatePosition()
-    }, 200)
-  }
-
-  const hideTooltip = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    setIsVisible(false)
-  }
+  const triggerRef = useRef<HTMLSpanElement>(null)
+  const rafRef = useRef<number>()
 
   const updatePosition = () => {
     if (!triggerRef.current) return
     const rect = triggerRef.current.getBoundingClientRect()
     setPosition({
-      top: rect.top - 8,
-      left: rect.left + rect.width / 2,
+      top: rect.top + window.scrollY - 8,
+      left: rect.left + window.scrollX + rect.width / 2,
     })
   }
 
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+  const showTooltip = () => {
+    setIsVisible(true)
+    updatePosition()
+
+    // Update position on scroll
+    const handleScroll = () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      rafRef.current = requestAnimationFrame(updatePosition)
     }
-  }, [])
+    window.addEventListener('scroll', handleScroll, { passive: true, capture: true })
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, { capture: true })
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
+  }
+
+  const hideTooltip = () => {
+    setIsVisible(false)
+  }
+
+  useEffect(() => {
+    let cleanup: (() => void) | undefined
+    if (isVisible) {
+      cleanup = showTooltip()
+    }
+    return () => {
+      cleanup?.()
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
+  }, [isVisible])
 
   return (
     <>
-      <button
+      <span
         ref={triggerRef}
-        type="button"
-        onMouseEnter={showTooltip}
-        onMouseLeave={hideTooltip}
-        onFocus={showTooltip}
-        onBlur={hideTooltip}
-        onClick={(e) => {
-          e.preventDefault()
-          if (isVisible) {
-            hideTooltip()
-          } else {
-            showTooltip()
-          }
-        }}
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
         className="cursor-help inline-flex"
       >
         {children}
-      </button>
+      </span>
 
       {isVisible && typeof window !== 'undefined' && createPortal(
         <div

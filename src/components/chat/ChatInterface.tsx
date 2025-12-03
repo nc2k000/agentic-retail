@@ -469,9 +469,9 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
-    <div className="flex h-screen bg-stone-50">
+    <div className="flex h-screen bg-stone-50 overflow-hidden">
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         <Header 
           user={user}
           profile={profile}
@@ -485,7 +485,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         />
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
           {messages.length === 0 ? (
             <WelcomeScreen 
               profile={profile}
