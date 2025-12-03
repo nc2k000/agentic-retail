@@ -2,6 +2,7 @@
 
 import { CartItem } from '@/types'
 import { formatPrice } from '@/lib/utils'
+import { getBulkDealForItem } from '@/lib/bulkDeals'
 
 interface CartSidebarProps {
   isOpen: boolean
@@ -75,45 +76,67 @@ export function CartSidebar({
             </div>
           ) : (
             <div className="space-y-3">
-              {cart.map(item => (
-                <div 
-                  key={item.sku}
-                  className="flex items-center gap-3 p-3 bg-stone-50 rounded-xl"
-                >
-                  <span className="text-2xl">{item.image}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-stone-800 truncate">{item.name}</p>
-                    <p className="text-sm text-stone-500">{formatPrice(item.price)}</p>
-                  </div>
-                  
-                  {/* Quantity Controls */}
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => onUpdateQuantity(item.sku, item.quantity - 1)}
-                      className="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-stone-200 hover:bg-stone-300 flex items-center justify-center text-stone-600 touch-manipulation"
-                    >
-                      −
-                    </button>
-                    <span className="w-9 sm:w-8 text-center text-sm font-medium">{item.quantity}</span>
-                    <button
-                      onClick={() => onUpdateQuantity(item.sku, item.quantity + 1)}
-                      className="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-stone-200 hover:bg-stone-300 flex items-center justify-center text-stone-600 touch-manipulation"
-                    >
-                      +
-                    </button>
-                  </div>
+              {cart.map(item => {
+                const bulkDeal = getBulkDealForItem(item)
 
-                  {/* Remove */}
-                  <button
-                    onClick={() => onRemove(item.sku)}
-                    className="p-2 sm:p-1 text-stone-400 hover:text-red-500 transition-colors touch-manipulation"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              ))}
+                return (
+                  <div key={item.sku}>
+                    <div className="flex items-center gap-3 p-3 bg-stone-50 rounded-xl">
+                      <span className="text-2xl">{item.image}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-stone-800 truncate">{item.name}</p>
+                        <p className="text-sm text-stone-500">{formatPrice(item.price)}</p>
+                      </div>
+
+                      {/* Quantity Controls */}
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => onUpdateQuantity(item.sku, item.quantity - 1)}
+                          className="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-stone-200 hover:bg-stone-300 flex items-center justify-center text-stone-600 touch-manipulation"
+                        >
+                          −
+                        </button>
+                        <span className="w-9 sm:w-8 text-center text-sm font-medium">{item.quantity}</span>
+                        <button
+                          onClick={() => onUpdateQuantity(item.sku, item.quantity + 1)}
+                          className="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-stone-200 hover:bg-stone-300 flex items-center justify-center text-stone-600 touch-manipulation"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      {/* Remove */}
+                      <button
+                        onClick={() => onRemove(item.sku)}
+                        className="p-2 sm:p-1 text-stone-400 hover:text-red-500 transition-colors touch-manipulation"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    {/* Bulk Deal Notification */}
+                    {bulkDeal && (
+                      <div className="mt-2 ml-3 mr-3 p-2.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg flex items-center gap-2">
+                        <span className="text-lg flex-shrink-0">💡</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-amber-900">{bulkDeal.message}</p>
+                          <p className="text-[10px] text-amber-700 mt-0.5">
+                            Buy {bulkDeal.bulkDeal.qty} for ${bulkDeal.bulkDeal.price.toFixed(2)}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => onUpdateQuantity(item.sku, bulkDeal.bulkDeal.qty)}
+                          className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded-lg whitespace-nowrap touch-manipulation transition-colors"
+                        >
+                          Add {bulkDeal.quantityNeeded}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>
