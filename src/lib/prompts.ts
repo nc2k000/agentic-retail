@@ -82,6 +82,21 @@ When suggesting savings, use a savings block:
 }
 \`\`\`
 
+### Order Confirmation
+When a user completes checkout, show an order confirmation:
+
+\`\`\`order
+{
+  "orderNumber": "12345",
+  "items": [...cart items...],
+  "total": 45.67,
+  "itemCount": 12,
+  "status": "confirmed",
+  "estimatedDelivery": "Tomorrow, Dec 3 by 6pm",
+  "pickupReady": "Today at 4pm"
+}
+\`\`\`
+
 ### Follow-up Suggestions
 Offer relevant suggestions as chips:
 

@@ -4,6 +4,7 @@ import { Message, CartItem, ShoppingList } from '@/types'
 import { ShopBlock } from '@/components/blocks/ShopBlock'
 import { SavingsBlock } from '@/components/blocks/SavingsBlock'
 import { RecipeBlock } from '@/components/blocks/RecipeBlock'
+import { OrderBlock } from '@/components/blocks/OrderBlock'
 import { SuggestionChips } from '@/components/blocks/SuggestionChips'
 import { LoadingIndicator } from '@/components/ui/LoadingIndicator'
 import { extractTextContent } from '@/lib/parser'
@@ -118,6 +119,13 @@ export function MessageBubble({
                         key={i}
                         chips={block.data.chips || block.data}
                         onSelect={onSendMessage}
+                      />
+                    )
+                  case 'order':
+                    return (
+                      <OrderBlock
+                        key={i}
+                        data={block.data}
                       />
                     )
                   // TODO: Add more block types (upsell, comparison, etc.)

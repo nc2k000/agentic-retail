@@ -285,8 +285,14 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       if (data) {
         setOrders(prev => [data as Order, ...prev])
 
-        // Request order confirmation from Claude
-        sendMessage(`Confirm my order with ${itemCount} items totaling $${total.toFixed(2)}. Generate an order confirmation block with order number ${(data as any).id}.`)
+        // Request order confirmation from Claude with full cart details
+        const orderDetails = JSON.stringify({
+          orderNumber: (data as any).id,
+          items: cart,
+          total,
+          itemCount,
+        })
+        sendMessage(`Generate an order confirmation block for this order:\n${orderDetails}\n\nUse "estimatedDelivery" for delivery orders or "pickupReady" for pickup. Make it celebratory!`)
 
         // Clear cart
         setCart([])

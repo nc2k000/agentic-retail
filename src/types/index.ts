@@ -149,6 +149,19 @@ export interface SuggestionChip {
   prompt: string
 }
 
+export interface OrderBlock {
+  type: 'order'
+  data: {
+    orderNumber: string
+    items: CartItem[]
+    total: number
+    itemCount: number
+    status: 'confirmed' | 'pending'
+    estimatedDelivery?: string
+    pickupReady?: string
+  }
+}
+
 // User & Profile Types
 export interface UserProfile {
   id: string
