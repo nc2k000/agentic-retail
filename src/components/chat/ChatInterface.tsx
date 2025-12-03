@@ -44,17 +44,20 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
   // Send message to Claude
   const sendMessage = useCallback(async (content: string, multimodalContent?: MessageContent) => {
+    const isSystemMessage = content.startsWith('[SYSTEM]')
     const displayContent = content
 
-    // Add user message to UI
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: displayContent,
-      multimodalContent,
-      createdAt: new Date().toISOString(),
+    // Add user message to UI (skip system messages)
+    if (!isSystemMessage) {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        role: 'user',
+        content: displayContent,
+        multimodalContent,
+        createdAt: new Date().toISOString(),
+      }
+      setMessages(prev => [...prev, userMessage])
     }
-    setMessages(prev => [...prev, userMessage])
     setIsLoading(true)
 
     // Create streaming assistant message
