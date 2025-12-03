@@ -352,7 +352,7 @@ if (meaningfulSwaps.length === 0 || totalMeaningfulSavings < MIN_TOTAL_SAVINGS) 
 
 ## Remaining Sprint 2 Features
 
-### 🔄 Bulk Deal Detection (~45 min)
+### ✅ Bulk Deal Detection (COMPLETED - Dec 3)
 **Description:** Savings agent suggests "buy 2 for discount" based on `bulkDeal` catalog data
 
 **Implementation Plan:**
@@ -377,7 +377,7 @@ function findBulkDealOpportunities(cart: CartItem[]) {
 
 ---
 
-### 🔄 Replenishment Reminders (~45 min)
+### ✅ Replenishment Reminders (COMPLETED - Dec 3)
 **Description:** Track purchase frequency, show "time to restock" suggestions
 
 **Implementation Plan:**
@@ -493,10 +493,12 @@ vercel --prod
 
 ### Immediate (This Week)
 1. ✅ Deploy Sprint 2 changes (DONE)
-2. ⏭️ Implement bulk deal detection (45 min)
-3. ⏭️ Implement replenishment reminders (45 min)
-4. ⏭️ Test deployed build on mobile devices
-5. ⏭️ Gather user feedback
+2. ✅ Implement bulk deal detection (DONE - Dec 3)
+3. ✅ Implement replenishment reminders (DONE - Dec 3)
+4. ✅ Inline cart savings (DONE - Dec 3)
+5. ✅ Clean up debug logs (DONE - Dec 3)
+6. ⏭️ Test deployed build on mobile devices
+7. ⏭️ Gather user feedback
 
 ### Short Term (Next 2 Weeks)
 1. Start Phase 0: Customer Memory System
