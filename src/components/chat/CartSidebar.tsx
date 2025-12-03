@@ -90,14 +90,14 @@ export function CartSidebar({
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => onUpdateQuantity(item.sku, item.quantity - 1)}
-                      className="w-7 h-7 rounded-lg bg-stone-200 hover:bg-stone-300 flex items-center justify-center text-stone-600"
+                      className="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-stone-200 hover:bg-stone-300 flex items-center justify-center text-stone-600 touch-manipulation"
                     >
                       −
                     </button>
-                    <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                    <span className="w-9 sm:w-8 text-center text-sm font-medium">{item.quantity}</span>
                     <button
                       onClick={() => onUpdateQuantity(item.sku, item.quantity + 1)}
-                      className="w-7 h-7 rounded-lg bg-stone-200 hover:bg-stone-300 flex items-center justify-center text-stone-600"
+                      className="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-stone-200 hover:bg-stone-300 flex items-center justify-center text-stone-600 touch-manipulation"
                     >
                       +
                     </button>
@@ -106,7 +106,7 @@ export function CartSidebar({
                   {/* Remove */}
                   <button
                     onClick={() => onRemove(item.sku)}
-                    className="p-1 text-stone-400 hover:text-red-500 transition-colors"
+                    className="p-2 sm:p-1 text-stone-400 hover:text-red-500 transition-colors touch-manipulation"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -124,7 +124,7 @@ export function CartSidebar({
             {/* Find Savings Button */}
             <button
               onClick={onFindSavings}
-              className="w-full py-2.5 border border-emerald-500 text-emerald-600 rounded-xl font-medium hover:bg-emerald-50 transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3 sm:py-2.5 min-h-[48px] border border-emerald-500 text-emerald-600 rounded-xl font-medium hover:bg-emerald-50 transition-colors flex items-center justify-center gap-2 touch-manipulation"
             >
               <span>💰</span>
               Find Savings
@@ -133,7 +133,7 @@ export function CartSidebar({
             {/* Checkout Button */}
             <button
               onClick={onCheckout}
-              className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-semibold transition-colors"
+              className="w-full py-3.5 sm:py-3 min-h-[52px] bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-semibold transition-colors touch-manipulation"
             >
               Checkout • {formatPrice(total)}
             </button>

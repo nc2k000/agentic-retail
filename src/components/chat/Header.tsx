@@ -29,24 +29,24 @@ export function Header({
   const [showMenu, setShowMenu] = useState(false)
 
   return (
-    <header className="bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between">
+    <header className="bg-white border-b border-stone-200 px-3 sm:px-4 py-3 flex items-center justify-between">
       {/* Logo & Title */}
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-white font-bold text-lg">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-white font-bold text-base sm:text-lg">
           A
         </div>
         <div>
-          <h1 className="font-semibold text-stone-800">Agentic Retail</h1>
-          <p className="text-xs text-stone-500">Powered by Claude</p>
+          <h1 className="font-semibold text-stone-800 text-sm sm:text-base">Agentic Retail</h1>
+          <p className="text-xs text-stone-500 hidden sm:block">Powered by Claude</p>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
         {/* New Chat */}
         <button
           onClick={onNewChat}
-          className="p-2 rounded-lg hover:bg-stone-100 text-stone-600 transition-colors"
+          className="p-2.5 sm:p-2 rounded-lg hover:bg-stone-100 text-stone-600 transition-colors touch-manipulation"
           title="New Chat"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,9 +57,9 @@ export function Header({
         {/* Voice Toggle */}
         <button
           onClick={onToggleVoice}
-          className={`p-2 rounded-lg transition-colors ${
-            voiceEnabled 
-              ? 'bg-amber-100 text-amber-700' 
+          className={`p-2.5 sm:p-2 rounded-lg transition-colors touch-manipulation ${
+            voiceEnabled
+              ? 'bg-amber-100 text-amber-700'
               : 'hover:bg-stone-100 text-stone-600'
           }`}
           title={voiceEnabled ? 'Disable voice' : 'Enable voice'}
@@ -79,7 +79,7 @@ export function Header({
         {/* Cart Button */}
         <button
           onClick={onOpenCart}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-colors"
+          className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 sm:py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-colors touch-manipulation min-h-[44px]"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -87,8 +87,8 @@ export function Header({
           {cartCount > 0 && (
             <>
               <span className="text-sm font-medium">{cartCount}</span>
-              <span className="text-sm">•</span>
-              <span className="text-sm font-medium">${cartTotal.toFixed(2)}</span>
+              <span className="text-sm hidden sm:inline">•</span>
+              <span className="text-sm font-medium hidden sm:inline">${cartTotal.toFixed(2)}</span>
             </>
           )}
         </button>
@@ -97,7 +97,7 @@ export function Header({
         <div className="relative">
           <button
             onClick={() => setShowMenu(!showMenu)}
-            className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 hover:bg-stone-300 transition-colors"
+            className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 hover:bg-stone-300 transition-colors touch-manipulation"
           >
             {profile?.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || '?'}
           </button>
