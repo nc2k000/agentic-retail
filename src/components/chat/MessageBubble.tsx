@@ -6,6 +6,7 @@ import { SavingsBlock } from '@/components/blocks/SavingsBlock'
 import { RecipeBlock } from '@/components/blocks/RecipeBlock'
 import { OrderBlock } from '@/components/blocks/OrderBlock'
 import { UpsellBlock } from '@/components/blocks/UpsellBlock'
+import { BulkDealBlock } from '@/components/blocks/BulkDealBlock'
 import { SuggestionChips } from '@/components/blocks/SuggestionChips'
 import { LoadingIndicator, SkeletonShopBlock } from '@/components/ui/LoadingIndicator'
 import { extractTextContent } from '@/lib/parser'
@@ -18,8 +19,10 @@ interface MessageBubbleProps {
   onSwap: (original: CartItem, replacement: CartItem) => void
   onSwapAll?: (swaps: Array<{original: CartItem, replacement: CartItem}>) => void
   onSendMessage: (message: string) => void
+  onUpdateCartQuantity: (sku: string, quantity: number) => void
   activeList: ShoppingList | null
   onUpdateActiveList: (list: ShoppingList | null) => void
+  cart: CartItem[]
 }
 
 export function MessageBubble({
@@ -30,8 +33,10 @@ export function MessageBubble({
   onSwap,
   onSwapAll,
   onSendMessage,
+  onUpdateCartQuantity,
   activeList,
   onUpdateActiveList,
+  cart,
 }: MessageBubbleProps) {
   const isUser = message.role === 'user'
   const isStreaming = message.isStreaming
@@ -145,6 +150,19 @@ export function MessageBubble({
                         key={i}
                         data={block.data}
                         onAddToCart={onAddToCart}
+                      />
+                    )
+                  case 'bulkdeal':
+                    return (
+                      <BulkDealBlock
+                        key={i}
+                        data={block.data}
+                        onAddQuantity={(sku, additionalQty) => {
+                          const currentItem = cart.find(item => item.sku === sku)
+                          if (currentItem) {
+                            onUpdateCartQuantity(sku, currentItem.quantity + additionalQty)
+                          }
+                        }}
                       />
                     )
                   // TODO: Add more block types (comparison, etc.)

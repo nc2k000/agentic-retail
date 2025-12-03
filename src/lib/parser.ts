@@ -48,6 +48,10 @@ export function parseBlocks(content: string): Block[] {
         case 'order':
           blocks.push({ type: 'order', data })
           break
+        case 'bulkdeal':
+        case 'bulk':
+          blocks.push({ type: 'bulkdeal', data })
+          break
         default:
           // Unknown block type, skip
           console.warn('Unknown block type:', blockType)

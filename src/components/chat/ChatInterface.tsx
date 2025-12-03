@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { User } from '@supabase/supabase-js'
 import { Message, CartItem, ShoppingList, Order, Block, MessageContent } from '@/types'
 import { MessageBubble } from './MessageBubble'
@@ -11,6 +11,8 @@ import { WelcomeScreen } from './WelcomeScreen'
 import { parseBlocks } from '@/lib/parser'
 import { SYSTEM_PROMPT } from '@/lib/prompts'
 import { createClient } from '@/lib/supabase/client'
+import { getTopReplenishmentSuggestions } from '@/lib/replenishment'
+import { catalog } from '@/lib/catalog'
 
 interface ChatInterfaceProps {
   user: User
@@ -34,6 +36,11 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Calculate replenishment suggestions
+  const replenishmentSuggestions = useMemo(() => {
+    return getTopReplenishmentSuggestions(orders, catalog, 3)
+  }, [orders])
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -518,9 +525,10 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         {/* Messages */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
           {messages.length === 0 ? (
-            <WelcomeScreen 
+            <WelcomeScreen
               profile={profile}
               onSendMessage={sendMessage}
+              replenishmentSuggestions={replenishmentSuggestions}
             />
           ) : (
             <div className="max-w-3xl mx-auto py-4">
@@ -534,8 +542,10 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
                   onSwap={handleSwap}
                   onSwapAll={handleSwapAll}
                   onSendMessage={sendMessage}
+                  onUpdateCartQuantity={updateCartQuantity}
                   activeList={activeList}
                   onUpdateActiveList={setActiveList}
+                  cart={cart}
                 />
               ))}
               <div ref={messagesEndRef} />

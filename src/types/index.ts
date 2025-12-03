@@ -65,17 +65,18 @@ export interface Message {
   isStreaming?: boolean
 }
 
-export type BlockType = 
-  | 'shop' 
-  | 'recipe' 
-  | 'outcome' 
-  | 'savings' 
-  | 'cart' 
-  | 'upsell' 
-  | 'comparison' 
-  | 'products' 
-  | 'suggestions' 
+export type BlockType =
+  | 'shop'
+  | 'recipe'
+  | 'outcome'
+  | 'savings'
+  | 'cart'
+  | 'upsell'
+  | 'comparison'
+  | 'products'
+  | 'suggestions'
   | 'order'
+  | 'bulkdeal'
 
 export interface Block {
   type: BlockType
@@ -164,6 +165,22 @@ export interface OrderBlock {
     status: 'confirmed' | 'pending'
     estimatedDelivery?: string
     pickupReady?: string
+  }
+}
+
+export interface BulkDealOpportunity {
+  item: CartItem
+  bulkDeal: BulkDeal
+  additionalQty: number
+  totalSavings: number
+  message: string
+}
+
+export interface BulkDealBlock {
+  type: 'bulkdeal'
+  data: {
+    opportunities: BulkDealOpportunity[]
+    totalPotentialSavings: number
   }
 }
 

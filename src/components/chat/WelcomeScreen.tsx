@@ -1,11 +1,15 @@
 'use client'
 
+import { ReplenishmentSuggestion } from '@/lib/replenishment'
+import { formatPrice } from '@/lib/utils'
+
 interface WelcomeScreenProps {
   profile: any
   onSendMessage: (message: string) => void
+  replenishmentSuggestions?: ReplenishmentSuggestion[]
 }
 
-export function WelcomeScreen({ profile, onSendMessage }: WelcomeScreenProps) {
+export function WelcomeScreen({ profile, onSendMessage, replenishmentSuggestions = [] }: WelcomeScreenProps) {
   const name = profile?.name?.split(' ')[0] || 'there'
   
   // Get time-based greeting
@@ -65,6 +69,42 @@ export function WelcomeScreen({ profile, onSendMessage }: WelcomeScreenProps) {
           What would you like to shop for today?
         </p>
       </div>
+
+      {/* Replenishment Suggestions */}
+      {replenishmentSuggestions.length > 0 && (
+        <div className="w-full max-w-md mb-6">
+          <h3 className="text-sm font-medium text-stone-600 mb-3 flex items-center gap-2">
+            <span>🔄</span>
+            <span>Time to restock</span>
+          </h3>
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 space-y-2">
+            {replenishmentSuggestions.slice(0, 3).map((suggestion, i) => (
+              <button
+                key={i}
+                onClick={() => onSendMessage(`Add ${suggestion.item.name} to my cart`)}
+                className="w-full flex items-center gap-3 p-2 bg-white rounded-lg border border-blue-100 hover:border-blue-300 hover:shadow-sm transition-all text-left"
+              >
+                <span className="text-xl flex-shrink-0">{suggestion.item.image}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-stone-800 truncate">{suggestion.item.name}</p>
+                  <p className="text-[10px] text-stone-500 truncate">{suggestion.message}</p>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <p className="text-xs font-semibold text-stone-700">{formatPrice(suggestion.item.price)}</p>
+                </div>
+              </button>
+            ))}
+            {replenishmentSuggestions.length > 3 && (
+              <button
+                onClick={() => onSendMessage('Show me all items I need to restock')}
+                className="w-full text-xs text-blue-600 hover:text-blue-700 font-medium mt-2 text-center"
+              >
+                +{replenishmentSuggestions.length - 3} more items
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 gap-3 w-full max-w-md">

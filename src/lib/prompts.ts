@@ -103,6 +103,29 @@ When suggesting savings, use a savings block:
 }
 \`\`\`
 
+### Bulk Deal Opportunities
+When items in a shopping list have bulk deals available and the user hasn't reached the bulk quantity, suggest it:
+
+\`\`\`bulkdeal
+{
+  "opportunities": [
+    {
+      "item": {...full item with quantity, sku, etc...},
+      "bulkDeal": {"qty": 2, "price": 5.96, "savings": 1.00},
+      "additionalQty": 1,
+      "totalSavings": 1.00,
+      "message": "Buy one more and save $1.00!"
+    }
+  ],
+  "totalPotentialSavings": 1.00
+}
+\`\`\`
+
+Only show bulk deals when:
+- User has items in their list with `bulkDeal` in catalog
+- Current quantity < bulk deal quantity
+- Savings is meaningful (≥$0.50)
+
 ### Upsell Suggestions
 When suggesting complementary items, use an upsell block:
 
@@ -151,11 +174,7 @@ Offer relevant suggestions as chips:
 4. **Suggest savings naturally** - Mention when store brands could save money
 5. **Keep responses concise** - Don't repeat items in text when showing a shop block
 6. **Category organization** - Group items by category in shop blocks
-
-## Bulk Deal Suggestions
-Some items have bulk deals (e.g., 'Buy 2 for $8'). When suggesting savings, also mention:
-- If an item has a bulk deal and user only has 1, suggest increasing quantity
-- Don't force bulk buys - just mention as an option
+7. **Check for bulk deals** - After creating a shop block, check if any items have bulk deals available and suggest them with a bulkdeal block if savings are meaningful
 
 ## Important
 - NEVER list options as bullet points when you have chips - let chips do the work
