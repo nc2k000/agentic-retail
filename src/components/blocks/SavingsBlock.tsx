@@ -20,9 +20,10 @@ interface SavingsBlockProps {
   }
   onSwap: (original: CartItem, replacement: CartItem) => void
   onAddToCart: (item: CartItem) => void
+  onSwapAll?: (swaps: SavingsSwap[]) => void
 }
 
-export function SavingsBlock({ data, onSwap, onAddToCart }: SavingsBlockProps) {
+export function SavingsBlock({ data, onSwap, onAddToCart, onSwapAll }: SavingsBlockProps) {
   const [swappedItems, setSwappedItems] = useState<Record<number, boolean>>({})
 
   // Minimum thresholds
@@ -46,12 +47,20 @@ export function SavingsBlock({ data, onSwap, onAddToCart }: SavingsBlockProps) {
   }
 
   const handleSwapAll = () => {
-    meaningfulSwaps.forEach((swap, index) => {
-      if (!swappedItems[index]) {
-        onSwap(swap.original, swap.replacement)
-        setSwappedItems(prev => ({ ...prev, [index]: true }))
-      }
-    })
+    const unswappedSwaps = meaningfulSwaps.filter((_, index) => !swappedItems[index])
+
+    if (onSwapAll && unswappedSwaps.length > 0) {
+      // Use the callback if provided
+      onSwapAll(unswappedSwaps)
+    } else {
+      // Fall back to individual swaps
+      meaningfulSwaps.forEach((swap, index) => {
+        if (!swappedItems[index]) {
+          onSwap(swap.original, swap.replacement)
+          setSwappedItems(prev => ({ ...prev, [index]: true }))
+        }
+      })
+    }
   }
 
   const remainingSavings = meaningfulSwaps.reduce(
