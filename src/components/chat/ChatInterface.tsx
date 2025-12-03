@@ -207,7 +207,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: apiMessages,
-          system: systemPrompt,
+          system: SYSTEM_PROMPT(profile, memoryContext),
         }),
       })
 
