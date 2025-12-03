@@ -222,14 +222,21 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     const supabase = createClient()
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
+    const insertData: {
+      user_id: string
+      items: CartItem[]
+      total: number
+      status: string
+    } = {
+      user_id: user.id,
+      items: cart,
+      total,
+      status: 'confirmed',
+    }
+
     const { data, error } = await supabase
       .from('orders')
-      .insert({
-        user_id: user.id,
-        items: cart,
-        total,
-        status: 'confirmed',
-      })
+      .insert(insertData)
       .select()
       .single()
 
@@ -250,7 +257,12 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     // Save order to database
     try {
       const supabase = createClient()
-      const orderData = {
+      const orderData: {
+        user_id: string
+        items: CartItem[]
+        total: number
+        status: string
+      } = {
         user_id: user.id,
         items: cart,
         total,
