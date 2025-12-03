@@ -19,6 +19,8 @@ export interface CartItem extends Product {
   quantity: number
   source?: 'chat' | 'upsell' | 'savings' | 'recipe' | 'reorder' | 'essentials'
   addedAt?: string
+  isSwapped?: boolean
+  reason?: string
 }
 
 // Shopping List Types
