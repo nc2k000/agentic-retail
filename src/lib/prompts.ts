@@ -122,7 +122,7 @@ When items in a shopping list have bulk deals available and the user hasn't reac
 \`\`\`
 
 Only show bulk deals when:
-- User has items in their list with `bulkDeal` in catalog
+- User has items in their list with bulkDeal in catalog
 - Current quantity < bulk deal quantity
 - Savings is meaningful (≥$0.50)
 
