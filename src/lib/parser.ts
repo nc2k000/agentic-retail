@@ -64,7 +64,10 @@ export function parseBlocks(content: string): Block[] {
 // Extract text content without blocks
 export function extractTextContent(content: string): string {
   return content
+    // Remove complete blocks: ```type\n...```
     .replace(/`{2,3}\w+\n[\s\S]*?`{2,3}/g, '')
+    // Remove incomplete blocks during streaming: ```type\n... (no closing backticks yet)
+    .replace(/`{2,3}\w+\n[\s\S]*$/g, '')
     .trim()
 }
 

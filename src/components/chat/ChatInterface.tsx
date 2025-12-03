@@ -416,6 +416,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         onRemove={removeFromCart}
         onCheckout={handleCheckout}
         onFindSavings={() => handleFindSavings(cart, 'Cart')}
+        onClearCart={() => setCart([])}
       />
     </div>
   )

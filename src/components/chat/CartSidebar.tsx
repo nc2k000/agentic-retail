@@ -11,6 +11,7 @@ interface CartSidebarProps {
   onRemove: (sku: string) => void
   onCheckout: () => void
   onFindSavings: () => void
+  onClearCart: () => void
 }
 
 export function CartSidebar({
@@ -21,6 +22,7 @@ export function CartSidebar({
   onRemove,
   onCheckout,
   onFindSavings,
+  onClearCart,
 }: CartSidebarProps) {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
@@ -38,19 +40,29 @@ export function CartSidebar({
       {/* Sidebar */}
       <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl z-50 flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200">
-          <div>
-            <h2 className="font-semibold text-stone-800">Your Cart</h2>
-            <p className="text-sm text-stone-500">{itemCount} items • {formatPrice(total)}</p>
+        <div className="px-4 py-3 border-b border-stone-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-semibold text-stone-800">Your Cart</h2>
+              <p className="text-sm text-stone-500">{itemCount} items • {formatPrice(total)}</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg hover:bg-stone-100 text-stone-500"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg hover:bg-stone-100 text-stone-500"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          {cart.length > 0 && (
+            <button
+              onClick={onClearCart}
+              className="mt-2 text-sm text-red-600 hover:text-red-700 font-medium"
+            >
+              Clear all items
+            </button>
+          )}
         </div>
 
         {/* Items */}
