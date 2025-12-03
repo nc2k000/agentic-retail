@@ -238,12 +238,14 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     try {
       const supabase = createClient()
 
+      const updateData = {
+        items: list.items as any,
+        updated_at: new Date().toISOString(),
+      }
+
       await supabase
         .from('shopping_lists')
-        .update({
-          items: list.items as any,
-          updated_at: new Date().toISOString(),
-        } as any)
+        .update(updateData as any)
         .eq('id', list.id)
 
       // Update recent lists
