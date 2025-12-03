@@ -91,7 +91,7 @@ export function ShopBlock({
   }
 
   return (
-    <div className="mt-3 bg-white border border-stone-200 rounded-xl overflow-hidden">
+    <div className="mt-3 bg-white border border-stone-200 rounded-xl overflow-hidden max-w-full">
       {/* Header */}
       <div className="px-4 py-3 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
         <div className="flex items-center gap-2">

@@ -353,14 +353,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       if (data) {
         setOrders(prev => [data as Order, ...prev])
 
-        // Request order confirmation from Claude with full cart details
-        const orderDetails = JSON.stringify({
-          orderNumber: (data as any).id,
-          items: cart,
-          total,
-          itemCount,
-        })
-        sendMessage(`Generate an order confirmation block for this order:\n${orderDetails}\n\nUse "estimatedDelivery" for delivery orders or "pickupReady" for pickup. Make it celebratory!`)
+        // Silently trigger order confirmation (don't add user message to chat)
+        sendMessage(`[SYSTEM] Generate order confirmation for order #${(data as any).id} with ${itemCount} items, total $${total.toFixed(2)}`)
 
         // Clear cart
         setCart([])
@@ -376,15 +370,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
   // Find savings on current list/cart
   const handleFindSavings = useCallback((items: CartItem[], title: string) => {
-    const itemsJson = JSON.stringify(items.map(i => ({
-      sku: i.sku,
-      name: i.name,
-      price: i.price,
-      quantity: i.quantity || 1,
-    })))
-    
     sendMessage(
-      `Find savings on these items:\n${itemsJson}\n\nGenerate a savings block with store brand alternatives.`
+      `[SYSTEM] Find savings on "${title}" with ${items.length} items. Generate a savings block with store brand alternatives.`
     )
   }, [sendMessage])
 

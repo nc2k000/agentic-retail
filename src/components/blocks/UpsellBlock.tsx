@@ -10,7 +10,7 @@ interface UpsellBlockProps {
 
 export function UpsellBlock({ data, onAddToCart }: UpsellBlockProps) {
   return (
-    <div className="mt-4 bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl overflow-hidden">
+    <div className="mt-4 bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl overflow-hidden max-w-full">
       {/* Header */}
       <div className="px-4 py-3 bg-white/80 border-b border-purple-200">
         <div className="flex items-center gap-2">

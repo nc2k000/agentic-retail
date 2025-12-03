@@ -8,7 +8,7 @@ interface RecipeBlockProps {
 
 export function RecipeBlock({ data }: RecipeBlockProps) {
   return (
-    <div className="mt-4 border border-stone-200 rounded-xl overflow-hidden bg-white">
+    <div className="mt-4 border border-stone-200 rounded-xl overflow-hidden bg-white max-w-full">
       {/* Header */}
       <div className="px-4 py-3 bg-gradient-to-r from-orange-50 to-amber-50 border-b border-stone-200">
         <h3 className="font-semibold text-stone-800">{data.title}</h3>
@@ -25,8 +25,8 @@ export function RecipeBlock({ data }: RecipeBlockProps) {
         <ul className="space-y-1">
           {data.ingredients.map((ing, i) => (
             <li key={i} className="text-sm text-stone-700 flex items-start gap-2">
-              <span className="text-stone-400">•</span>
-              <span>
+              <span className="text-stone-400 flex-shrink-0">•</span>
+              <span className="break-words">
                 {ing.amount && ing.unit ? `${ing.amount} ${ing.unit} ` : ''}
                 {ing.name}
               </span>
@@ -42,8 +42,8 @@ export function RecipeBlock({ data }: RecipeBlockProps) {
           <ol className="space-y-2">
             {data.instructions.map((step, i) => (
               <li key={i} className="text-sm text-stone-700 flex gap-3">
-                <span className="font-medium text-orange-600 min-w-[1.5rem]">{i + 1}.</span>
-                <span>{step}</span>
+                <span className="font-medium text-orange-600 min-w-[1.5rem] flex-shrink-0">{i + 1}.</span>
+                <span className="break-words">{step}</span>
               </li>
             ))}
           </ol>

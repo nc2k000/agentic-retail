@@ -9,7 +9,7 @@ interface OrderBlockProps {
 
 export function OrderBlock({ data }: OrderBlockProps) {
   return (
-    <div className="mt-4 bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl overflow-hidden">
+    <div className="mt-4 bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl overflow-hidden max-w-full">
       {/* Success Header */}
       <div className="px-4 py-4 bg-white/80 border-b border-emerald-200 text-center">
         <div className="text-4xl mb-2">✅</div>
