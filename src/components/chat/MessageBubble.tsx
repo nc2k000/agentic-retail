@@ -3,6 +3,7 @@
 import { Message, CartItem, ShoppingList } from '@/types'
 import { ShopBlock } from '@/components/blocks/ShopBlock'
 import { SavingsBlock } from '@/components/blocks/SavingsBlock'
+import { RecipeBlock } from '@/components/blocks/RecipeBlock'
 import { SuggestionChips } from '@/components/blocks/SuggestionChips'
 import { LoadingIndicator } from '@/components/ui/LoadingIndicator'
 import { extractTextContent } from '@/lib/parser'
@@ -104,6 +105,13 @@ export function MessageBubble({
                         onAddToCart={onAddToCart}
                       />
                     )
+                  case 'recipe':
+                    return (
+                      <RecipeBlock
+                        key={i}
+                        data={block.data}
+                      />
+                    )
                   case 'suggestions':
                     return (
                       <SuggestionChips
@@ -112,7 +120,7 @@ export function MessageBubble({
                         onSelect={onSendMessage}
                       />
                     )
-                  // TODO: Add more block types (recipe, upsell, comparison, etc.)
+                  // TODO: Add more block types (upsell, comparison, etc.)
                   default:
                     return null
                 }

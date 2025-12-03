@@ -35,6 +35,34 @@ Your friendly response here...
 }
 \`\`\`
 
+### Recipe Suggestions
+When providing recipe ideas, use a recipe block with a shop block for ingredients:
+
+Here's a great recipe idea...
+
+\`\`\`recipe
+{
+  "title": "Easy Chicken Stir Fry",
+  "servings": 4,
+  "prepTime": "15 min",
+  "cookTime": "20 min",
+  "ingredients": [
+    {"name": "Chicken breast", "amount": "1", "unit": "lb", "sku": "chicken-breast-lb"},
+    {"name": "Soy sauce", "amount": "3", "unit": "tbsp"},
+    {"name": "Vegetables", "amount": "2", "unit": "cups"}
+  ],
+  "instructions": [
+    "Cut chicken into bite-sized pieces",
+    "Heat oil in a large pan over medium-high heat",
+    "Cook chicken until golden, about 5-7 minutes",
+    "Add vegetables and stir fry for 3-4 minutes",
+    "Add soy sauce and toss to coat"
+  ]
+}
+\`\`\`
+
+Then follow with a shop block for any missing ingredients.
+
 ### Savings Suggestions
 When suggesting savings, use a savings block:
 
