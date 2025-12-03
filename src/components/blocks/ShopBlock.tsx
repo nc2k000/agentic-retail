@@ -160,18 +160,18 @@ export function ShopBlock({
                   return (
                   <div
                     key={item.sku}
-                    className={`flex items-center gap-2 sm:gap-3 p-2 rounded-lg group overflow-hidden ${
+                    className={`flex items-center gap-1.5 sm:gap-2 p-2 rounded-lg group w-full min-w-0 ${
                       item.isSwapped || item.source === 'savings'
                         ? 'bg-emerald-50 border border-emerald-200'
                         : 'bg-stone-50'
                     }`}
                   >
-                    <span className="text-xl flex-shrink-0">{item.image}</span>
+                    <span className="text-base sm:text-xl flex-shrink-0">{item.image}</span>
                     <div className="flex-1 min-w-0 overflow-hidden">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <p className="text-sm font-medium text-stone-800 truncate">{item.name}</p>
+                      <div className="flex items-center gap-1 overflow-hidden">
+                        <p className="text-xs sm:text-sm font-medium text-stone-800 truncate flex-1 min-w-0">{item.name}</p>
                         {badge && (
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${badge.className} flex-shrink-0 whitespace-nowrap`}>
+                          <span className={`text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 rounded-full font-medium ${badge.className} flex-shrink-0 whitespace-nowrap hidden xs:inline-block`}>
                             {badge.icon} {badge.text}
                           </span>
                         )}
@@ -183,21 +183,21 @@ export function ShopBlock({
                           </Tooltip>
                         )}
                       </div>
-                      <p className="text-xs text-stone-500 truncate">{formatPrice(item.price)}</p>
+                      <p className="text-[10px] sm:text-xs text-stone-500 truncate">{formatPrice(item.price)}</p>
                     </div>
 
                     {/* Quantity Controls */}
-                    <div className="flex items-center gap-1 flex-shrink-0">
+                    <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
                       <button
                         onClick={() => updateQuantity(item.sku, -1)}
-                        className="w-6 h-6 rounded bg-stone-200 hover:bg-stone-300 flex items-center justify-center text-stone-600 text-sm"
+                        className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-stone-200 hover:bg-stone-300 flex items-center justify-center text-stone-600 text-xs sm:text-sm"
                       >
                         −
                       </button>
-                      <span className="w-6 text-center text-sm">{item.quantity || 1}</span>
+                      <span className="w-4 sm:w-6 text-center text-xs sm:text-sm">{item.quantity || 1}</span>
                       <button
                         onClick={() => updateQuantity(item.sku, 1)}
-                        className="w-6 h-6 rounded bg-stone-200 hover:bg-stone-300 flex items-center justify-center text-stone-600 text-sm"
+                        className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-stone-200 hover:bg-stone-300 flex items-center justify-center text-stone-600 text-xs sm:text-sm"
                       >
                         +
                       </button>
@@ -216,7 +216,7 @@ export function ShopBlock({
                     {/* Add to Cart */}
                     <button
                       onClick={() => onAddToCart({ ...item, quantity: item.quantity || 1 })}
-                      className="px-2 sm:px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded-lg transition-colors flex-shrink-0 whitespace-nowrap"
+                      className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-[10px] sm:text-xs font-medium rounded-lg transition-colors flex-shrink-0 whitespace-nowrap"
                     >
                       Add
                     </button>
@@ -230,18 +230,20 @@ export function ShopBlock({
       </div>
 
       {/* Footer */}
-      <div className="px-3 sm:px-4 py-3 bg-stone-50 border-t border-stone-200 flex items-center gap-2 sm:gap-3">
+      <div className="px-3 sm:px-4 py-3 bg-stone-50 border-t border-stone-200 flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           onClick={onFindSavings}
-          className="flex-1 py-2.5 border border-emerald-500 text-emerald-600 rounded-xl font-medium hover:bg-emerald-50 transition-colors"
+          className="flex-1 min-w-0 py-2.5 border border-emerald-500 text-emerald-600 rounded-xl text-xs sm:text-sm font-medium hover:bg-emerald-50 transition-colors whitespace-nowrap overflow-hidden text-ellipsis"
         >
-          💰 Find Savings
+          <span className="hidden sm:inline">💰 Find Savings</span>
+          <span className="sm:hidden">💰 Save</span>
         </button>
         <button
           onClick={() => onAddAllToCart(items)}
-          className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-medium transition-colors"
+          className="flex-1 min-w-0 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs sm:text-sm font-medium transition-colors whitespace-nowrap overflow-hidden text-ellipsis"
         >
-          Add all • {formatPrice(total)}
+          <span className="hidden sm:inline">Add all • {formatPrice(total)}</span>
+          <span className="sm:hidden">Add • {formatPrice(total)}</span>
         </button>
       </div>
     </div>
