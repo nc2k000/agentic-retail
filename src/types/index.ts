@@ -37,6 +37,7 @@ export interface ShoppingListItem extends Product {
   savedAmount?: number
   source?: 'chat' | 'upsell' | 'savings' | 'recipe' | 'reorder' | 'essentials'
   isSwapped?: boolean
+  reason?: string
 }
 
 // Message & Chat Types

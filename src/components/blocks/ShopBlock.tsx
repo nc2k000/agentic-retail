@@ -170,6 +170,14 @@ export function ShopBlock({
                             {badge.icon} {badge.text}
                           </span>
                         )}
+                        {item.reason && (
+                          <span
+                            className="text-stone-400 hover:text-stone-600 cursor-help flex-shrink-0"
+                            title={item.reason}
+                          >
+                            ℹ️
+                          </span>
+                        )}
                       </div>
                       <p className="text-xs text-stone-500">{formatPrice(item.price)}</p>
                     </div>
