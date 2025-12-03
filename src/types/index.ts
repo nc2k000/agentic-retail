@@ -254,9 +254,26 @@ export interface Database {
         }>
       }
       shopping_lists: {
-        Row: ShoppingList & { userId: string }
-        Insert: Omit<ShoppingList, 'id' | 'createdAt'> & { userId: string }
-        Update: Partial<Omit<ShoppingList, 'id' | 'createdAt'>>
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          items: ShoppingListItem[]
+          source: 'chat' | 'recipe' | 'outcome' | 'reorder'
+          created_at: string
+          updated_at?: string | null
+        }
+        Insert: {
+          user_id: string
+          title: string
+          items: ShoppingListItem[]
+          source: 'chat' | 'recipe' | 'outcome' | 'reorder'
+        }
+        Update: Partial<{
+          title: string
+          items: ShoppingListItem[]
+          updated_at: string
+        }>
       }
       missions: {
         Row: Mission

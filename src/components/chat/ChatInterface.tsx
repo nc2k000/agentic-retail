@@ -158,17 +158,21 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         )
       )
 
-      // Handle shop blocks - set as active list
+      // Handle shop blocks - set as active list and save to DB
       const shopBlocks = blocks.filter(b => b.type === 'shop')
       if (shopBlocks.length > 0) {
         const shopData = shopBlocks[shopBlocks.length - 1].data
-        setActiveList({
+        const newList: ShoppingList = {
           id: Date.now().toString(),
           title: shopData.title || 'Shopping List',
           items: shopData.items || [],
           source: shopData.source || 'chat',
           createdAt: new Date().toISOString(),
-        })
+        }
+        setActiveList(newList)
+
+        // Save to Supabase
+        saveListToDatabase(newList)
       }
 
       // Handle order blocks - save to DB
@@ -198,6 +202,69 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       setIsLoading(false)
     }
   }, [messages, activeList, profile, voiceEnabled])
+
+  // Save shopping list to database
+  const saveListToDatabase = useCallback(async (list: ShoppingList) => {
+    try {
+      const supabase = createClient()
+
+      const { data, error } = await supabase
+        .from('shopping_lists')
+        .insert({
+          user_id: user.id,
+          title: list.title,
+          items: list.items as any,
+          source: list.source,
+        } as any)
+        .select()
+        .single()
+
+      if (!error && data) {
+        // Update list with database ID
+        const savedList = {
+          ...list,
+          id: (data as any).id,
+        }
+        setActiveList(savedList)
+        setRecentLists(prev => [savedList, ...prev.slice(0, 9)])
+      }
+    } catch (error) {
+      console.error('Failed to save list:', error)
+    }
+  }, [user.id])
+
+  // Update shopping list in database
+  const updateListInDatabase = useCallback(async (list: ShoppingList) => {
+    try {
+      const supabase = createClient()
+
+      await supabase
+        .from('shopping_lists')
+        .update({
+          items: list.items as any,
+          updated_at: new Date().toISOString(),
+        } as any)
+        .eq('id', list.id)
+
+      // Update recent lists
+      setRecentLists(prev =>
+        prev.map(l => l.id === list.id ? list : l)
+      )
+    } catch (error) {
+      console.error('Failed to update list:', error)
+    }
+  }, [])
+
+  // Watch for active list changes and persist them
+  useEffect(() => {
+    if (activeList && activeList.id && !activeList.id.startsWith('temp-')) {
+      // Only update if list has a real database ID (not temporary timestamp)
+      const hasDbId = activeList.id.length > 15 // DB IDs are UUIDs
+      if (hasDbId) {
+        updateListInDatabase(activeList)
+      }
+    }
+  }, [activeList, updateListInDatabase])
 
   // Add item to cart
   const addToCart = useCallback((item: CartItem) => {
