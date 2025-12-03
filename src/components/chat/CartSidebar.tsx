@@ -3,6 +3,7 @@
 import { CartItem } from '@/types'
 import { formatPrice } from '@/lib/utils'
 import { getBulkDealForItem } from '@/lib/bulkDeals'
+import { SavingsBlock } from '@/components/blocks/SavingsBlock'
 
 interface CartSidebarProps {
   isOpen: boolean
@@ -13,6 +14,10 @@ interface CartSidebarProps {
   onCheckout: () => void
   onFindSavings: () => void
   onClearCart: () => void
+  cartSavingsData?: any
+  isLoadingCartSavings?: boolean
+  onCartSwap?: (original: CartItem, replacement: CartItem) => void
+  onAddToCart?: (item: CartItem) => void
 }
 
 export function CartSidebar({
@@ -24,6 +29,10 @@ export function CartSidebar({
   onCheckout,
   onFindSavings,
   onClearCart,
+  cartSavingsData,
+  isLoadingCartSavings,
+  onCartSwap,
+  onAddToCart,
 }: CartSidebarProps) {
   // Calculate total with bulk discounts applied
   const total = cart.reduce((sum, item) => {
@@ -166,6 +175,30 @@ export function CartSidebar({
                 )
               })}
             </div>
+          )}
+
+          {/* Savings Section */}
+          {cart.length > 0 && (
+            <>
+              {isLoadingCartSavings && (
+                <div className="mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-sm text-emerald-700">Finding savings...</span>
+                  </div>
+                </div>
+              )}
+
+              {cartSavingsData && onCartSwap && onAddToCart && (
+                <div className="mt-4">
+                  <SavingsBlock
+                    data={cartSavingsData}
+                    onSwap={onCartSwap}
+                    onAddToCart={onAddToCart}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
 

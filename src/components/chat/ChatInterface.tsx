@@ -34,10 +34,13 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const [recentLists, setRecentLists] = useState<ShoppingList[]>(initialLists)
   const [voiceEnabled, setVoiceEnabled] = useState(false)
   const [isCheckingOut, setIsCheckingOut] = useState(false)
+  const [cartSavingsData, setCartSavingsData] = useState<any>(null)
+  const [isLoadingCartSavings, setIsLoadingCartSavings] = useState(false)
   
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const lastUserIntentRef = useRef<string>('')
+  const isFindingCartSavings = useRef<boolean>(false)
 
   // Calculate replenishment suggestions
   const replenishmentSuggestions = useMemo(() => {
@@ -232,6 +235,15 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
         // Save to Supabase
         saveListToDatabase(newList)
+      }
+
+      // Handle savings blocks - store in cart if for cart savings
+      const savingsBlocks = blocks.filter(b => b.type === 'savings')
+      if (savingsBlocks.length > 0 && isFindingCartSavings.current) {
+        // Store savings data for inline display in cart
+        setCartSavingsData(savingsBlocks[0].data)
+        setIsLoadingCartSavings(false)
+        isFindingCartSavings.current = false
       }
 
       // Handle order blocks - save to DB
@@ -440,12 +452,30 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     }
   }, [cart, sendMessage, user.id, calculateCartTotal])
 
-  // Find savings on current list/cart
+  // Find savings on current list (displayed in chat)
   const handleFindSavings = useCallback((items: CartItem[], title: string) => {
     sendMessage(
       `[SYSTEM] Find savings on "${title}" with ${items.length} items. Generate a savings block with store brand alternatives.`
     )
   }, [sendMessage])
+
+  // Find savings on cart (displayed inline in cart)
+  const handleFindCartSavings = useCallback(() => {
+    isFindingCartSavings.current = true
+    setIsLoadingCartSavings(true)
+    setCartSavingsData(null) // Clear previous savings
+    sendMessage(
+      `[SYSTEM] Find savings on "Cart" with ${cart.length} items. Generate a savings block with store brand alternatives.`
+    )
+  }, [sendMessage, cart.length])
+
+  // Handle swap in cart savings (inline swap without updating list)
+  const handleCartSwap = useCallback((original: CartItem, replacement: CartItem) => {
+    // Swap in cart directly
+    setCart(prev => prev.map(item =>
+      item.sku === original.sku ? { ...replacement, quantity: item.quantity } : item
+    ))
+  }, [])
 
   // Handle swap in savings - request Claude to generate new list with swap
   const handleSwap = useCallback((original: CartItem, replacement: CartItem) => {
@@ -630,8 +660,12 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         onUpdateQuantity={updateCartQuantity}
         onRemove={removeFromCart}
         onCheckout={handleCheckout}
-        onFindSavings={() => handleFindSavings(cart, 'Cart')}
+        onFindSavings={handleFindCartSavings}
         onClearCart={() => setCart([])}
+        cartSavingsData={cartSavingsData}
+        isLoadingCartSavings={isLoadingCartSavings}
+        onCartSwap={handleCartSwap}
+        onAddToCart={addToCart}
       />
     </div>
   )
