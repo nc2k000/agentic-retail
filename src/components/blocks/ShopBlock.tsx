@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { CartItem, ShoppingList } from '@/types'
 import { formatPrice } from '@/lib/utils'
+import { Tooltip } from '@/components/ui/Tooltip'
 
 interface ShopBlockProps {
   data: {
@@ -93,16 +94,16 @@ export function ShopBlock({
   return (
     <div className="mt-3 bg-white border border-stone-200 rounded-xl overflow-hidden max-w-full">
       {/* Header */}
-      <div className="px-4 py-3 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-lg">🛒</span>
-          <span className="font-medium text-stone-800">{data.title}</span>
+      <div className="px-4 py-3 bg-stone-50 border-b border-stone-200 flex items-center justify-between gap-2 min-w-0">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <span className="text-lg flex-shrink-0">🛒</span>
+          <span className="font-medium text-stone-800 truncate">{data.title}</span>
           {hasEdits && (
-            <span className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">edited</span>
+            <span className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full flex-shrink-0">edited</span>
           )}
         </div>
-        <span className="text-sm text-stone-500">
-          {items.length} items • {formatPrice(total)}
+        <span className="text-sm text-stone-500 flex-shrink-0 whitespace-nowrap">
+          {items.length} • {formatPrice(total)}
         </span>
       </div>
 
@@ -113,21 +114,21 @@ export function ShopBlock({
             {/* Category Header */}
             <button
               onClick={() => toggleCategory(category)}
-              className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-stone-50 transition-colors"
+              className="w-full px-4 py-2.5 flex items-center justify-between gap-2 hover:bg-stone-50 transition-colors min-w-0"
             >
-              <div className="flex items-center gap-2">
-                <svg 
-                  className={`w-4 h-4 text-stone-400 transition-transform ${expandedCategories[category] ? 'rotate-90' : ''}`}
-                  fill="none" 
-                  stroke="currentColor" 
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <svg
+                  className={`w-4 h-4 text-stone-400 transition-transform flex-shrink-0 ${expandedCategories[category] ? 'rotate-90' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-                <span className="font-medium text-stone-700">{category}</span>
-                <span className="text-xs text-stone-400">({categoryItems.length})</span>
+                <span className="font-medium text-stone-700 truncate">{category}</span>
+                <span className="text-xs text-stone-400 flex-shrink-0">({categoryItems.length})</span>
               </div>
-              <span className="text-sm text-stone-500">
+              <span className="text-sm text-stone-500 flex-shrink-0 whitespace-nowrap">
                 {formatPrice(categoryItems.reduce((s, i) => s + i.price * (i.quantity || 1), 0))}
               </span>
             </button>
@@ -175,12 +176,11 @@ export function ShopBlock({
                           </span>
                         )}
                         {item.reason && (
-                          <span
-                            className="text-stone-400 hover:text-stone-600 cursor-help flex-shrink-0"
-                            title={item.reason}
-                          >
-                            ℹ️
-                          </span>
+                          <Tooltip content={item.reason}>
+                            <span className="text-[10px] text-stone-400 hover:text-stone-500 flex-shrink-0">
+                              ⓘ
+                            </span>
+                          </Tooltip>
                         )}
                       </div>
                       <p className="text-xs text-stone-500 truncate">{formatPrice(item.price)}</p>

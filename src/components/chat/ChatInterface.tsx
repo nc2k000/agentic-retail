@@ -395,7 +395,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       return `${item.name} (×${item.quantity})${wasSwapped ? ' [SWAPPED - highlight in green]' : ''}`
     }).join('\n')
 
-    sendMessage(`[SYSTEM] Create a NEW "${activeList.title}" shop block with these items:\n${itemsList}\n\nMark the 1 swapped item with green styling/badge to show it was changed for savings.`)
+    const newTitle = `${activeList.title} (with savings)`
+    sendMessage(`[SYSTEM] Create a NEW shop block titled "${newTitle}" with these items:\n${itemsList}\n\nMark the 1 swapped item with green styling/badge to show it was changed for savings.`)
 
     // Also swap in cart if present
     setCart(prev => prev.map(item =>
@@ -423,7 +424,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       return `${item.name} (×${item.quantity})${wasSwapped ? ' [SWAPPED - highlight in green]' : ''}`
     }).join('\n')
 
-    sendMessage(`[SYSTEM] Create a NEW "${activeList.title}" shop block with these items:\n${itemsList}\n\nMark the ${swaps.length} swapped items with green styling/badges to show they were changed for savings.`)
+    const newTitle = `${activeList.title} (with savings)`
+    sendMessage(`[SYSTEM] Create a NEW shop block titled "${newTitle}" with these items:\n${itemsList}\n\nMark the ${swaps.length} swapped items with green styling/badges to show they were changed for savings.`)
   }, [activeList, sendMessage])
 
   // Voice output
