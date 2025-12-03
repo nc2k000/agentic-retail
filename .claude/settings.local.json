@@ -12,7 +12,10 @@
       "Bash(git push)",
       "Bash(/usr/local/bin/npm run dev)",
       "Bash(node node_modules/.bin/next dev:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(/usr/local/bin/npm run build)",
+      "Bash(git push:*)",
+      "Bash(node_modules/.bin/tsc:*)"
     ],
     "deny": [],
     "ask": []

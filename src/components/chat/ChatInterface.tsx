@@ -12,7 +12,7 @@ import { parseBlocks } from '@/lib/parser'
 import { SYSTEM_PROMPT } from '@/lib/prompts'
 import { createClient } from '@/lib/supabase/client'
 import { getTopReplenishmentSuggestions } from '@/lib/replenishment'
-import { catalog } from '@/lib/catalog'
+import { getAllProducts } from '@/lib/catalog'
 
 interface ChatInterfaceProps {
   user: User
@@ -39,7 +39,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
   // Calculate replenishment suggestions
   const replenishmentSuggestions = useMemo(() => {
-    return getTopReplenishmentSuggestions(orders, catalog, 3)
+    return getTopReplenishmentSuggestions(orders, getAllProducts(), 3)
   }, [orders])
 
   // Scroll to bottom on new messages
