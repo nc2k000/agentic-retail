@@ -310,8 +310,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     })))
     
     sendMessage(
-      `Find savings on these items:\n${itemsJson}\n\nGenerate a savings block with store brand alternatives.`,
-      { displayAs: 'Find savings on my list' }
+      `Find savings on these items:\n${itemsJson}\n\nGenerate a savings block with store brand alternatives.`
     )
   }, [sendMessage])
 
