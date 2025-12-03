@@ -238,14 +238,14 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     try {
       const supabase = createClient()
 
-      // Use type assertion on the entire chain to bypass strict typing
-      await (supabase
+      // @ts-ignore - Supabase type inference has issues with JSONB update
+      await supabase
         .from('shopping_lists')
         .update({
           items: list.items,
           updated_at: new Date().toISOString(),
-        } as any)
-        .eq('id', list.id) as any)
+        })
+        .eq('id', list.id)
 
       // Update recent lists
       setRecentLists(prev =>
