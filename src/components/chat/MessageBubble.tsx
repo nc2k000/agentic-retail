@@ -47,8 +47,8 @@ export function MessageBubble({
   const hasBlocks = blocks.length > 0
 
   return (
-    <div className={`px-4 py-3 ${isUser ? 'bg-stone-50' : ''}`}>
-      <div className="flex gap-3 max-w-3xl mx-auto">
+    <div className={`px-2 sm:px-4 py-3 ${isUser ? 'bg-stone-50' : ''}`}>
+      <div className="flex gap-2 sm:gap-3 max-w-3xl mx-auto min-w-0">
         {/* Avatar */}
         {isUser ? (
           <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 flex-shrink-0">

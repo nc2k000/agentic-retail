@@ -92,9 +92,9 @@ export function ShopBlock({
   }
 
   return (
-    <div className="mt-3 bg-white border border-stone-200 rounded-xl overflow-hidden max-w-full">
+    <div className="mt-3 bg-white border border-stone-200 rounded-xl overflow-hidden w-full max-w-full">
       {/* Header */}
-      <div className="px-4 py-3 bg-stone-50 border-b border-stone-200 flex items-center justify-between gap-2 min-w-0">
+      <div className="px-3 sm:px-4 py-3 bg-stone-50 border-b border-stone-200 flex items-center justify-between gap-2 min-w-0">
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <span className="text-lg flex-shrink-0">🛒</span>
           <span className="font-medium text-stone-800 truncate">{data.title}</span>
@@ -114,7 +114,7 @@ export function ShopBlock({
             {/* Category Header */}
             <button
               onClick={() => toggleCategory(category)}
-              className="w-full px-4 py-2.5 flex items-center justify-between gap-2 hover:bg-stone-50 transition-colors min-w-0"
+              className="w-full px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2 hover:bg-stone-50 transition-colors min-w-0"
             >
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 <svg
@@ -135,7 +135,7 @@ export function ShopBlock({
 
             {/* Category Items */}
             {expandedCategories[category] && (
-              <div className="px-4 pb-3 space-y-2">
+              <div className="px-3 sm:px-4 pb-3 space-y-2">
                 {categoryItems.map(item => {
                   // Get source badge info
                   const getSourceBadge = () => {
@@ -230,7 +230,7 @@ export function ShopBlock({
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-3 bg-stone-50 border-t border-stone-200 flex items-center gap-3">
+      <div className="px-3 sm:px-4 py-3 bg-stone-50 border-t border-stone-200 flex items-center gap-2 sm:gap-3">
         <button
           onClick={onFindSavings}
           className="flex-1 py-2.5 border border-emerald-500 text-emerald-600 rounded-xl font-medium hover:bg-emerald-50 transition-colors"
