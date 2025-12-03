@@ -7,7 +7,7 @@ import { RecipeBlock } from '@/components/blocks/RecipeBlock'
 import { OrderBlock } from '@/components/blocks/OrderBlock'
 import { UpsellBlock } from '@/components/blocks/UpsellBlock'
 import { SuggestionChips } from '@/components/blocks/SuggestionChips'
-import { LoadingIndicator } from '@/components/ui/LoadingIndicator'
+import { LoadingIndicator, SkeletonShopBlock } from '@/components/ui/LoadingIndicator'
 import { extractTextContent } from '@/lib/parser'
 
 interface MessageBubbleProps {
@@ -84,6 +84,13 @@ export function MessageBubble({
               {isStreaming && textContent && (
                 <span className="inline-block w-2 h-4 bg-amber-500 animate-pulse ml-1" />
               )}
+
+              {/* Show skeleton while streaming if creating a list */}
+              {isStreaming && blocks.length === 0 && textContent && (
+                textContent.toLowerCase().includes('list') ||
+                textContent.toLowerCase().includes('shop') ||
+                textContent.toLowerCase().includes('item')
+              ) && <SkeletonShopBlock />}
 
               {/* Blocks */}
               {blocks.map((block, i) => {
