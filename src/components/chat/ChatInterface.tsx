@@ -34,10 +34,10 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const [recentLists, setRecentLists] = useState<ShoppingList[]>(initialLists)
   const [voiceEnabled, setVoiceEnabled] = useState(false)
   const [isCheckingOut, setIsCheckingOut] = useState(false)
-  const [lastUserIntent, setLastUserIntent] = useState<string>('')
   
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const lastUserIntentRef = useRef<string>('')
 
   // Calculate replenishment suggestions
   const replenishmentSuggestions = useMemo(() => {
@@ -67,9 +67,9 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
       if (hasAdd && (hasCart || hasItemKeywords)) {
         console.log('🎯 Intent captured: add-to-cart', { content, hasAdd, hasCart, hasItemKeywords })
-        setLastUserIntent('add-to-cart')
+        lastUserIntentRef.current = 'add-to-cart'
       } else {
-        setLastUserIntent('')
+        lastUserIntentRef.current = ''
       }
     }
 
@@ -201,8 +201,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         setActiveList(newList)
 
         // Auto-add to cart if user intent was detected
-        console.log('📦 ShopBlock received. Intent:', lastUserIntent, 'Items:', shopData.items?.length)
-        if (lastUserIntent === 'add-to-cart') {
+        console.log('📦 ShopBlock received. Intent:', lastUserIntentRef.current, 'Items:', shopData.items?.length)
+        if (lastUserIntentRef.current === 'add-to-cart') {
           console.log('✅ Auto-adding items to cart:', shopData.items)
           // Add all items from the shop block directly to cart
           shopData.items?.forEach((item: CartItem) => {
@@ -211,9 +211,9 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
           // Open cart to show what was added
           setIsCartOpen(true)
           // Clear intent after using it
-          setLastUserIntent('')
+          lastUserIntentRef.current = ''
         } else {
-          console.log('❌ No auto-add (intent was:', lastUserIntent, ')')
+          console.log('❌ No auto-add (intent was:', lastUserIntentRef.current, ')')
         }
 
         // Save to Supabase
