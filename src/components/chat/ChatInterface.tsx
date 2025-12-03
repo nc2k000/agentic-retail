@@ -183,9 +183,11 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         setActiveList(newList)
 
         // Auto-add to cart if user said "add to cart"
-        const userMessage = messages[messages.length - 1]?.content?.toLowerCase() || ''
+        // Find the last user message (not assistant message)
+        const lastUserMessage = messages.filter(m => m.role === 'user').pop()
+        const userMessage = lastUserMessage?.content?.toLowerCase() || ''
         const isAddToCartIntent =
-          userMessage.includes('add') && userMessage.includes('cart') ||
+          (userMessage.includes('add') && userMessage.includes('cart')) ||
           userMessage.includes('add to my cart')
 
         if (isAddToCartIntent) {

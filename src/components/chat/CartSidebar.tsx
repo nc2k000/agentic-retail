@@ -25,7 +25,18 @@ export function CartSidebar({
   onFindSavings,
   onClearCart,
 }: CartSidebarProps) {
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  // Calculate total with bulk discounts applied
+  const total = cart.reduce((sum, item) => {
+    // Check if item qualifies for bulk discount
+    if (item.bulkDeal && item.quantity >= item.bulkDeal.qty) {
+      // Calculate how many bulk deals fit
+      const bulkSets = Math.floor(item.quantity / item.bulkDeal.qty)
+      const remaining = item.quantity % item.bulkDeal.qty
+      return sum + (bulkSets * item.bulkDeal.price) + (remaining * item.price)
+    }
+    return sum + item.price * item.quantity
+  }, 0)
+
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
 
   if (!isOpen) return null
@@ -79,13 +90,30 @@ export function CartSidebar({
               {cart.map(item => {
                 const bulkDeal = getBulkDealForItem(item)
 
+                // Check if bulk discount is active
+                const isBulkActive = item.bulkDeal && item.quantity >= item.bulkDeal.qty
+                const itemTotal = isBulkActive
+                  ? Math.floor(item.quantity / item.bulkDeal!.qty) * item.bulkDeal!.price +
+                    (item.quantity % item.bulkDeal!.qty) * item.price
+                  : item.price * item.quantity
+
                 return (
                   <div key={item.sku}>
-                    <div className="flex items-center gap-3 p-3 bg-stone-50 rounded-xl">
+                    <div className={`flex items-center gap-3 p-3 rounded-xl ${isBulkActive ? 'bg-amber-50 border border-amber-200' : 'bg-stone-50'}`}>
                       <span className="text-2xl">{item.image}</span>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-stone-800 truncate">{item.name}</p>
-                        <p className="text-sm text-stone-500">{formatPrice(item.price)}</p>
+                        <div className="flex items-center gap-1.5">
+                          {isBulkActive ? (
+                            <>
+                              <span className="text-xs text-stone-400 line-through">{formatPrice(item.price * item.quantity)}</span>
+                              <span className="text-sm font-semibold text-emerald-600">{formatPrice(itemTotal)}</span>
+                              <span className="text-[10px] text-emerald-600 font-medium">Bulk!</span>
+                            </>
+                          ) : (
+                            <span className="text-sm text-stone-500">{formatPrice(item.price)} ea</span>
+                          )}
+                        </div>
                       </div>
 
                       {/* Quantity Controls */}
@@ -118,17 +146,17 @@ export function CartSidebar({
 
                     {/* Bulk Deal Notification */}
                     {bulkDeal && (
-                      <div className="mt-2 ml-3 mr-3 p-2.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg flex items-center gap-2">
-                        <span className="text-lg flex-shrink-0">💡</span>
+                      <div className="mt-2 mx-1 sm:mx-3 p-2 sm:p-2.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg flex items-center gap-1.5 sm:gap-2 w-full max-w-full">
+                        <span className="text-base sm:text-lg flex-shrink-0">💡</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-amber-900">{bulkDeal.message}</p>
-                          <p className="text-[10px] text-amber-700 mt-0.5">
+                          <p className="text-[11px] sm:text-xs font-medium text-amber-900 leading-tight">{bulkDeal.message}</p>
+                          <p className="text-[9px] sm:text-[10px] text-amber-700 mt-0.5">
                             Buy {bulkDeal.bulkDeal.qty} for ${bulkDeal.bulkDeal.price.toFixed(2)}
                           </p>
                         </div>
                         <button
                           onClick={() => onUpdateQuantity(item.sku, bulkDeal.bulkDeal.qty)}
-                          className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded-lg whitespace-nowrap touch-manipulation transition-colors"
+                          className="px-2 sm:px-3 py-1 sm:py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-[10px] sm:text-xs font-medium rounded-lg whitespace-nowrap touch-manipulation transition-colors flex-shrink-0"
                         >
                           Add {bulkDeal.quantityNeeded}
                         </button>
