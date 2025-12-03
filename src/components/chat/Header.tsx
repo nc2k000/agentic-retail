@@ -30,8 +30,11 @@ export function Header({
 
   return (
     <header className="bg-white border-b border-stone-200 px-3 sm:px-4 py-3 flex items-center justify-between">
-      {/* Logo & Title */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      {/* Logo & Title (clickable home button) */}
+      <button
+        onClick={onNewChat}
+        className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity touch-manipulation"
+      >
         <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-white font-bold text-base sm:text-lg">
           A
         </div>
@@ -39,7 +42,7 @@ export function Header({
           <h1 className="font-semibold text-stone-800 text-sm sm:text-base">Agentic Retail</h1>
           <p className="text-xs text-stone-500 hidden sm:block">Powered by Claude</p>
         </div>
-      </div>
+      </button>
 
       {/* Actions */}
       <div className="flex items-center gap-1 sm:gap-2">
