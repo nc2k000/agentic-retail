@@ -375,31 +375,36 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     )
   }, [sendMessage])
 
-  // Handle swap in savings
+  // Handle swap in savings - request Claude to generate new list with swap
   const handleSwap = useCallback((original: CartItem, replacement: CartItem) => {
-    if (activeList) {
-      setActiveList(prev => {
-        if (!prev) return prev
-        return {
-          ...prev,
-          items: prev.items.map(item =>
-            item.sku === original.sku ? { ...replacement, quantity: item.quantity, source: 'savings', isSwapped: true } : item
-          ),
-        }
-      })
-    }
+    if (!activeList) return
+
+    // Build the updated items with swap applied
+    const updatedItems = activeList.items.map(item =>
+      item.sku === original.sku
+        ? { ...replacement, quantity: item.quantity, source: 'savings' as const, isSwapped: true }
+        : item
+    )
+
+    // Create a detailed prompt for Claude to generate a NEW list with the swap highlighted
+    const itemsList = updatedItems.map(item => {
+      const wasSwapped = item.sku === replacement.sku && item.isSwapped
+      return `${item.name} (×${item.quantity})${wasSwapped ? ' [SWAPPED - highlight in green]' : ''}`
+    }).join('\n')
+
+    sendMessage(`[SYSTEM] Create a NEW "${activeList.title}" shop block with these items:\n${itemsList}\n\nMark the 1 swapped item with green styling/badge to show it was changed for savings.`)
 
     // Also swap in cart if present
     setCart(prev => prev.map(item =>
       item.sku === original.sku ? { ...replacement, quantity: item.quantity } : item
     ))
-  }, [activeList])
+  }, [activeList, sendMessage])
 
-  // Handle swap all in savings - regenerate list with highlights
+  // Handle swap all in savings - request Claude to generate new list with swaps
   const handleSwapAll = useCallback((swaps: Array<{original: CartItem, replacement: CartItem}>) => {
     if (!activeList) return
 
-    // Apply all swaps to the active list
+    // Build the updated items with swaps applied
     const updatedItems = activeList.items.map(item => {
       const swap = swaps.find(s => s.original.sku === item.sku)
       if (swap) {
@@ -408,11 +413,14 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       return item
     })
 
-    // Update the list in state
-    setActiveList(prev => prev ? { ...prev, items: updatedItems } : prev)
+    // Create a detailed prompt for Claude to generate a NEW list with highlights
+    const swappedSkus = swaps.map(s => s.original.sku)
+    const itemsList = updatedItems.map(item => {
+      const wasSwapped = swappedSkus.includes(item.sku) || item.isSwapped
+      return `${item.name} (×${item.quantity})${wasSwapped ? ' [SWAPPED - highlight in green]' : ''}`
+    }).join('\n')
 
-    // Request Claude to regenerate the list with green highlights for swapped items
-    sendMessage(`[SYSTEM] Regenerate the "${activeList.title}" list showing the ${swaps.length} swapped items with green highlights. Mark swapped items clearly.`)
+    sendMessage(`[SYSTEM] Create a NEW "${activeList.title}" shop block with these items:\n${itemsList}\n\nMark the ${swaps.length} swapped items with green styling/badges to show they were changed for savings.`)
   }, [activeList, sendMessage])
 
   // Voice output
