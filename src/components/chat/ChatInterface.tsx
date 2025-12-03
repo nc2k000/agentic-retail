@@ -13,6 +13,16 @@ import { SYSTEM_PROMPT } from '@/lib/prompts'
 import { createClient } from '@/lib/supabase/client'
 import { getTopReplenishmentSuggestions } from '@/lib/replenishment'
 import { getAllProducts, getProductBySku } from '@/lib/catalog'
+import {
+  upsertPreference,
+  updatePattern,
+  recordInteraction,
+  getCurrentTimePeriod,
+  getCurrentDayOfWeek,
+  getBasketSizeCategory,
+  extractDietaryRestriction,
+  extractAllergy,
+} from '@/lib/memory'
 
 interface ChatInterfaceProps {
   user: User
@@ -86,6 +96,41 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         lastUserIntentRef.current = 'add-to-cart'
       } else {
         lastUserIntentRef.current = ''
+      }
+
+      // Passive learning: Detect dietary restrictions and allergies
+      const dietaryRestriction = extractDietaryRestriction(content)
+      if (dietaryRestriction) {
+        upsertPreference({
+          userId: user.id,
+          type: 'dietary',
+          key: dietaryRestriction,
+          confidence: 1.0,
+          reason: `User said: "${content.substring(0, 100)}"`,
+          source: 'explicit'
+        }).catch(console.error)
+      }
+
+      const allergy = extractAllergy(content)
+      if (allergy) {
+        upsertPreference({
+          userId: user.id,
+          type: 'allergy',
+          key: allergy,
+          confidence: 1.0,
+          reason: `User said: "${content.substring(0, 100)}"`,
+          source: 'explicit'
+        }).catch(console.error)
+      }
+
+      // Track question interactions
+      if (lowerContent.includes('?') || lowerContent.includes('recipe') || lowerContent.includes('meal')) {
+        recordInteraction({
+          userId: user.id,
+          type: 'question',
+          key: 'query',
+          value: { query: content.substring(0, 200) }
+        }).catch(console.error)
       }
     }
 
@@ -346,6 +391,30 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
     setCart(prev => {
       const existing = prev.find(i => i.sku === item.sku)
+
+      // Passive learning: Track item view and potential favorite
+      recordInteraction({
+        userId: user.id,
+        type: 'view_item',
+        key: item.sku,
+        value: { name: item.name, category: item.category, price: item.price }
+      }).catch(console.error)
+
+      // If item added multiple times, increase favorite confidence
+      if (existing) {
+        const newCount = existing.quantity + (enrichedItem.quantity || 1)
+        if (newCount >= 3) {
+          upsertPreference({
+            userId: user.id,
+            type: 'favorite',
+            key: item.sku,
+            confidence: Math.min(0.95, 0.50 + (newCount * 0.08)),
+            reason: `Added to cart ${newCount} times`,
+            source: 'pattern'
+          }).catch(console.error)
+        }
+      }
+
       if (existing) {
         return prev.map(i =>
           i.sku === item.sku
@@ -355,7 +424,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       }
       return [...prev, { ...enrichedItem, quantity: enrichedItem.quantity || 1 }]
     })
-  }, [])
+  }, [user.id])
 
   // Remove item from cart
   const removeFromCart = useCallback((sku: string) => {
@@ -431,6 +500,40 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       if (data) {
         setOrders(prev => [data as Order, ...prev])
 
+        // Passive learning: Update shopping patterns
+        updatePattern({
+          userId: user.id,
+          type: 'time_of_day',
+          key: getCurrentTimePeriod(),
+          value: { timestamp: new Date().toISOString(), order_id: (data as any).id }
+        }).catch(console.error)
+
+        updatePattern({
+          userId: user.id,
+          type: 'day_of_week',
+          key: getCurrentDayOfWeek(),
+          value: { order_count: 1 }
+        }).catch(console.error)
+
+        updatePattern({
+          userId: user.id,
+          type: 'basket_size',
+          key: getBasketSizeCategory(itemCount),
+          value: { item_count: itemCount, total: total }
+        }).catch(console.error)
+
+        // Track category preferences
+        cart.forEach(item => {
+          if (item.category) {
+            updatePattern({
+              userId: user.id,
+              type: 'category_preference',
+              key: item.category,
+              value: { quantity: item.quantity, price: item.price }
+            }).catch(console.error)
+          }
+        })
+
         // Silently trigger order confirmation (don't add user message to chat)
         sendMessage(`[SYSTEM] Generate order confirmation for order #${(data as any).id} with ${itemCount} items, total $${total.toFixed(2)}`)
 
@@ -466,15 +569,61 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
   // Handle swap in cart savings (inline swap without updating list)
   const handleCartSwap = useCallback((original: CartItem, replacement: CartItem) => {
+    // Passive learning: User accepted swap, increase confidence in replacement brand
+    recordInteraction({
+      userId: user.id,
+      type: 'swap',
+      key: 'accepted',
+      value: { original: original.sku, replacement: replacement.sku }
+    }).catch(console.error)
+
+    // Increase confidence in replacement brand/product
+    if (replacement.name) {
+      const brandMatch = replacement.name.match(/^([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/);
+      if (brandMatch) {
+        upsertPreference({
+          userId: user.id,
+          type: 'brand',
+          key: brandMatch[1].toLowerCase(),
+          confidence: 0.65,
+          reason: 'Accepted savings swap',
+          source: 'pattern'
+        }).catch(console.error)
+      }
+    }
+
     // Swap in cart directly
     setCart(prev => prev.map(item =>
       item.sku === original.sku ? { ...replacement, quantity: item.quantity } : item
     ))
-  }, [])
+  }, [user.id])
 
   // Handle swap in savings - request Claude to generate new list with swap
   const handleSwap = useCallback((original: CartItem, replacement: CartItem) => {
     if (!activeList) return
+
+    // Passive learning: User accepted swap
+    recordInteraction({
+      userId: user.id,
+      type: 'swap',
+      key: 'accepted',
+      value: { original: original.sku, replacement: replacement.sku }
+    }).catch(console.error)
+
+    // Increase confidence in replacement brand
+    if (replacement.name) {
+      const brandMatch = replacement.name.match(/^([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/);
+      if (brandMatch) {
+        upsertPreference({
+          userId: user.id,
+          type: 'brand',
+          key: brandMatch[1].toLowerCase(),
+          confidence: 0.65,
+          reason: 'Accepted savings swap',
+          source: 'pattern'
+        }).catch(console.error)
+      }
+    }
 
     // Build the updated items with swap applied
     const updatedItems = activeList.items.map(item =>
