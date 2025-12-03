@@ -206,7 +206,8 @@ export function ShopBlock({
                     {/* Remove */}
                     <button
                       onClick={() => removeItem(item.sku)}
-                      className="p-1 text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0 hidden sm:block"
+                      className="p-1 text-stone-400 hover:text-red-500 sm:opacity-0 sm:group-hover:opacity-100 transition-all flex-shrink-0"
+                      title="Remove item"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

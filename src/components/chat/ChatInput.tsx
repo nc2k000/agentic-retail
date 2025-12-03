@@ -11,6 +11,7 @@ interface ChatInputProps {
 export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   const [input, setInput] = useState('')
   const [isListening, setIsListening] = useState(false)
+  const [isVoiceSupported, setIsVoiceSupported] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const recognitionRef = useRef<any>(null)
 
@@ -24,21 +25,32 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
 
   // Initialize speech recognition
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'webkitSpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition
-      recognitionRef.current = new SpeechRecognition()
-      recognitionRef.current.continuous = false
-      recognitionRef.current.interimResults = true
+    if (typeof window !== 'undefined') {
+      // Check for speech recognition support (works on Chrome desktop, not on mobile Safari)
+      const hasRecognition = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window
+      setIsVoiceSupported(hasRecognition)
 
-      recognitionRef.current.onresult = (event: any) => {
-        const transcript = Array.from(event.results)
-          .map((result: any) => result[0].transcript)
-          .join('')
-        setInput(transcript)
-      }
+      if (hasRecognition) {
+        const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
+        recognitionRef.current = new SpeechRecognition()
+        recognitionRef.current.continuous = false
+        recognitionRef.current.interimResults = true
 
-      recognitionRef.current.onend = () => {
-        setIsListening(false)
+        recognitionRef.current.onresult = (event: any) => {
+          const transcript = Array.from(event.results)
+            .map((result: any) => result[0].transcript)
+            .join('')
+          setInput(transcript)
+        }
+
+        recognitionRef.current.onend = () => {
+          setIsListening(false)
+        }
+
+        recognitionRef.current.onerror = (event: any) => {
+          console.error('Speech recognition error:', event.error)
+          setIsListening(false)
+        }
       }
     }
   }, [])
@@ -125,20 +137,23 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
             </svg>
           </label>
 
-          {/* Voice Input */}
-          <button
-            type="button"
-            onClick={toggleVoiceInput}
-            className={`p-2 rounded-lg transition-colors ${
-              isListening
-                ? 'bg-red-100 text-red-600 animate-pulse'
-                : 'hover:bg-stone-200 text-stone-500'
-            }`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-            </svg>
-          </button>
+          {/* Voice Input - only show if supported */}
+          {isVoiceSupported && (
+            <button
+              type="button"
+              onClick={toggleVoiceInput}
+              className={`p-2 rounded-lg transition-colors ${
+                isListening
+                  ? 'bg-red-100 text-red-600 animate-pulse'
+                  : 'hover:bg-stone-200 text-stone-500'
+              }`}
+              title="Voice input"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              </svg>
+            </button>
+          )}
 
           {/* Text Input */}
           <textarea

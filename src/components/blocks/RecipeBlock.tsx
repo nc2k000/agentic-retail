@@ -8,11 +8,11 @@ interface RecipeBlockProps {
 
 export function RecipeBlock({ data }: RecipeBlockProps) {
   return (
-    <div className="mt-4 border border-stone-200 rounded-xl overflow-hidden bg-white max-w-full">
+    <div className="mt-3 sm:mt-4 border border-stone-200 rounded-xl overflow-hidden bg-white w-full max-w-full">
       {/* Header */}
-      <div className="px-4 py-3 bg-gradient-to-r from-orange-50 to-amber-50 border-b border-stone-200">
-        <h3 className="font-semibold text-stone-800">{data.title}</h3>
-        <div className="flex gap-4 mt-1 text-sm text-stone-600">
+      <div className="px-3 sm:px-4 py-3 bg-gradient-to-r from-orange-50 to-amber-50 border-b border-stone-200">
+        <h3 className="font-semibold text-stone-800 text-sm sm:text-base">{data.title}</h3>
+        <div className="flex gap-2 sm:gap-4 mt-1 text-xs sm:text-sm text-stone-600">
           {data.servings && <span>🍽️ {data.servings} servings</span>}
           {data.prepTime && <span>⏱️ {data.prepTime} prep</span>}
           {data.cookTime && <span>🔥 {data.cookTime} cook</span>}
@@ -20,8 +20,8 @@ export function RecipeBlock({ data }: RecipeBlockProps) {
       </div>
 
       {/* Ingredients */}
-      <div className="p-4 border-b border-stone-200">
-        <h4 className="font-medium text-stone-800 mb-2">Ingredients</h4>
+      <div className="p-3 sm:p-4 border-b border-stone-200">
+        <h4 className="font-medium text-stone-800 text-xs sm:text-sm mb-2">Ingredients</h4>
         <ul className="space-y-1">
           {data.ingredients.map((ing, i) => (
             <li key={i} className="text-sm text-stone-700 flex items-start gap-2">
@@ -37,8 +37,8 @@ export function RecipeBlock({ data }: RecipeBlockProps) {
 
       {/* Instructions */}
       {data.instructions && data.instructions.length > 0 && (
-        <div className="p-4">
-          <h4 className="font-medium text-stone-800 mb-2">Instructions</h4>
+        <div className="p-3 sm:p-4">
+          <h4 className="font-medium text-stone-800 text-xs sm:text-sm mb-2">Instructions</h4>
           <ol className="space-y-2">
             {data.instructions.map((step, i) => (
               <li key={i} className="text-sm text-stone-700 flex gap-3">

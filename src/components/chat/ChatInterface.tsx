@@ -431,25 +431,56 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   // Voice output
   const speakResponse = (text: string, blocks: Block[]) => {
     if (!window.speechSynthesis) return
-    
+
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel()
+
     // Create concise summary
-    let summary = text.split('\n')[0] // First line
-    
+    let summary = text.split('\n')[0] || text // First line or full text
+
     if (blocks.length > 0) {
       const shopBlock = blocks.find(b => b.type === 'shop')
+      const savingsBlock = blocks.find(b => b.type === 'savings')
+      const orderBlock = blocks.find(b => b.type === 'order')
+
       if (shopBlock) {
         const itemCount = shopBlock.data.items?.length || 0
         const total = shopBlock.data.items?.reduce((s: number, i: any) => s + (i.price * (i.quantity || 1)), 0) || 0
         summary = `Added ${itemCount} items to ${shopBlock.data.title}, total $${total.toFixed(0)}`
+      } else if (savingsBlock) {
+        const totalSavings = savingsBlock.data.totalSavings || 0
+        const swapCount = savingsBlock.data.swaps?.length || 0
+        summary = `Found ${swapCount} swaps to save $${totalSavings.toFixed(0)}`
+      } else if (orderBlock) {
+        const total = orderBlock.data.total || 0
+        summary = `Order confirmed for $${total.toFixed(0)}`
       }
     }
-    
-    // Strip emojis
-    summary = summary.replace(/[\u1F300-\u1F9FF\u2600-\u26FF\u2700-\u27BF]/g, '')
-    
+
+    // Strip emojis and extra whitespace
+    summary = summary
+      .replace(/[\u1F300-\u1F9FF\u2600-\u26FF\u2700-\u27BF]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+
+    // Don't speak if empty
+    if (!summary) return
+
+    // Create and configure utterance
     const utterance = new SpeechSynthesisUtterance(summary)
-    utterance.rate = 1.05
-    window.speechSynthesis.speak(utterance)
+    utterance.rate = 1.1
+    utterance.pitch = 1.0
+    utterance.volume = 1.0
+
+    // Handle errors
+    utterance.onerror = (event) => {
+      console.error('Speech synthesis error:', event.error)
+    }
+
+    // Small delay for mobile compatibility
+    setTimeout(() => {
+      window.speechSynthesis.speak(utterance)
+    }, 100)
   }
 
   // Start new chat

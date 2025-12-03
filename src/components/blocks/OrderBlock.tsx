@@ -9,18 +9,18 @@ interface OrderBlockProps {
 
 export function OrderBlock({ data }: OrderBlockProps) {
   return (
-    <div className="mt-4 bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl overflow-hidden max-w-full">
+    <div className="mt-3 sm:mt-4 bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl overflow-hidden w-full max-w-full">
       {/* Success Header */}
-      <div className="px-4 py-4 bg-white/80 border-b border-emerald-200 text-center">
-        <div className="text-4xl mb-2">✅</div>
-        <h3 className="text-xl font-semibold text-emerald-800">Order Confirmed!</h3>
-        <p className="text-sm text-emerald-600 mt-1">
+      <div className="px-3 sm:px-4 py-3 sm:py-4 bg-white/80 border-b border-emerald-200 text-center">
+        <div className="text-3xl sm:text-4xl mb-2">✅</div>
+        <h3 className="text-lg sm:text-xl font-semibold text-emerald-800">Order Confirmed!</h3>
+        <p className="text-xs sm:text-sm text-emerald-600 mt-1">
           Order #{data.orderNumber}
         </p>
       </div>
 
       {/* Order Summary */}
-      <div className="p-4 space-y-4">
+      <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
         {/* Items Summary */}
         <div className="bg-white rounded-lg p-3 border border-emerald-100">
           <div className="flex items-center justify-between mb-2">
