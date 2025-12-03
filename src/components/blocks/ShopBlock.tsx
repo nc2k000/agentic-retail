@@ -159,14 +159,18 @@ export function ShopBlock({
                   return (
                   <div
                     key={item.sku}
-                    className="flex items-center gap-3 p-2 bg-stone-50 rounded-lg group"
+                    className={`flex items-center gap-2 sm:gap-3 p-2 rounded-lg group overflow-hidden ${
+                      item.isSwapped || item.source === 'savings'
+                        ? 'bg-emerald-50 border border-emerald-200'
+                        : 'bg-stone-50'
+                    }`}
                   >
-                    <span className="text-xl">{item.image}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
+                    <span className="text-xl flex-shrink-0">{item.image}</span>
+                    <div className="flex-1 min-w-0 overflow-hidden">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <p className="text-sm font-medium text-stone-800 truncate">{item.name}</p>
                         {badge && (
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${badge.className} flex-shrink-0`}>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${badge.className} flex-shrink-0 whitespace-nowrap`}>
                             {badge.icon} {badge.text}
                           </span>
                         )}
@@ -179,11 +183,11 @@ export function ShopBlock({
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-stone-500">{formatPrice(item.price)}</p>
+                      <p className="text-xs text-stone-500 truncate">{formatPrice(item.price)}</p>
                     </div>
-                    
+
                     {/* Quantity Controls */}
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 flex-shrink-0">
                       <button
                         onClick={() => updateQuantity(item.sku, -1)}
                         className="w-6 h-6 rounded bg-stone-200 hover:bg-stone-300 flex items-center justify-center text-stone-600 text-sm"
@@ -202,7 +206,7 @@ export function ShopBlock({
                     {/* Remove */}
                     <button
                       onClick={() => removeItem(item.sku)}
-                      className="p-1 text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                      className="p-1 text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0 hidden sm:block"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -212,7 +216,7 @@ export function ShopBlock({
                     {/* Add to Cart */}
                     <button
                       onClick={() => onAddToCart({ ...item, quantity: item.quantity || 1 })}
-                      className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded-lg transition-colors"
+                      className="px-2 sm:px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded-lg transition-colors flex-shrink-0 whitespace-nowrap"
                     >
                       Add
                     </button>

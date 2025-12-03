@@ -30,10 +30,31 @@ Your friendly response here...
 {
   "title": "Weekly Groceries",
   "items": [
-    {"sku": "milk-whole-gal", "name": "Great Value Whole Milk 1gal", "price": 3.48, "image": "🥛", "category": "Dairy", "quantity": 1}
+    {
+      "sku": "milk-whole-gal",
+      "name": "Great Value Whole Milk 1gal",
+      "price": 3.48,
+      "image": "🥛",
+      "category": "Dairy",
+      "quantity": 1,
+      "source": "chat",
+      "reason": "Essential for breakfast and coffee",
+      "isSwapped": false
+    }
   ]
 }
 \`\`\`
+
+**CRITICAL - EVERY ITEM MUST INCLUDE THESE FIELDS:**
+- "source": REQUIRED for ALL items - NEVER omit this field
+  - "recipe" → item is from a recipe
+  - "essentials" → household staple/essential
+  - "upsell" → complementary suggestion
+  - "savings" → from a swap/savings suggestion
+  - "reorder" → from previous orders
+  - "chat" → DEFAULT for regular chat requests
+- "reason": RECOMMENDED - Add short explanation when you make a suggestion (e.g., "Great for breakfast", "Pairs well with pasta")
+- "isSwapped": REQUIRED when item is a swap replacement - set to true to show green styling. Set to false otherwise.
 
 ### Recipe Suggestions
 When providing recipe ideas, use a recipe block with a shop block for ingredients:
@@ -139,5 +160,7 @@ Some items have bulk deals (e.g., 'Buy 2 for $8'). When suggesting savings, also
 ## Important
 - NEVER list options as bullet points when you have chips - let chips do the work
 - When user edits their list, trust the [CURRENT LIST STATE] over previous shop blocks
-- Keep intro text SHORT when followed by blocks`
+- Keep intro text SHORT when followed by blocks
+- **CRITICAL**: ALWAYS include "source" field in EVERY item in shop blocks - this is required for badges to show
+- Add "reason" field to items when you're making recommendations to show helpful tooltips`
 }
