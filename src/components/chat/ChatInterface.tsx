@@ -186,11 +186,26 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         // Find the last user message (not assistant message)
         const lastUserMessage = messages.filter(m => m.role === 'user').pop()
         const userMessage = lastUserMessage?.content?.toLowerCase() || ''
-        const isAddToCartIntent =
-          (userMessage.includes('add') && userMessage.includes('cart')) ||
-          userMessage.includes('add to my cart')
+
+        // More lenient detection - check for "add" + "cart" OR "add" + item mentions
+        const hasAdd = userMessage.includes('add')
+        const hasCart = userMessage.includes('cart') || userMessage.includes('my cart')
+        const hasItemKeywords = userMessage.includes('milk') || userMessage.includes('egg') ||
+                                userMessage.includes('bread') || userMessage.includes('item')
+
+        const isAddToCartIntent = hasAdd && (hasCart || hasItemKeywords)
+
+        console.log('🔍 Auto-add detection:', {
+          userMessage,
+          hasAdd,
+          hasCart,
+          hasItemKeywords,
+          isAddToCartIntent,
+          shopItemCount: shopData.items?.length
+        })
 
         if (isAddToCartIntent) {
+          console.log('✅ Auto-adding items to cart:', shopData.items)
           // Add all items from the shop block directly to cart
           shopData.items?.forEach((item: CartItem) => {
             addToCart(item)
