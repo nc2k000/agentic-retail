@@ -46,6 +46,17 @@ export function Header({
 
       {/* Actions */}
       <div className="flex items-center gap-1 sm:gap-2">
+        {/* History */}
+        <a
+          href="/history"
+          className="p-2.5 sm:p-2 rounded-lg hover:bg-stone-100 text-stone-600 transition-colors touch-manipulation"
+          title="History"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </a>
+
         {/* New Chat */}
         <button
           onClick={onNewChat}
