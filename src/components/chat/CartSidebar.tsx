@@ -120,10 +120,7 @@ export function CartSidebar({
 
             {/* Checkout Button */}
             <button
-              onClick={() => {
-                alert('Button clicked in CartSidebar!')
-                onCheckout()
-              }}
+              onClick={onCheckout}
               className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-semibold transition-colors"
             >
               Checkout • {formatPrice(total)}

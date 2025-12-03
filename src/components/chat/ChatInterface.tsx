@@ -217,8 +217,9 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     items.forEach(item => addToCart(item))
   }, [addToCart])
 
-  // Save order to database (unused - keeping for reference)
+  // Save order to database (called when Claude returns order block)
   const saveOrder = async (orderData: any) => {
+    const supabase = createClient()
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
     const { data, error } = await supabase
@@ -239,34 +240,22 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
   // Handle checkout
   const handleCheckout = useCallback(async () => {
-    alert('Checkout button clicked!')
-    console.log('=== CHECKOUT FUNCTION CALLED ===')
-    console.log('Cart length:', cart.length)
-    console.log('Cart contents:', cart)
-
     if (cart.length === 0) {
-      console.log('Cart is empty, cannot checkout')
-      alert('Cart is empty')
       return
     }
 
-    console.log('Starting checkout with cart:', cart)
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
     const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
-
-    console.log('Checkout details:', { itemCount, total, userId: user.id })
 
     // Save order to database
     try {
       const supabase = createClient()
       const orderData = {
-        user_id: user.id,  // Database uses snake_case
+        user_id: user.id,
         items: cart,
         total,
         status: 'confirmed',
       }
-
-      console.log('Inserting order:', orderData)
 
       const { data, error } = await supabase
         .from('orders')
@@ -274,33 +263,20 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         .select()
         .single()
 
-      console.log('Supabase response:', { data, error })
-
-      if (error) {
-        console.error('Supabase error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        })
-        throw error
-      }
+      if (error) throw error
 
       if (data) {
-        console.log('Order saved successfully:', data)
         setOrders(prev => [data, ...prev])
 
         // Request order confirmation from Claude
         sendMessage(`Confirm my order with ${itemCount} items totaling $${total.toFixed(2)}. Generate an order confirmation block with order number ${data.id}.`)
 
         // Clear cart
-        console.log('Clearing cart')
         setCart([])
         setIsCartOpen(false)
       }
     } catch (error: any) {
       console.error('Checkout failed:', error)
-      alert(`Checkout failed: ${error.message}`)
       // Still show confirmation even if DB save failed (for demo purposes)
       sendMessage(`Checkout my cart with ${itemCount} items totaling $${total.toFixed(2)}`)
       setIsCartOpen(false)
