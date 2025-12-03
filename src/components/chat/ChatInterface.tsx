@@ -17,12 +17,14 @@ import {
   upsertPreference,
   updatePattern,
   recordInteraction,
+  fetchMemoryContext,
   getCurrentTimePeriod,
   getCurrentDayOfWeek,
   getBasketSizeCategory,
   extractDietaryRestriction,
   extractAllergy,
 } from '@/lib/memory'
+import type { MemoryContext } from '@/types/memory'
 
 interface ChatInterfaceProps {
   user: User
@@ -46,7 +48,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const [isCheckingOut, setIsCheckingOut] = useState(false)
   const [cartSavingsData, setCartSavingsData] = useState<any>(null)
   const [isLoadingCartSavings, setIsLoadingCartSavings] = useState(false)
-  
+  const [memoryContext, setMemoryContext] = useState<MemoryContext | null>(null)
+
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const lastUserIntentRef = useRef<string>('')
@@ -70,6 +73,15 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       return sum + item.price * item.quantity
     }, 0)
   }, [])
+
+  // Fetch memory context on mount and when preferences change
+  useEffect(() => {
+    const loadMemoryContext = async () => {
+      const context = await fetchMemoryContext({ userId: user.id, minConfidence: 0.70 })
+      setMemoryContext(context)
+    }
+    loadMemoryContext()
+  }, [user.id, orders.length]) // Refresh when new orders are placed
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -189,13 +201,13 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
       apiMessages.push({ role: 'user', content: currentMessageContent })
 
-      // Call streaming API
+      // Call streaming API with memory context
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: apiMessages,
-          system: SYSTEM_PROMPT(profile),
+          system: SYSTEM_PROMPT(profile, memoryContext),
         }),
       })
 
@@ -317,7 +329,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     } finally {
       setIsLoading(false)
     }
-  }, [messages, activeList, profile, voiceEnabled])
+  }, [messages, activeList, profile, voiceEnabled, memoryContext, user.id])
 
   // Save shopping list to database
   const saveListToDatabase = useCallback(async (list: ShoppingList) => {

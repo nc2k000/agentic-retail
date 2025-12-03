@@ -1,10 +1,65 @@
 import { getCatalogSummary } from '@/lib/catalog'
+import type { MemoryContext } from '@/types/memory'
 
-export function SYSTEM_PROMPT(profile: any): string {
+export function SYSTEM_PROMPT(profile: any, memoryContext?: MemoryContext | null): string {
   const catalogSummary = getCatalogSummary()
   const userName = profile?.name?.split(' ')[0] || 'there'
   const household = profile?.household || { size: 1, members: [], pets: [] }
   const preferences = profile?.preferences || { brands: [], dietary: [], budget: 'moderate' }
+
+  // Format memory context for prompt
+  let memorySection = ''
+  if (memoryContext) {
+    memorySection = '\n## Customer Memory (Personalization Data)\n'
+
+    if (memoryContext.dietary && memoryContext.dietary.length > 0) {
+      memorySection += '\n### Dietary Preferences:\n'
+      memoryContext.dietary.forEach(pref => {
+        memorySection += `- ${pref.key} (confidence: ${(pref.confidence * 100).toFixed(0)}%)`
+        if (pref.reason) memorySection += ` - ${pref.reason}`
+        memorySection += '\n'
+      })
+    }
+
+    if (memoryContext.allergy && memoryContext.allergy.length > 0) {
+      memorySection += '\n### Allergies (CRITICAL - NEVER suggest these):\n'
+      memoryContext.allergy.forEach(pref => {
+        memorySection += `- ⚠️ ${pref.key.toUpperCase()}`
+        if (pref.reason) memorySection += ` - ${pref.reason}`
+        memorySection += '\n'
+      })
+    }
+
+    if (memoryContext.favorite && memoryContext.favorite.length > 0) {
+      memorySection += '\n### Favorite Items:\n'
+      memoryContext.favorite.slice(0, 5).forEach(pref => {
+        memorySection += `- ${pref.key} (purchased ${pref.times_confirmed} times)\n`
+      })
+    }
+
+    if (memoryContext.brand && memoryContext.brand.length > 0) {
+      memorySection += '\n### Brand Preferences:\n'
+      memoryContext.brand.slice(0, 5).forEach(pref => {
+        memorySection += `- Prefers ${pref.key} (confidence: ${(pref.confidence * 100).toFixed(0)}%)\n`
+      })
+    }
+
+    if (memoryContext.dislike && memoryContext.dislike.length > 0) {
+      memorySection += '\n### Dislikes:\n'
+      memoryContext.dislike.forEach(pref => {
+        memorySection += `- Avoids ${pref.key}\n`
+      })
+    }
+
+    if (memoryContext.insights && memoryContext.insights.length > 0) {
+      memorySection += '\n### Customer Insights:\n'
+      memoryContext.insights.forEach(insight => {
+        memorySection += `- ${insight.type}: ${insight.value}\n`
+      })
+    }
+
+    memorySection += '\n**Use this memory to provide personalized recommendations, but don\'t explicitly mention "I remember" or "based on your history" unless the user asks about it.**\n'
+  }
 
   return `You are a friendly AI shopping assistant for a grocery store. Help users build shopping lists, find recipes, plan events, and save money.
 
@@ -14,7 +69,7 @@ export function SYSTEM_PROMPT(profile: any): string {
 - Members: ${household.members?.map((m: any) => m.name).join(', ') || 'Not specified'}
 - Preferred brands: ${preferences.brands?.join(', ') || 'None specified'}
 - Dietary restrictions: ${preferences.dietary?.join(', ') || 'None'}
-- Budget preference: ${preferences.budget || 'moderate'}
+- Budget preference: ${preferences.budget || 'moderate'}${memorySection}
 
 ## Product Catalog
 ${catalogSummary}
