@@ -9,6 +9,9 @@ export async function POST(request: NextRequest) {
   try {
     const { messages, system } = await request.json()
 
+    // The messages array can contain either text strings or content blocks (for multimodal)
+    // Claude API handles both formats automatically, so no transformation needed
+
     // Create streaming response
     const stream = await anthropic.messages.stream({
       model: 'claude-sonnet-4-20250514',

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { User } from '@supabase/supabase-js'
-import { Message, CartItem, ShoppingList, Order, Block } from '@/types'
+import { Message, CartItem, ShoppingList, Order, Block, MessageContent } from '@/types'
 import { MessageBubble } from './MessageBubble'
 import { ChatInput } from './ChatInput'
 import { CartSidebar } from './CartSidebar'
@@ -43,21 +43,15 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   }, [messages])
 
   // Send message to Claude
-  const sendMessage = useCallback(async (content: string, options?: { displayAs?: string }) => {
-    const displayContent = options?.displayAs || content
-    let augmentedContent = content
-
-    // Inject active list context
-    if (activeList && activeList.items && activeList.items.length > 0) {
-      const listContext = `\n\n[IMPORTANT - CURRENT LIST STATE]\nThe user's "${activeList.title}" has been EDITED since it was created.\nIGNORE any previous shop blocks - use THIS as the authoritative list:\n${activeList.items.map(i => `- ${i.name} (×${i.quantity || 1})`).join('\n')}\n\nIf the user asks to add something already on this list, help them. If they ask about something NOT on this list, it has been REMOVED - do not say it's already there.`
-      augmentedContent += listContext
-    }
+  const sendMessage = useCallback(async (content: string, multimodalContent?: MessageContent) => {
+    const displayContent = content
 
     // Add user message to UI
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: displayContent,
+      multimodalContent,
       createdAt: new Date().toISOString(),
     }
     setMessages(prev => [...prev, userMessage])
@@ -75,11 +69,35 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
     try {
       // Build message history for API
-      const apiMessages = messages.map(m => ({
-        role: m.role,
-        content: m.content,
-      }))
-      apiMessages.push({ role: 'user', content: augmentedContent })
+      const apiMessages = messages.map(m => {
+        // Use multimodal content if available, otherwise use text content
+        if (m.multimodalContent) {
+          return {
+            role: m.role,
+            content: m.multimodalContent,
+          }
+        }
+        return {
+          role: m.role,
+          content: m.content,
+        }
+      })
+
+      // Handle current message - multimodal or text with active list context
+      let currentMessageContent: MessageContent
+      if (multimodalContent) {
+        currentMessageContent = multimodalContent
+      } else {
+        // Text message with optional active list context
+        let textContent = content
+        if (activeList && activeList.items && activeList.items.length > 0) {
+          const listContext = `\n\n[IMPORTANT - CURRENT LIST STATE]\nThe user's "${activeList.title}" has been EDITED since it was created.\nIGNORE any previous shop blocks - use THIS as the authoritative list:\n${activeList.items.map(i => `- ${i.name} (×${i.quantity || 1})`).join('\n')}\n\nIf the user asks to add something already on this list, help them. If they ask about something NOT on this list, it has been REMOVED - do not say it's already there.`
+          textContent += listContext
+        }
+        currentMessageContent = textContent
+      }
+
+      apiMessages.push({ role: 'user', content: currentMessageContent })
 
       // Call streaming API
       const response = await fetch('/api/chat', {

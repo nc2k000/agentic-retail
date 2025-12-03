@@ -38,10 +38,23 @@ export interface ShoppingListItem extends Product {
 }
 
 // Message & Chat Types
+export type MessageContent =
+  | string
+  | Array<{
+      type: 'text' | 'image'
+      text?: string
+      source?: {
+        type: 'base64'
+        media_type: string
+        data: string
+      }
+    }>
+
 export interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
+  multimodalContent?: MessageContent
   blocks?: Block[]
   createdAt: string
   isStreaming?: boolean

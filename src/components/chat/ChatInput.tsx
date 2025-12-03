@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { MessageContent } from '@/types'
 
 interface ChatInputProps {
-  onSendMessage: (message: string) => void
+  onSendMessage: (message: string, multimodalContent?: MessageContent) => void
   isLoading: boolean
 }
 
@@ -76,12 +77,31 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
     // Convert to base64 and send
     const reader = new FileReader()
     reader.onload = () => {
-      const base64 = reader.result as string
-      // For now, just send a message about the image
-      onSendMessage(`[Image uploaded: ${file.name}] Please analyze this image.`)
+      const base64Data = reader.result as string
+      // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
+      const base64 = base64Data.split(',')[1]
+
+      // Create multimodal content with image and text
+      const multimodalContent: MessageContent = [
+        {
+          type: 'image',
+          source: {
+            type: 'base64',
+            media_type: file.type,
+            data: base64,
+          },
+        },
+        {
+          type: 'text',
+          text: 'Please analyze this image and help me with recipes or shopping based on what you see.',
+        },
+      ]
+
+      // Send with a display message for the UI
+      onSendMessage(`[Uploaded image: ${file.name}]`, multimodalContent)
     }
     reader.readAsDataURL(file)
-    
+
     // Reset input
     e.target.value = ''
   }
