@@ -16,6 +16,7 @@ interface MessageBubbleProps {
   onAddAllToCart: (items: CartItem[]) => void
   onFindSavings: (items: CartItem[], title: string) => void
   onSwap: (original: CartItem, replacement: CartItem) => void
+  onSwapAll?: (swaps: Array<{original: CartItem, replacement: CartItem}>) => void
   onSendMessage: (message: string) => void
   activeList: ShoppingList | null
   onUpdateActiveList: (list: ShoppingList | null) => void
@@ -27,6 +28,7 @@ export function MessageBubble({
   onAddAllToCart,
   onFindSavings,
   onSwap,
+  onSwapAll,
   onSendMessage,
   activeList,
   onUpdateActiveList,
@@ -105,6 +107,7 @@ export function MessageBubble({
                         data={block.data}
                         onSwap={onSwap}
                         onAddToCart={onAddToCart}
+                        onSwapAll={onSwapAll}
                       />
                     )
                   case 'recipe':

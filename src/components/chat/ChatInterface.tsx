@@ -382,18 +382,38 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         if (!prev) return prev
         return {
           ...prev,
-          items: prev.items.map(item => 
-            item.sku === original.sku ? { ...replacement, quantity: item.quantity } : item
+          items: prev.items.map(item =>
+            item.sku === original.sku ? { ...replacement, quantity: item.quantity, source: 'savings', isSwapped: true } : item
           ),
         }
       })
     }
-    
+
     // Also swap in cart if present
-    setCart(prev => prev.map(item => 
+    setCart(prev => prev.map(item =>
       item.sku === original.sku ? { ...replacement, quantity: item.quantity } : item
     ))
   }, [activeList])
+
+  // Handle swap all in savings - regenerate list with highlights
+  const handleSwapAll = useCallback((swaps: Array<{original: CartItem, replacement: CartItem}>) => {
+    if (!activeList) return
+
+    // Apply all swaps to the active list
+    const updatedItems = activeList.items.map(item => {
+      const swap = swaps.find(s => s.original.sku === item.sku)
+      if (swap) {
+        return { ...swap.replacement, quantity: item.quantity, source: 'savings' as const, isSwapped: true }
+      }
+      return item
+    })
+
+    // Update the list in state
+    setActiveList(prev => prev ? { ...prev, items: updatedItems } : prev)
+
+    // Request Claude to regenerate the list with green highlights for swapped items
+    sendMessage(`[SYSTEM] Regenerate the "${activeList.title}" list showing the ${swaps.length} swapped items with green highlights. Mark swapped items clearly.`)
+  }, [activeList, sendMessage])
 
   // Voice output
   const speakResponse = (text: string, blocks: Block[]) => {
@@ -468,6 +488,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
                   onAddAllToCart={addAllToCart}
                   onFindSavings={handleFindSavings}
                   onSwap={handleSwap}
+                  onSwapAll={handleSwapAll}
                   onSendMessage={sendMessage}
                   activeList={activeList}
                   onUpdateActiveList={setActiveList}

@@ -17,7 +17,7 @@ export interface BulkDeal {
 
 export interface CartItem extends Product {
   quantity: number
-  source?: 'chat' | 'upsell' | 'savings' | 'recipe' | 'reorder'
+  source?: 'chat' | 'upsell' | 'savings' | 'recipe' | 'reorder' | 'essentials'
   addedAt?: string
 }
 
