@@ -3,7 +3,11 @@
     "allow": [
       "Bash(npm audit:*)",
       "Bash(npm run build:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

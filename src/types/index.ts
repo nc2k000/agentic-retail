@@ -204,9 +204,28 @@ export interface Database {
         Update: Partial<Omit<UserProfile, 'id' | 'createdAt'>>
       }
       orders: {
-        Row: Order
-        Insert: Omit<Order, 'id' | 'createdAt'>
-        Update: Partial<Omit<Order, 'id' | 'userId' | 'createdAt'>>
+        Row: {
+          id: string
+          user_id: string
+          items: CartItem[]
+          total: number
+          status: string
+          created_at: string
+          delivered_at?: string | null
+        }
+        Insert: {
+          user_id: string
+          items: CartItem[]
+          total: number
+          status: string
+          delivered_at?: string | null
+        }
+        Update: Partial<{
+          items: CartItem[]
+          total: number
+          status: string
+          delivered_at: string | null
+        }>
       }
       shopping_lists: {
         Row: ShoppingList & { userId: string }

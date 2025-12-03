@@ -5,6 +5,7 @@ import { ShopBlock } from '@/components/blocks/ShopBlock'
 import { SavingsBlock } from '@/components/blocks/SavingsBlock'
 import { SuggestionChips } from '@/components/blocks/SuggestionChips'
 import { LoadingIndicator } from '@/components/ui/LoadingIndicator'
+import { extractTextContent } from '@/lib/parser'
 
 interface MessageBubbleProps {
   message: Message
@@ -30,10 +31,8 @@ export function MessageBubble({
   const isUser = message.role === 'user'
   const isStreaming = message.isStreaming
 
-  // Extract text content (remove block markers)
-  const textContent = message.content
-    .replace(/```\w*\n[\s\S]*?```/g, '')
-    .trim()
+  // Extract text content (remove block markers including during streaming)
+  const textContent = extractTextContent(message.content)
 
   // Get blocks
   const blocks = message.blocks || []

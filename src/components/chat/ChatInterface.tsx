@@ -34,7 +34,6 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const supabase = createClient()
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -218,18 +217,18 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     items.forEach(item => addToCart(item))
   }, [addToCart])
 
-  // Save order to database
+  // Save order to database (unused - keeping for reference)
   const saveOrder = async (orderData: any) => {
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
     const { data, error } = await supabase
       .from('orders')
       .insert({
-        userId: user.id,
+        user_id: user.id,
         items: cart,
         total,
-        status: 'confirmed' as const,
-      } as any)
+        status: 'confirmed',
+      })
       .select()
       .single()
 
@@ -239,15 +238,74 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   }
 
   // Handle checkout
-  const handleCheckout = useCallback(() => {
-    if (cart.length === 0) return
-    
+  const handleCheckout = useCallback(async () => {
+    alert('Checkout button clicked!')
+    console.log('=== CHECKOUT FUNCTION CALLED ===')
+    console.log('Cart length:', cart.length)
+    console.log('Cart contents:', cart)
+
+    if (cart.length === 0) {
+      console.log('Cart is empty, cannot checkout')
+      alert('Cart is empty')
+      return
+    }
+
+    console.log('Starting checkout with cart:', cart)
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
     const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
-    
-    sendMessage(`Checkout my cart with ${itemCount} items totaling $${total.toFixed(2)}`)
-    setIsCartOpen(false)
-  }, [cart, sendMessage])
+
+    console.log('Checkout details:', { itemCount, total, userId: user.id })
+
+    // Save order to database
+    try {
+      const supabase = createClient()
+      const orderData = {
+        user_id: user.id,  // Database uses snake_case
+        items: cart,
+        total,
+        status: 'confirmed',
+      }
+
+      console.log('Inserting order:', orderData)
+
+      const { data, error } = await supabase
+        .from('orders')
+        .insert(orderData)
+        .select()
+        .single()
+
+      console.log('Supabase response:', { data, error })
+
+      if (error) {
+        console.error('Supabase error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        })
+        throw error
+      }
+
+      if (data) {
+        console.log('Order saved successfully:', data)
+        setOrders(prev => [data, ...prev])
+
+        // Request order confirmation from Claude
+        sendMessage(`Confirm my order with ${itemCount} items totaling $${total.toFixed(2)}. Generate an order confirmation block with order number ${data.id}.`)
+
+        // Clear cart
+        console.log('Clearing cart')
+        setCart([])
+        setIsCartOpen(false)
+      }
+    } catch (error: any) {
+      console.error('Checkout failed:', error)
+      alert(`Checkout failed: ${error.message}`)
+      // Still show confirmation even if DB save failed (for demo purposes)
+      sendMessage(`Checkout my cart with ${itemCount} items totaling $${total.toFixed(2)}`)
+      setIsCartOpen(false)
+    }
+  }, [cart, sendMessage, user.id])
 
   // Find savings on current list/cart
   const handleFindSavings = useCallback((items: CartItem[], title: string) => {
@@ -316,6 +374,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
   // Sign out
   const handleSignOut = async () => {
+    const supabase = createClient()
     await supabase.auth.signOut()
     window.location.href = '/login'
   }
