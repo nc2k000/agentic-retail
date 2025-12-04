@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     // Strategy 1: Look for recipe schema/structured data
     const recipeSchema = $('script[type="application/ld+json"]').filter((_, el) => {
       const content = $(el).html()
-      return content?.includes('"@type":"Recipe"') || content?.includes('"@type": "Recipe"')
+      return !!(content?.includes('"@type":"Recipe"') || content?.includes('"@type": "Recipe"'))
     }).first()
 
     if (recipeSchema.length) {
