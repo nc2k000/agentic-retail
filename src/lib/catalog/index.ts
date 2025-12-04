@@ -1191,6 +1191,358 @@ export const CATALOG: Record<string, Product[]> = {
     { sku: 'poly-mailers', name: 'Poly Mailers 10x13 100pk', price: 16.99, category: 'Office Supplies', image: '📦' },
     { sku: 'bubble-mailers', name: 'Bubble Mailers 6x10 25pk', price: 14.99, category: 'Office Supplies', image: '📦' },
   ],
+
+  'Pet Care': [
+    // Dog Food - Weekly Essentials
+    { sku: 'dog-food-pedigree-30lb', name: 'Pedigree Adult Dry Dog Food 30lb', price: 29.99, category: 'Pet Care', image: '🐕' },
+    { sku: 'dog-food-purina-one-16lb', name: 'Purina ONE SmartBlend 16.5lb', price: 24.99, category: 'Pet Care', image: '🐕' },
+    { sku: 'dog-food-blue-buffalo-24lb', name: 'Blue Buffalo Life Protection 24lb', price: 49.99, category: 'Pet Care', image: '🐕' },
+    { sku: 'dog-food-iams-30lb', name: 'IAMS ProActive Health 30lb', price: 34.99, category: 'Pet Care', image: '🐕' },
+    { sku: 'dog-food-wet-pedigree', name: 'Pedigree Wet Dog Food 13.2oz 12pk', price: 14.99, category: 'Pet Care', image: '🥫' },
+    { sku: 'dog-food-wet-cesar', name: 'Cesar Classic Loaf 3.5oz 24pk', price: 21.99, category: 'Pet Care', image: '🥫' },
+    { sku: 'dog-food-puppy', name: 'Purina Puppy Chow 16.5lb', price: 24.99, category: 'Pet Care', image: '🐕' },
+    { sku: 'dog-food-senior', name: 'Pedigree Senior Dog Food 15lb', price: 19.99, category: 'Pet Care', image: '🐕' },
+
+    // Cat Food - Weekly Essentials
+    { sku: 'cat-food-meow-mix-16lb', name: 'Meow Mix Original Dry Food 16lb', price: 14.99, category: 'Pet Care', image: '🐱' },
+    { sku: 'cat-food-purina-one-16lb', name: 'Purina ONE Indoor Cat Food 16lb', price: 24.99, category: 'Pet Care', image: '🐱' },
+    { sku: 'cat-food-friskies-16lb', name: 'Friskies Surfin\' & Turfin\' 16lb', price: 16.99, category: 'Pet Care', image: '🐱' },
+    { sku: 'cat-food-iams-16lb', name: 'IAMS ProActive Health 16lb', price: 26.99, category: 'Pet Care', image: '🐱' },
+    { sku: 'cat-food-wet-fancy-feast', name: 'Fancy Feast Classic 3oz 24pk', price: 19.99, category: 'Pet Care', image: '🥫' },
+    { sku: 'cat-food-wet-friskies', name: 'Friskies Pate Variety 5.5oz 32pk', price: 24.99, category: 'Pet Care', image: '🥫' },
+    { sku: 'cat-food-kitten', name: 'Purina Kitten Chow 3.15lb', price: 9.99, category: 'Pet Care', image: '🐱' },
+
+    // Pet Treats
+    { sku: 'dog-treats-milk-bone', name: 'Milk-Bone Dog Treats 24oz', price: 6.99, category: 'Pet Care', image: '🦴' },
+    { sku: 'dog-treats-beggin-strips', name: 'Beggin\' Strips Bacon 25oz', price: 9.99, category: 'Pet Care', image: '🦴' },
+    { sku: 'dog-treats-dentastix', name: 'Pedigree Dentastix 40ct', price: 14.99, category: 'Pet Care', image: '🦴' },
+    { sku: 'dog-treats-greenies', name: 'Greenies Dental Treats 36oz', price: 24.99, category: 'Pet Care', image: '🦴' },
+    { sku: 'dog-treats-rawhide', name: 'Good\'n\'Fun Rawhide Chews 50pk', price: 16.99, category: 'Pet Care', image: '🦴' },
+    { sku: 'cat-treats-temptations', name: 'Temptations Cat Treats 16oz', price: 6.99, category: 'Pet Care', image: '🐟' },
+    { sku: 'cat-treats-greenies', name: 'Greenies Feline Treats 4.6oz', price: 7.99, category: 'Pet Care', image: '🐟' },
+
+    // Pet Toys
+    { sku: 'dog-toy-rope', name: 'Dog Rope Tug Toy 3-Pack', price: 9.99, category: 'Pet Care', image: '🧶' },
+    { sku: 'dog-toy-ball', name: 'Kong Classic Dog Toy', price: 12.99, category: 'Pet Care', image: '⚽' },
+    { sku: 'dog-toy-squeaky', name: 'Squeaky Plush Dog Toys 5pk', price: 14.99, category: 'Pet Care', image: '🧸' },
+    { sku: 'dog-toy-chew', name: 'Nylabone Dura Chew', price: 8.99, category: 'Pet Care', image: '🦴' },
+    { sku: 'cat-toy-mice', name: 'Fur Mouse Cat Toys 10pk', price: 6.99, category: 'Pet Care', image: '🐭' },
+    { sku: 'cat-toy-wand', name: 'Cat Feather Wand Toy', price: 5.99, category: 'Pet Care', image: '🪶' },
+    { sku: 'cat-toy-laser', name: 'PetSafe Laser Toy', price: 9.99, category: 'Pet Care', image: '🔴' },
+    { sku: 'cat-toy-scratching-post', name: 'Cat Scratching Post 16"', price: 19.99, category: 'Pet Care', image: '🏛️' },
+    { sku: 'cat-toy-tunnel', name: 'Cat Play Tunnel Collapsible', price: 12.99, category: 'Pet Care', image: '🚇' },
+
+    // Pet Supplies - Outcome: New Pet
+    { sku: 'dog-leash-6ft', name: 'Dog Leash 6ft Nylon', price: 7.99, category: 'Pet Care', image: '🦮' },
+    { sku: 'dog-collar-adjustable', name: 'Adjustable Dog Collar', price: 8.99, category: 'Pet Care', image: '⭕' },
+    { sku: 'dog-harness', name: 'No-Pull Dog Harness', price: 19.99, category: 'Pet Care', image: '🦮' },
+    { sku: 'dog-bowl-stainless', name: 'Stainless Steel Dog Bowl Set', price: 14.99, category: 'Pet Care', image: '🥣' },
+    { sku: 'dog-bed-medium', name: 'Dog Bed Medium 30x20"', price: 29.99, category: 'Pet Care', image: '🛏️' },
+    { sku: 'dog-bed-large', name: 'Dog Bed Large 40x30"', price: 49.99, category: 'Pet Care', image: '🛏️' },
+    { sku: 'dog-crate-24', name: 'Dog Crate 24" Single Door', price: 39.99, category: 'Pet Care', image: '📦' },
+    { sku: 'dog-crate-36', name: 'Dog Crate 36" Double Door', price: 59.99, category: 'Pet Care', image: '📦' },
+    { sku: 'pet-carrier-small', name: 'Pet Carrier Small 18"', price: 24.99, category: 'Pet Care', image: '🧳' },
+    { sku: 'pet-carrier-medium', name: 'Pet Carrier Medium 23"', price: 34.99, category: 'Pet Care', image: '🧳' },
+    { sku: 'cat-collar-breakaway', name: 'Breakaway Cat Collar with Bell', price: 4.99, category: 'Pet Care', image: '🔔' },
+    { sku: 'cat-bowl-ceramic', name: 'Ceramic Cat Bowl Set', price: 12.99, category: 'Pet Care', image: '🥣' },
+    { sku: 'cat-bed', name: 'Cat Bed Cushion 18"', price: 19.99, category: 'Pet Care', image: '🛏️' },
+    { sku: 'cat-litter-box', name: 'Cat Litter Box with Hood', price: 24.99, category: 'Pet Care', image: '🧺' },
+    { sku: 'cat-litter-scoop', name: 'Cat Litter Scoop Metal', price: 5.99, category: 'Pet Care', image: '🥄' },
+
+    // Pet Grooming
+    { sku: 'dog-shampoo', name: 'Hartz Dog Shampoo 18oz', price: 6.99, category: 'Pet Care', image: '🧴' },
+    { sku: 'dog-brush', name: 'Self-Cleaning Slicker Brush', price: 12.99, category: 'Pet Care', image: '🪮' },
+    { sku: 'dog-nail-clippers', name: 'Dog Nail Clippers with Guard', price: 9.99, category: 'Pet Care', image: '✂️' },
+    { sku: 'dog-toothbrush', name: 'Dog Toothbrush & Toothpaste Kit', price: 7.99, category: 'Pet Care', image: '🪥' },
+    { sku: 'cat-shampoo', name: 'Burt\'s Bees Cat Shampoo 10oz', price: 8.99, category: 'Pet Care', image: '🧴' },
+    { sku: 'cat-brush', name: 'Cat Grooming Brush', price: 7.99, category: 'Pet Care', image: '🪮' },
+    { sku: 'pet-wipes', name: 'Pet Grooming Wipes 100ct', price: 6.99, category: 'Pet Care', image: '🧻' },
+
+    // Pet Health & Wellness
+    { sku: 'flea-tick-frontline-dog', name: 'Frontline Plus Dogs 45-88lb 3pk', price: 44.99, category: 'Pet Care', image: '💊' },
+    { sku: 'flea-tick-frontline-cat', name: 'Frontline Plus Cats 3pk', price: 39.99, category: 'Pet Care', image: '💊' },
+    { sku: 'flea-tick-collar-dog', name: 'Seresto Flea Collar Large Dog', price: 59.99, category: 'Pet Care', image: '⭕' },
+    { sku: 'flea-tick-collar-cat', name: 'Seresto Flea Collar Cat', price: 54.99, category: 'Pet Care', image: '⭕' },
+    { sku: 'pet-vitamins-dog', name: 'Zesty Paws Dog Multivitamin 90ct', price: 24.99, category: 'Pet Care', image: '💊' },
+    { sku: 'pet-vitamins-cat', name: 'Zesty Paws Cat Multivitamin 60ct', price: 19.99, category: 'Pet Care', image: '💊' },
+
+    // Pet Waste Management
+    { sku: 'cat-litter-tidy-cats', name: 'Tidy Cats Clumping Litter 35lb', price: 18.99, category: 'Pet Care', image: '🪨' },
+    { sku: 'cat-litter-fresh-step', name: 'Fresh Step Multi-Cat Litter 25lb', price: 16.99, category: 'Pet Care', image: '🪨' },
+    { sku: 'cat-litter-arm-hammer', name: 'Arm & Hammer Cat Litter 28lb', price: 14.99, category: 'Pet Care', image: '🪨' },
+    { sku: 'dog-waste-bags', name: 'Dog Waste Bags 900ct', price: 12.99, category: 'Pet Care', image: '💩' },
+    { sku: 'pee-pads', name: 'Pet Training Pee Pads 100ct', price: 24.99, category: 'Pet Care', image: '🟦' },
+
+    // Small Animal & Bird Supplies
+    { sku: 'hamster-food', name: 'Kaytee Hamster Food 2lb', price: 6.99, category: 'Pet Care', image: '🐹' },
+    { sku: 'guinea-pig-food', name: 'Oxbow Guinea Pig Food 5lb', price: 14.99, category: 'Pet Care', image: '🐹' },
+    { sku: 'rabbit-food', name: 'Kaytee Rabbit Food 5lb', price: 12.99, category: 'Pet Care', image: '🐰' },
+    { sku: 'bird-food', name: 'Wild Bird Seed 20lb', price: 16.99, category: 'Pet Care', image: '🐦' },
+    { sku: 'fish-food', name: 'Tetra Goldfish Flakes 2.2oz', price: 5.99, category: 'Pet Care', image: '🐠' },
+    { sku: 'hamster-cage', name: 'Hamster Cage with Tubes', price: 34.99, category: 'Pet Care', image: '🏠' },
+    { sku: 'bird-cage', name: 'Bird Cage 18x18x24"', price: 49.99, category: 'Pet Care', image: '🏠' },
+    { sku: 'fish-tank-10gal', name: 'Aqua Culture 10 Gallon Tank Kit', price: 39.99, category: 'Pet Care', image: '🐠' },
+  ],
+
+  'Garden & Outdoor': [
+    // Plants & Seeds - Outcome: Spring Gardening
+    { sku: 'seeds-tomato', name: 'Heirloom Tomato Seeds 4 Varieties', price: 5.99, category: 'Garden & Outdoor', image: '🍅' },
+    { sku: 'seeds-vegetable-garden', name: 'Vegetable Garden Seed Kit 10pk', price: 14.99, category: 'Garden & Outdoor', image: '🌱' },
+    { sku: 'seeds-herb-garden', name: 'Herb Garden Seed Kit 8pk', price: 12.99, category: 'Garden & Outdoor', image: '🌿' },
+    { sku: 'seeds-flower-wildflower', name: 'Wildflower Seed Mix 1lb', price: 9.99, category: 'Garden & Outdoor', image: '🌸' },
+    { sku: 'seeds-sunflower', name: 'Mammoth Sunflower Seeds', price: 4.99, category: 'Garden & Outdoor', image: '🌻' },
+    { sku: 'seeds-grass-sun', name: 'Scotts Turf Builder Grass Seed Sun & Shade 7lb', price: 34.99, category: 'Garden & Outdoor', image: '🌱' },
+    { sku: 'bulbs-tulip', name: 'Tulip Bulbs Assorted 25pk', price: 19.99, category: 'Garden & Outdoor', image: '🌷' },
+    { sku: 'bulbs-daffodil', name: 'Daffodil Bulbs 15pk', price: 14.99, category: 'Garden & Outdoor', image: '🌼' },
+
+    // Soil, Fertilizer & Mulch
+    { sku: 'potting-soil-miracle-gro', name: 'Miracle-Gro Potting Mix 16qt', price: 12.99, category: 'Garden & Outdoor', image: '🪴' },
+    { sku: 'potting-soil-organic', name: 'Organic Potting Soil 1.5 cu ft', price: 9.99, category: 'Garden & Outdoor', image: '🪴' },
+    { sku: 'garden-soil', name: 'Vigoro Garden Soil 2 cu ft', price: 5.99, category: 'Garden & Outdoor', image: '🪴' },
+    { sku: 'topsoil', name: 'Premium Topsoil 40lb', price: 4.99, category: 'Garden & Outdoor', image: '🪴' },
+    { sku: 'compost', name: 'Organic Compost 1 cu ft', price: 7.99, category: 'Garden & Outdoor', image: '🪴' },
+    { sku: 'mulch-brown', name: 'Brown Mulch 2 cu ft', price: 4.99, category: 'Garden & Outdoor', image: '🪵' },
+    { sku: 'mulch-red', name: 'Red Mulch 2 cu ft', price: 4.99, category: 'Garden & Outdoor', image: '🪵' },
+    { sku: 'fertilizer-miracle-gro', name: 'Miracle-Gro All Purpose Plant Food 1.5lb', price: 8.99, category: 'Garden & Outdoor', image: '🧪' },
+    { sku: 'fertilizer-lawn', name: 'Scotts Turf Builder Lawn Food 15000 sqft', price: 49.99, category: 'Garden & Outdoor', image: '🧪' },
+    { sku: 'weed-killer', name: 'Roundup Weed & Grass Killer 1gal', price: 24.99, category: 'Garden & Outdoor', image: '🧪' },
+    { sku: 'weed-control-lawn', name: 'Scotts Weed & Feed 5000 sqft', price: 34.99, category: 'Garden & Outdoor', image: '🧪' },
+    { sku: 'insect-killer-garden', name: 'Sevin Garden Insect Killer 32oz', price: 14.99, category: 'Garden & Outdoor', image: '🐛' },
+
+    // Pots, Planters & Containers
+    { sku: 'planter-6inch', name: 'Terracotta Pot 6" 4pk', price: 9.99, category: 'Garden & Outdoor', image: '🪴' },
+    { sku: 'planter-10inch', name: 'Terracotta Pot 10"', price: 7.99, category: 'Garden & Outdoor', image: '🪴' },
+    { sku: 'planter-hanging', name: 'Hanging Basket Planter 10" 3pk', price: 14.99, category: 'Garden & Outdoor', image: '🪴' },
+    { sku: 'planter-window-box', name: 'Window Box Planter 24"', price: 19.99, category: 'Garden & Outdoor', image: '🪴' },
+    { sku: 'planter-raised-bed', name: 'Raised Garden Bed 4x4ft', price: 79.99, category: 'Garden & Outdoor', image: '📦' },
+    { sku: 'planter-large-resin', name: 'Large Resin Planter 16"', price: 34.99, category: 'Garden & Outdoor', image: '🪴' },
+    { sku: 'planter-saucer', name: 'Plant Saucers Assorted 5pk', price: 7.99, category: 'Garden & Outdoor', image: '🍽️' },
+
+    // Garden Tools - Outcome: Gardening, Yard Work
+    { sku: 'shovel-round-point', name: 'Round Point Shovel', price: 24.99, category: 'Garden & Outdoor', image: '🛠️' },
+    { sku: 'shovel-spade', name: 'Garden Spade', price: 19.99, category: 'Garden & Outdoor', image: '🛠️' },
+    { sku: 'rake-leaf', name: 'Leaf Rake 24"', price: 16.99, category: 'Garden & Outdoor', image: '🛠️' },
+    { sku: 'rake-garden', name: 'Garden Rake Bow', price: 18.99, category: 'Garden & Outdoor', image: '🛠️' },
+    { sku: 'hoe', name: 'Garden Hoe Warren', price: 14.99, category: 'Garden & Outdoor', image: '🛠️' },
+    { sku: 'trowel-hand', name: 'Hand Trowel & Cultivator Set', price: 9.99, category: 'Garden & Outdoor', image: '🛠️' },
+    { sku: 'pruning-shears', name: 'Fiskars Pruning Shears', price: 14.99, category: 'Garden & Outdoor', image: '✂️' },
+    { sku: 'loppers', name: 'Bypass Loppers 28"', price: 24.99, category: 'Garden & Outdoor', image: '✂️' },
+    { sku: 'hedge-trimmer-manual', name: 'Manual Hedge Shears', price: 19.99, category: 'Garden & Outdoor', image: '✂️' },
+    { sku: 'garden-tool-set', name: '10-Piece Garden Tool Set', price: 39.99, category: 'Garden & Outdoor', image: '🛠️' },
+    { sku: 'wheelbarrow', name: 'Wheelbarrow 4 cu ft', price: 79.99, category: 'Garden & Outdoor', image: '🚚' },
+    { sku: 'garden-kneeler', name: 'Garden Kneeler with Handles', price: 29.99, category: 'Garden & Outdoor', image: '🪑' },
+    { sku: 'garden-gloves', name: 'Gardening Gloves 3pk', price: 8.99, category: 'Garden & Outdoor', image: '🧤' },
+
+    // Watering Equipment
+    { sku: 'hose-50ft', name: 'Garden Hose 50ft', price: 24.99, category: 'Garden & Outdoor', image: '💦' },
+    { sku: 'hose-100ft', name: 'Garden Hose 100ft Heavy Duty', price: 44.99, category: 'Garden & Outdoor', image: '💦' },
+    { sku: 'hose-nozzle', name: '8-Pattern Hose Nozzle', price: 12.99, category: 'Garden & Outdoor', image: '💦' },
+    { sku: 'hose-reel', name: 'Hose Reel Cart 300ft Capacity', price: 89.99, category: 'Garden & Outdoor', image: '🎡' },
+    { sku: 'sprinkler-oscillating', name: 'Oscillating Sprinkler', price: 19.99, category: 'Garden & Outdoor', image: '💦' },
+    { sku: 'sprinkler-impact', name: 'Impact Sprinkler Metal', price: 14.99, category: 'Garden & Outdoor', image: '💦' },
+    { sku: 'watering-can-2gal', name: 'Watering Can 2 Gallon', price: 12.99, category: 'Garden & Outdoor', image: '🚰' },
+    { sku: 'soaker-hose', name: 'Soaker Hose 50ft', price: 19.99, category: 'Garden & Outdoor', image: '💦' },
+
+    // Outdoor Decor
+    { sku: 'garden-gnome', name: 'Garden Gnome Statue 12"', price: 19.99, category: 'Garden & Outdoor', image: '🧙' },
+    { sku: 'bird-feeder', name: 'Wild Bird Feeder Tube', price: 14.99, category: 'Garden & Outdoor', image: '🐦' },
+    { sku: 'bird-bath', name: 'Bird Bath Pedestal 28"', price: 49.99, category: 'Garden & Outdoor', image: '🛁' },
+    { sku: 'wind-chimes', name: 'Wind Chimes Metal 36"', price: 24.99, category: 'Garden & Outdoor', image: '🎐' },
+    { sku: 'solar-lights-path', name: 'Solar Path Lights 8pk', price: 29.99, category: 'Garden & Outdoor', image: '💡' },
+    { sku: 'solar-lights-string', name: 'Solar String Lights 48ft', price: 24.99, category: 'Garden & Outdoor', image: '💡' },
+    { sku: 'garden-stakes', name: 'Decorative Garden Stakes 4pk', price: 19.99, category: 'Garden & Outdoor', image: '🌸' },
+    { sku: 'garden-flag', name: 'Seasonal Garden Flag 12x18"', price: 9.99, category: 'Garden & Outdoor', image: '🚩' },
+
+    // Patio Furniture - Outcome: Outdoor Living
+    { sku: 'patio-chair-folding', name: 'Folding Patio Chair 2pk', price: 49.99, category: 'Garden & Outdoor', image: '🪑' },
+    { sku: 'patio-table-round', name: 'Round Patio Table 38"', price: 89.99, category: 'Garden & Outdoor', image: '🪑' },
+    { sku: 'patio-umbrella', name: 'Patio Umbrella 9ft', price: 79.99, category: 'Garden & Outdoor', image: '☂️' },
+    { sku: 'patio-umbrella-base', name: 'Umbrella Base 50lb', price: 49.99, category: 'Garden & Outdoor', image: '⚓' },
+    { sku: 'outdoor-cushions', name: 'Outdoor Seat Cushions 2pk', price: 34.99, category: 'Garden & Outdoor', image: '🛋️' },
+    { sku: 'adirondack-chair', name: 'Adirondack Chair Resin', price: 89.99, category: 'Garden & Outdoor', image: '🪑' },
+
+    // Grills & Outdoor Cooking - Outcome: BBQ Party
+    { sku: 'grill-charcoal', name: 'Charcoal Grill 22"', price: 89.99, category: 'Garden & Outdoor', image: '🔥' },
+    { sku: 'grill-gas-2burner', name: '2-Burner Gas Grill', price: 199.99, category: 'Garden & Outdoor', image: '🔥' },
+    { sku: 'grill-gas-4burner', name: '4-Burner Gas Grill with Side Burner', price: 399.99, category: 'Garden & Outdoor', image: '🔥' },
+    { sku: 'grill-cover', name: 'Grill Cover 64" Heavy Duty', price: 29.99, category: 'Garden & Outdoor', image: '🧥' },
+    { sku: 'charcoal-briquettes', name: 'Kingsford Charcoal Briquettes 20lb', price: 19.99, category: 'Garden & Outdoor', image: '🪨' },
+    { sku: 'propane-tank', name: 'Propane Tank 20lb Empty', price: 39.99, category: 'Garden & Outdoor', image: '🔥' },
+    { sku: 'grill-tools', name: 'BBQ Grill Tool Set 3-Piece', price: 19.99, category: 'Garden & Outdoor', image: '🍴' },
+    { sku: 'grill-brush', name: 'Grill Cleaning Brush', price: 9.99, category: 'Garden & Outdoor', image: '🧹' },
+
+    // Lawn Care
+    { sku: 'lawn-mower-push', name: 'Push Reel Lawn Mower 18"', price: 99.99, category: 'Garden & Outdoor', image: '🛠️' },
+    { sku: 'lawn-edger', name: 'Manual Lawn Edger', price: 29.99, category: 'Garden & Outdoor', image: '🛠️' },
+    { sku: 'leaf-blower', name: 'Worx Electric Leaf Blower', price: 49.99, category: 'Garden & Outdoor', image: '💨' },
+    { sku: 'lawn-bags', name: 'Lawn & Leaf Bags 30gal 25pk', price: 12.99, category: 'Garden & Outdoor', image: '🗑️' },
+  ],
+
+  'Automotive': [
+    // Motor Oil - Regular Maintenance
+    { sku: 'oil-motor-5w30-conventional', name: 'Pennzoil 5W-30 Conventional Oil 5qt', price: 14.99, category: 'Automotive', image: '🛢️' },
+    { sku: 'oil-motor-5w30-synthetic', name: 'Mobil 1 5W-30 Full Synthetic 5qt', price: 29.99, category: 'Automotive', image: '🛢️' },
+    { sku: 'oil-motor-10w30', name: 'Castrol 10W-30 Conventional 5qt', price: 16.99, category: 'Automotive', image: '🛢️' },
+    { sku: 'oil-motor-0w20-synthetic', name: 'Mobil 1 0W-20 Full Synthetic 5qt', price: 32.99, category: 'Automotive', image: '🛢️' },
+    { sku: 'oil-filter-standard', name: 'Fram Extra Guard Oil Filter', price: 6.99, category: 'Automotive', image: '🔧' },
+    { sku: 'oil-filter-premium', name: 'Mobil 1 Extended Performance Filter', price: 12.99, category: 'Automotive', image: '🔧' },
+
+    // Fluids - Maintenance
+    { sku: 'coolant-antifreeze', name: 'Prestone Antifreeze Coolant 1gal', price: 14.99, category: 'Automotive', image: '🧪' },
+    { sku: 'brake-fluid', name: 'Prestone Brake Fluid DOT 3 32oz', price: 5.99, category: 'Automotive', image: '🧪' },
+    { sku: 'transmission-fluid', name: 'Valvoline ATF Transmission Fluid 1qt', price: 8.99, category: 'Automotive', image: '🧪' },
+    { sku: 'power-steering-fluid', name: 'Prestone Power Steering Fluid 32oz', price: 5.99, category: 'Automotive', image: '🧪' },
+    { sku: 'windshield-washer-fluid', name: 'Rain-X Windshield Washer Fluid 1gal', price: 4.99, category: 'Automotive', image: '💦' },
+    { sku: 'windshield-washer-deicer', name: 'Prestone De-Icer Washer Fluid 1gal', price: 6.99, category: 'Automotive', image: '💦' },
+
+    // Filters
+    { sku: 'air-filter', name: 'Fram Extra Guard Air Filter', price: 14.99, category: 'Automotive', image: '🔧' },
+    { sku: 'cabin-air-filter', name: 'Fram Fresh Breeze Cabin Air Filter', price: 12.99, category: 'Automotive', image: '🔧' },
+    { sku: 'fuel-filter', name: 'Fram Fuel Filter', price: 9.99, category: 'Automotive', image: '🔧' },
+
+    // Car Wash & Care - Outcome: Car Detailing
+    { sku: 'car-wash-soap', name: 'Meguiar\'s Car Wash Soap 64oz', price: 9.99, category: 'Automotive', image: '🧴' },
+    { sku: 'car-wax', name: 'Turtle Wax Carnauba Car Wax', price: 12.99, category: 'Automotive', image: '🧴' },
+    { sku: 'car-polish', name: 'Meguiar\'s Ultimate Polish 16oz', price: 14.99, category: 'Automotive', image: '🧴' },
+    { sku: 'tire-shine', name: 'Armor All Tire Shine 18oz', price: 6.99, category: 'Automotive', image: '🧴' },
+    { sku: 'wheel-cleaner', name: 'Meguiar\'s Hot Rims Wheel Cleaner 24oz', price: 8.99, category: 'Automotive', image: '🧴' },
+    { sku: 'glass-cleaner-auto', name: 'Invisible Glass Cleaner 22oz', price: 5.99, category: 'Automotive', image: '🧴' },
+    { sku: 'interior-cleaner', name: 'Armor All Multi-Purpose Cleaner 16oz', price: 5.99, category: 'Automotive', image: '🧴' },
+    { sku: 'leather-conditioner', name: 'Meguiar\'s Leather Conditioner 16oz', price: 9.99, category: 'Automotive', image: '🧴' },
+    { sku: 'detailing-clay', name: 'Mothers Clay Bar System', price: 19.99, category: 'Automotive', image: '🧼' },
+    { sku: 'microfiber-towels-auto', name: 'Microfiber Detailing Towels 12pk', price: 12.99, category: 'Automotive', image: '🧻' },
+    { sku: 'wash-mitt', name: 'Meguiar\'s Wash Mitt', price: 7.99, category: 'Automotive', image: '🧤' },
+    { sku: 'foam-applicator-pads', name: 'Foam Applicator Pads 6pk', price: 4.99, category: 'Automotive', image: '🔵' },
+
+    // Wiper Blades & Bulbs - Replacement Parts
+    { sku: 'wiper-blades-18', name: 'Rain-X Wiper Blades 18" Pair', price: 19.99, category: 'Automotive', image: '🚗' },
+    { sku: 'wiper-blades-22', name: 'Bosch ICON Wiper Blades 22"', price: 24.99, category: 'Automotive', image: '🚗' },
+    { sku: 'headlight-bulb-h11', name: 'Sylvania H11 Headlight Bulb', price: 19.99, category: 'Automotive', image: '💡' },
+    { sku: 'headlight-bulb-9006', name: 'Sylvania 9006 Headlight Bulb', price: 18.99, category: 'Automotive', image: '💡' },
+    { sku: 'brake-light-bulb', name: 'Sylvania Brake Light Bulbs 2pk', price: 7.99, category: 'Automotive', image: '💡' },
+
+    // Accessories - Low Consideration
+    { sku: 'air-freshener-tree', name: 'Little Trees Air Freshener 6pk', price: 5.99, category: 'Automotive', image: '🌲' },
+    { sku: 'air-freshener-vent', name: 'Febreze Car Vent Clips 2pk', price: 7.99, category: 'Automotive', image: '🌸' },
+    { sku: 'phone-mount-car', name: 'Universal Car Phone Mount', price: 14.99, category: 'Automotive', image: '📱' },
+    { sku: 'cup-holder-organizer', name: 'Car Cup Holder Organizer', price: 9.99, category: 'Automotive', image: '🥤' },
+    { sku: 'trunk-organizer', name: 'Collapsible Trunk Organizer', price: 19.99, category: 'Automotive', image: '📦' },
+    { sku: 'seat-covers', name: 'Universal Seat Covers 2pk', price: 29.99, category: 'Automotive', image: '🪑' },
+    { sku: 'floor-mats-rubber', name: 'Rubber Floor Mats 4pc', price: 24.99, category: 'Automotive', image: '🟫' },
+    { sku: 'steering-wheel-cover', name: 'Steering Wheel Cover Leather', price: 12.99, category: 'Automotive', image: '⭕' },
+    { sku: 'sunshade-windshield', name: 'Windshield Sunshade Foldable', price: 14.99, category: 'Automotive', image: '☀️' },
+    { sku: 'car-vacuum', name: 'Portable Car Vacuum Cleaner', price: 29.99, category: 'Automotive', image: '🧹' },
+    { sku: 'ice-scraper', name: 'Ice Scraper with Snow Brush', price: 9.99, category: 'Automotive', image: '❄️' },
+
+    // Emergency & Safety
+    { sku: 'jumper-cables', name: 'Jumper Cables 12ft 8-Gauge', price: 19.99, category: 'Automotive', image: '🔌' },
+    { sku: 'jumper-cables-heavy', name: 'Heavy Duty Jumper Cables 20ft 4-Gauge', price: 34.99, category: 'Automotive', image: '🔌' },
+    { sku: 'roadside-kit', name: 'Roadside Emergency Kit 42-Piece', price: 29.99, category: 'Automotive', image: '🚨' },
+    { sku: 'first-aid-kit-auto', name: 'Auto First Aid Kit 73-Piece', price: 14.99, category: 'Automotive', image: '🩹' },
+    { sku: 'tire-pressure-gauge', name: 'Digital Tire Pressure Gauge', price: 9.99, category: 'Automotive', image: '⚙️' },
+    { sku: 'tire-inflator', name: 'Portable Tire Inflator 12V', price: 29.99, category: 'Automotive', image: '⚙️' },
+    { sku: 'tow-strap', name: 'Tow Strap 3" x 20ft', price: 19.99, category: 'Automotive', image: '🪢' },
+
+    // Maintenance Tools
+    { sku: 'oil-drain-pan', name: 'Oil Drain Pan 5qt', price: 12.99, category: 'Automotive', image: '🪣' },
+    { sku: 'oil-filter-wrench', name: 'Oil Filter Wrench Adjustable', price: 9.99, category: 'Automotive', image: '🔧' },
+    { sku: 'socket-set-automotive', name: 'Automotive Socket Set 40-Piece', price: 39.99, category: 'Automotive', image: '🔧' },
+    { sku: 'wrench-set', name: 'Combination Wrench Set 12-Piece', price: 29.99, category: 'Automotive', image: '🔧' },
+    { sku: 'funnel-oil', name: 'Oil Funnel with Spout', price: 5.99, category: 'Automotive', image: '⏬' },
+    { sku: 'work-light-led', name: 'LED Work Light Rechargeable', price: 24.99, category: 'Automotive', image: '🔦' },
+
+    // Battery & Charging
+    { sku: 'car-battery-charger', name: 'Battery Charger 6/12V 2A', price: 29.99, category: 'Automotive', image: '🔋' },
+    { sku: 'battery-terminal-cleaner', name: 'Battery Terminal Cleaner Brush', price: 4.99, category: 'Automotive', image: '🧹' },
+    { sku: 'usb-car-charger', name: 'Dual USB Car Charger 3.1A', price: 9.99, category: 'Automotive', image: '🔌' },
+  ],
+
+  'Tools & Hardware': [
+    // Hand Tools - Outcome: Home Repair, DIY Projects
+    { sku: 'hammer-claw', name: 'Stanley 16oz Claw Hammer', price: 14.99, category: 'Tools & Hardware', image: '🔨' },
+    { sku: 'hammer-rubber-mallet', name: 'Rubber Mallet 16oz', price: 9.99, category: 'Tools & Hardware', image: '🔨' },
+    { sku: 'screwdriver-set', name: 'Stanley 6-Piece Screwdriver Set', price: 12.99, category: 'Tools & Hardware', image: '🪛' },
+    { sku: 'screwdriver-set-precision', name: 'Precision Screwdriver Set 32-Piece', price: 9.99, category: 'Tools & Hardware', image: '🪛' },
+    { sku: 'pliers-set', name: 'Pliers Set 3-Piece', price: 16.99, category: 'Tools & Hardware', image: '🔧' },
+    { sku: 'adjustable-wrench', name: 'Adjustable Wrench 10"', price: 12.99, category: 'Tools & Hardware', image: '🔧' },
+    { sku: 'allen-wrench-set', name: 'Hex Key Allen Wrench Set', price: 7.99, category: 'Tools & Hardware', image: '🔧' },
+    { sku: 'utility-knife', name: 'Stanley Retractable Utility Knife', price: 6.99, category: 'Tools & Hardware', image: '🔪' },
+    { sku: 'utility-knife-blades', name: 'Utility Knife Blades 100pk', price: 8.99, category: 'Tools & Hardware', image: '🔪' },
+    { sku: 'tape-measure-25ft', name: 'Stanley 25ft Tape Measure', price: 9.99, category: 'Tools & Hardware', image: '📏' },
+    { sku: 'level-torpedo', name: 'Torpedo Level 9"', price: 7.99, category: 'Tools & Hardware', image: '📏' },
+    { sku: 'level-48inch', name: 'Stanley 48" Box Level', price: 29.99, category: 'Tools & Hardware', image: '📏' },
+    { sku: 'stud-finder', name: 'Zircon Stud Finder', price: 19.99, category: 'Tools & Hardware', image: '🔍' },
+
+    // Power Tools - High Consideration
+    { sku: 'drill-cordless', name: 'Black+Decker 20V Cordless Drill', price: 49.99, category: 'Tools & Hardware', image: '🔧' },
+    { sku: 'drill-dewalt', name: 'DeWalt 20V MAX Drill Driver Kit', price: 129.99, category: 'Tools & Hardware', image: '🔧' },
+    { sku: 'drill-bit-set', name: 'DeWalt Drill Bit Set 100-Piece', price: 29.99, category: 'Tools & Hardware', image: '🔩' },
+    { sku: 'circular-saw', name: 'Black+Decker Circular Saw 15A', price: 59.99, category: 'Tools & Hardware', image: '⚙️' },
+    { sku: 'jigsaw', name: 'Black+Decker Jigsaw 5A', price: 39.99, category: 'Tools & Hardware', image: '⚙️' },
+    { sku: 'orbital-sander', name: 'Black+Decker Orbital Sander', price: 34.99, category: 'Tools & Hardware', image: '⚙️' },
+    { sku: 'power-tool-combo', name: 'Ryobi 18V 6-Tool Combo Kit', price: 299.99, category: 'Tools & Hardware', image: '🔧' },
+
+    // Fasteners & Hardware
+    { sku: 'screws-wood-assorted', name: 'Wood Screw Assortment 260pc', price: 12.99, category: 'Tools & Hardware', image: '🔩' },
+    { sku: 'nails-common', name: 'Common Nails 16d 5lb', price: 9.99, category: 'Tools & Hardware', image: '📌' },
+    { sku: 'nails-finish', name: 'Finish Nails Assortment 500pc', price: 8.99, category: 'Tools & Hardware', image: '📌' },
+    { sku: 'anchors-drywall', name: 'Drywall Anchors 100pk', price: 9.99, category: 'Tools & Hardware', image: '⚓' },
+    { sku: 'hooks-utility', name: 'Utility Hooks Assorted 20pk', price: 7.99, category: 'Tools & Hardware', image: '🪝' },
+    { sku: 'hooks-command', name: 'Command Strips Hooks Variety 16pk', price: 12.99, category: 'Tools & Hardware', image: '🪝' },
+    { sku: 'brackets-shelf', name: 'Shelf Brackets 8" 4pk', price: 12.99, category: 'Tools & Hardware', image: '📐' },
+    { sku: 'hinges-door', name: 'Door Hinges 3.5" Satin Nickel 3pk', price: 9.99, category: 'Tools & Hardware', image: '🚪' },
+    { sku: 'door-handle', name: 'Door Handle Set Satin Nickel', price: 19.99, category: 'Tools & Hardware', image: '🚪' },
+
+    // Paint & Supplies - Outcome: Home Improvement
+    { sku: 'paint-roller-kit', name: 'Paint Roller Kit 9-Piece', price: 12.99, category: 'Tools & Hardware', image: '🖌️' },
+    { sku: 'paint-brushes-set', name: 'Paint Brush Set 10-Piece', price: 14.99, category: 'Tools & Hardware', image: '🖌️' },
+    { sku: 'paint-tray', name: 'Paint Tray with Liner 5pk', price: 6.99, category: 'Tools & Hardware', image: '🎨' },
+    { sku: 'painters-tape-2inch', name: 'ScotchBlue Painter\'s Tape 2" 60yd', price: 12.99, category: 'Tools & Hardware', image: '📏' },
+    { sku: 'drop-cloth', name: 'Canvas Drop Cloth 9x12ft', price: 14.99, category: 'Tools & Hardware', image: '🧱' },
+    { sku: 'sandpaper-assorted', name: 'Sandpaper Sheets Assorted Grit 25pk', price: 8.99, category: 'Tools & Hardware', image: '📄' },
+    { sku: 'wood-filler', name: 'Elmer\'s Wood Filler 16oz', price: 7.99, category: 'Tools & Hardware', image: '🪵' },
+    { sku: 'spackling-paste', name: 'DAP Spackling Paste 16oz', price: 5.99, category: 'Tools & Hardware', image: '🧱' },
+    { sku: 'caulk-white', name: 'DAP White Silicone Caulk', price: 4.99, category: 'Tools & Hardware', image: '🧴' },
+    { sku: 'caulk-gun', name: 'Caulk Gun Smooth Rod', price: 7.99, category: 'Tools & Hardware', image: '🔫' },
+
+    // Electrical
+    { sku: 'electrical-tape', name: 'Electrical Tape Black 10pk', price: 9.99, category: 'Tools & Hardware', image: '📦' },
+    { sku: 'wire-nuts', name: 'Wire Nuts Assortment 150pk', price: 7.99, category: 'Tools & Hardware', image: '🔩' },
+    { sku: 'outlet-standard', name: 'Electrical Outlets 15A 10pk', price: 12.99, category: 'Tools & Hardware', image: '🔌' },
+    { sku: 'light-switch', name: 'Light Switches Single Pole 10pk', price: 11.99, category: 'Tools & Hardware', image: '💡' },
+    { sku: 'extension-cord-25ft', name: 'Extension Cord 25ft 16/3 Outdoor', price: 14.99, category: 'Tools & Hardware', image: '🔌' },
+    { sku: 'extension-cord-50ft', name: 'Extension Cord 50ft Heavy Duty', price: 24.99, category: 'Tools & Hardware', image: '🔌' },
+    { sku: 'power-strip', name: 'Power Strip 8-Outlet with Surge', price: 19.99, category: 'Tools & Hardware', image: '🔌' },
+    { sku: 'led-bulbs-60w', name: 'LED Light Bulbs 60W Equivalent 8pk', price: 12.99, category: 'Tools & Hardware', image: '💡' },
+    { sku: 'led-bulbs-100w', name: 'LED Light Bulbs 100W Equivalent 4pk', price: 14.99, category: 'Tools & Hardware', image: '💡' },
+
+    // Plumbing
+    { sku: 'plunger', name: 'Toilet Plunger with Caddy', price: 9.99, category: 'Tools & Hardware', image: '🚽' },
+    { sku: 'drain-snake', name: 'Drain Snake 25ft', price: 12.99, category: 'Tools & Hardware', image: '🐍' },
+    { sku: 'teflon-tape', name: 'Teflon Plumber\'s Tape 5pk', price: 4.99, category: 'Tools & Hardware', image: '📦' },
+    { sku: 'pipe-wrench', name: 'Pipe Wrench 14"', price: 19.99, category: 'Tools & Hardware', image: '🔧' },
+
+    // Adhesives & Sealants
+    { sku: 'super-glue', name: 'Super Glue Gel 4pk', price: 5.99, category: 'Tools & Hardware', image: '🧴' },
+    { sku: 'gorilla-glue', name: 'Gorilla Glue Original 4oz', price: 7.99, category: 'Tools & Hardware', image: '🦍' },
+    { sku: 'wood-glue', name: 'Titebond Wood Glue 16oz', price: 8.99, category: 'Tools & Hardware', image: '🧴' },
+    { sku: 'epoxy-5-minute', name: '5-Minute Epoxy 0.85oz', price: 5.99, category: 'Tools & Hardware', image: '🧴' },
+    { sku: 'duct-tape', name: 'Duck Tape Silver 1.88" x 60yd', price: 6.99, category: 'Tools & Hardware', image: '📦' },
+    { sku: 'wd40', name: 'WD-40 Multi-Use Product 12oz', price: 5.99, category: 'Tools & Hardware', image: '🧴' },
+
+    // Safety Equipment
+    { sku: 'safety-glasses', name: 'Safety Glasses Clear 3pk', price: 9.99, category: 'Tools & Hardware', image: '🥽' },
+    { sku: 'work-gloves', name: 'Work Gloves Leather 3pk', price: 12.99, category: 'Tools & Hardware', image: '🧤' },
+    { sku: 'dust-masks', name: 'Dust Masks N95 20pk', price: 14.99, category: 'Tools & Hardware', image: '😷' },
+    { sku: 'ear-plugs', name: 'Foam Ear Plugs 50 Pair', price: 9.99, category: 'Tools & Hardware', image: '👂' },
+    { sku: 'knee-pads', name: 'Knee Pads Heavy Duty', price: 19.99, category: 'Tools & Hardware', image: '🦵' },
+
+    // Tool Storage
+    { sku: 'toolbox-16inch', name: '16" Tool Box with Tray', price: 19.99, category: 'Tools & Hardware', image: '🧰' },
+    { sku: 'toolbox-22inch', name: '22" Pro Tool Box', price: 34.99, category: 'Tools & Hardware', image: '🧰' },
+    { sku: 'tool-bag', name: 'Tool Bag 16" with Pockets', price: 24.99, category: 'Tools & Hardware', image: '👜' },
+    { sku: 'pegboard-kit', name: 'Pegboard Organizer Kit 48"', price: 39.99, category: 'Tools & Hardware', image: '🗄️' },
+  ],
 }
 
 // Helper functions
