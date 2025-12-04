@@ -5,6 +5,7 @@ import { CartItem, ShoppingList, Product, SubscriptionFrequency } from '@/types'
 import { formatPrice } from '@/lib/utils'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { SubscribeModal } from '@/components/subscriptions/SubscribeModal'
+import { isProductEligibleForSubscription } from '@/lib/subscriptions'
 
 interface ShopBlockProps {
   data: {
@@ -220,8 +221,8 @@ export function ShopBlock({
                       </svg>
                     </button>
 
-                    {/* Subscribe Button */}
-                    {onSubscribe && !isProductSubscribed?.(item.sku) && (
+                    {/* Subscribe Button - Only for eligible products */}
+                    {onSubscribe && !isProductSubscribed?.(item.sku) && isProductEligibleForSubscription(item) && (
                       <button
                         onClick={() => setSubscribeModalProduct({ product: item, quantity: item.quantity || 1 })}
                         className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-green-500 hover:bg-green-600 text-white text-[10px] sm:text-xs font-medium rounded-lg transition-colors flex-shrink-0 whitespace-nowrap"

@@ -15,6 +15,7 @@ import { createClient } from '@/lib/supabase/client'
 import { getTopReplenishmentSuggestions } from '@/lib/replenishment'
 import { getAllProducts, getProductBySku } from '@/lib/catalog'
 import { useSubscriptions } from '@/hooks/useSubscriptions'
+import { getSubscriptionUpsells } from '@/lib/subscriptions'
 import {
   upsertPreference,
   updatePattern,
@@ -60,11 +61,45 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
   const handleSubscribe = useCallback((product: Product, quantity: number, frequency: SubscriptionFrequency) => {
     addSubscription(product, quantity, frequency, user.id)
-    // Show success message
+
+    // Get complementary upsells
+    const upsells = getSubscriptionUpsells(product, getAllProducts(), 3)
+
+    // Build success message with upsells
+    let successContent = `✅ **Subscription added!** You'll receive **${product.name}** (${frequency}) and automatically save 10% on each delivery.`
+
+    // Add upsell block if we have recommendations
+    if (upsells.length > 0) {
+      successContent += '\n\n```upsell\n'
+      successContent += JSON.stringify({
+        inference: `Great choice! Since you're subscribing to ${product.name}, you might also want to subscribe to these items:`,
+        complementary: upsells.map(p => ({
+          ...p,
+          reason: `Pairs well with ${product.name} - Subscribe & save 10%`
+        }))
+      })
+      successContent += '\n```'
+    }
+
+    // Add follow-up suggestion chips
+    successContent += '\n\n```suggestions\n'
+    successContent += JSON.stringify({
+      chips: [
+        { label: 'View my subscriptions', prompt: 'Show me my subscriptions' },
+        { label: 'Add more items', prompt: 'I want to add more items to my cart' },
+        { label: 'Continue shopping', prompt: 'Show me my shopping list' }
+      ]
+    })
+    successContent += '\n```'
+
+    // Parse blocks from the content
+    const blocks = parseBlocks(successContent)
+
     const successMessage: Message = {
       id: `msg-${Date.now()}`,
       role: 'assistant',
-      content: `✅ Subscribed! You'll receive **${product.name}** (${frequency}) and save 10% on each delivery. Manage your subscriptions anytime from the menu.`,
+      content: successContent,
+      blocks,
       createdAt: new Date().toISOString(),
     }
     setMessages(prev => [...prev, successMessage])
@@ -79,6 +114,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const replenishmentSuggestions = useMemo(() => {
     return getTopReplenishmentSuggestions(orders, getAllProducts(), 3)
   }, [orders])
+
 
   // Helper: Calculate total with bulk discounts applied
   const calculateCartTotal = useCallback((cartItems: CartItem[]) => {
@@ -985,6 +1021,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         isLoadingCartSavings={isLoadingCartSavings}
         onCartSwap={handleCartSwap}
         onAddToCart={addToCart}
+        isProductSubscribed={isProductSubscribed}
       />
 
       {/* Recipe Import Modal */}

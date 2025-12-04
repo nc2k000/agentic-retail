@@ -18,6 +18,7 @@ interface CartSidebarProps {
   isLoadingCartSavings?: boolean
   onCartSwap?: (original: CartItem, replacement: CartItem) => void
   onAddToCart?: (item: CartItem) => void
+  isProductSubscribed?: (sku: string) => boolean
 }
 
 export function CartSidebar({
@@ -33,6 +34,7 @@ export function CartSidebar({
   isLoadingCartSavings,
   onCartSwap,
   onAddToCart,
+  isProductSubscribed,
 }: CartSidebarProps) {
   // Calculate total with bulk discounts applied
   const total = cart.reduce((sum, item) => {
@@ -98,6 +100,7 @@ export function CartSidebar({
             <div className="space-y-3">
               {cart.map(item => {
                 const bulkDeal = getBulkDealForItem(item)
+                const isSubscribed = isProductSubscribed?.(item.sku) || false
 
                 // Check if bulk discount is active
                 const isBulkActive = item.bulkDeal && item.quantity >= item.bulkDeal.qty
@@ -111,7 +114,14 @@ export function CartSidebar({
                     <div className={`flex items-center gap-3 p-3 rounded-xl ${isBulkActive ? 'bg-amber-50 border border-amber-200' : 'bg-stone-50'}`}>
                       <span className="text-2xl">{item.image}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-stone-800 truncate">{item.name}</p>
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-sm font-medium text-stone-800 truncate">{item.name}</p>
+                          {isSubscribed && (
+                            <span className="flex-shrink-0 text-xs px-1.5 py-0.5 bg-green-100 text-green-700 rounded font-semibold" title="Subscribed">
+                              ♻️ Sub
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center gap-1.5">
                           {isBulkActive ? (
                             <>

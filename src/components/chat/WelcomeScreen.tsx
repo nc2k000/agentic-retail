@@ -9,7 +9,11 @@ interface WelcomeScreenProps {
   replenishmentSuggestions?: ReplenishmentSuggestion[]
 }
 
-export function WelcomeScreen({ profile, onSendMessage, replenishmentSuggestions = [] }: WelcomeScreenProps) {
+export function WelcomeScreen({
+  profile,
+  onSendMessage,
+  replenishmentSuggestions = []
+}: WelcomeScreenProps) {
   const name = profile?.name?.split(' ')[0] || 'there'
   
   // Get time-based greeting

@@ -5,6 +5,7 @@ import { useSubscriptions } from '@/hooks/useSubscriptions'
 import { SubscriptionCard } from './SubscriptionCard'
 import { UpcomingDeliveries } from './UpcomingDeliveries'
 import { SavingsSummary } from './SavingsSummary'
+import { AutoCartSimulation } from './AutoCartSimulation'
 import Link from 'next/link'
 
 interface SubscriptionsViewProps {
@@ -15,6 +16,7 @@ interface SubscriptionsViewProps {
 export function SubscriptionsView({ user, profile }: SubscriptionsViewProps) {
   const {
     subscriptions,
+    allSubscriptions,
     upcomingDeliveries,
     monthlySavings,
     isLoading,
@@ -23,6 +25,10 @@ export function SubscriptionsView({ user, profile }: SubscriptionsViewProps) {
     resumeSubscription,
     cancelSubscription,
   } = useSubscriptions(user.id)
+
+  // Separate active and paused subscriptions
+  const activeSubscriptions = allSubscriptions.filter(sub => sub.status === 'active')
+  const pausedSubscriptions = allSubscriptions.filter(sub => sub.status === 'paused')
 
   if (isLoading) {
     return (
@@ -44,7 +50,7 @@ export function SubscriptionsView({ user, profile }: SubscriptionsViewProps) {
             </div>
             <Link
               href="/chat"
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
             >
               ← Back to Shopping
             </Link>
@@ -59,6 +65,9 @@ export function SubscriptionsView({ user, profile }: SubscriptionsViewProps) {
           activeCount={subscriptions.length}
         />
 
+        {/* Auto-Cart Simulation */}
+        <AutoCartSimulation subscriptions={subscriptions} />
+
         {/* Upcoming Deliveries */}
         {upcomingDeliveries.length > 0 && (
           <div className="mb-8">
@@ -66,15 +75,15 @@ export function SubscriptionsView({ user, profile }: SubscriptionsViewProps) {
           </div>
         )}
 
-        {/* Subscriptions List */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        {/* Active Subscriptions List */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900">
-              Active Subscriptions ({subscriptions.length})
+              Active Subscriptions ({activeSubscriptions.length})
             </h2>
           </div>
 
-          {subscriptions.length === 0 ? (
+          {activeSubscriptions.length === 0 ? (
             <div className="px-6 py-12 text-center">
               <div className="text-gray-400 text-5xl mb-4">📦</div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -92,7 +101,7 @@ export function SubscriptionsView({ user, profile }: SubscriptionsViewProps) {
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {subscriptions.map(subscription => (
+              {activeSubscriptions.map(subscription => (
                 <SubscriptionCard
                   key={subscription.id}
                   subscription={subscription}
@@ -105,6 +114,36 @@ export function SubscriptionsView({ user, profile }: SubscriptionsViewProps) {
             </div>
           )}
         </div>
+
+        {/* Paused Subscriptions List */}
+        {pausedSubscriptions.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+            <div className="px-6 py-4 border-b border-gray-200 bg-amber-50">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">⏸️</span>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Paused Subscriptions ({pausedSubscriptions.length})
+                </h2>
+              </div>
+              <p className="text-sm text-gray-600 mt-1">
+                These subscriptions are paused and won't be delivered. Resume them anytime.
+              </p>
+            </div>
+
+            <div className="divide-y divide-gray-200">
+              {pausedSubscriptions.map(subscription => (
+                <SubscriptionCard
+                  key={subscription.id}
+                  subscription={subscription}
+                  onUpdate={updateSubscription}
+                  onPause={pauseSubscription}
+                  onResume={resumeSubscription}
+                  onCancel={cancelSubscription}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Help Text */}
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">

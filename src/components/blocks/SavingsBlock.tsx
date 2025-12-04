@@ -179,6 +179,13 @@ export function SavingsBlock({ data, onSwap, onAddToCart, onSwapAll }: SavingsBl
           </button>
         </div>
       )}
+
+      {/* Subscription Alternative */}
+      <div className="px-3 sm:px-4 py-2.5 bg-green-50 border-t border-green-200">
+        <p className="text-[10px] sm:text-xs text-green-700 text-center">
+          ♻️ <span className="font-medium">Or subscribe to frequently purchased items</span> for automatic 10% savings on every delivery!
+        </p>
+      </div>
     </div>
   )
 }

@@ -149,6 +149,13 @@ export function SubscribeModal({ product, quantity, onSubscribe, onClose }: Subs
               <span>Adjust quantity or frequency as needed</span>
             </li>
           </ul>
+
+          <div className="mt-3 p-2.5 bg-white border border-blue-300 rounded-lg">
+            <p className="text-xs text-gray-700 flex items-start gap-1.5">
+              <span className="text-blue-600 mt-0.5">ℹ️</span>
+              <span><strong>No payment now.</strong> Subscribed items are automatically added to your cart on delivery days. You'll only be charged when you checkout.</span>
+            </p>
+          </div>
         </div>
 
         {/* Actions */}

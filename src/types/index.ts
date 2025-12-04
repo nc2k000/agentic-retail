@@ -274,6 +274,7 @@ export interface SubscriptionSuggestion {
   suggestedFrequency: SubscriptionFrequency
   potentialSavings: number // monthly savings
   confidence: 'high' | 'medium' | 'low'
+  orderCount?: number // number of times ordered (optional, for sorting)
 }
 
 // Database Types (for Supabase)
