@@ -138,6 +138,7 @@ export async function getMissionsForNudge(userId: string): Promise<Mission[]> {
   try {
     const supabase = createClient()
 
+    // @ts-expect-error - Supabase type inference doesn't handle custom RPC functions well
     const { data, error } = await supabase
       .rpc('get_missions_for_nudge', { p_user_id: userId })
 

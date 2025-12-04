@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { User } from '@supabase/supabase-js'
-import { Message, CartItem, ShoppingList, Order, Block, MessageContent, Product, SubscriptionFrequency } from '@/types'
+import { Message, CartItem, ShoppingList, Order, Block, MessageContent, Product, SubscriptionFrequency, Mission } from '@/types'
 import { MessageBubble } from './MessageBubble'
 import { ChatInput } from './ChatInput'
 import { CartSidebar } from './CartSidebar'
@@ -29,7 +29,12 @@ import {
 } from '@/lib/memory'
 import type { MemoryContext } from '@/types/memory'
 import type { WeatherData } from '@/lib/weather'
-import { initializeFunnel, getFunnelState, trackFunnelAction } from '@/lib/funnel'
+import {
+  findOrCreateMission,
+  trackMissionAction,
+  getActiveMission,
+  getMissionsForNudge,
+} from '@/lib/missions'
 import {
   initializeVerbosity,
   getVerbosityPreference,
@@ -51,7 +56,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const [cart, setCart] = useState<CartItem[]>([])
   const [activeList, setActiveList] = useState<ShoppingList | null>(null)
   const [isCartOpen, setIsCartOpen] = useState(false)
-  
+
   // Additional state
   const [orders, setOrders] = useState<Order[]>(initialOrders)
   const [recentLists, setRecentLists] = useState<ShoppingList[]>(initialLists)
@@ -62,6 +67,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const [memoryContext, setMemoryContext] = useState<MemoryContext | null>(null)
   const [weather, setWeather] = useState<WeatherData | null>(null)
   const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false)
+  const [activeMission, setActiveMission] = useState<Mission | null>(null)
 
   // Verbosity tracking
   const [verbositySignals, setVerbositySignals] = useState({
@@ -145,13 +151,14 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     }, 0)
   }, [])
 
-  // Initialize funnel state on mount
+  // Load active mission on mount
   useEffect(() => {
-    const currentState = getFunnelState()
-    if (!currentState) {
-      initializeFunnel()
+    const loadActiveMission = async () => {
+      const mission = await getActiveMission(user.id)
+      setActiveMission(mission)
     }
-  }, [])
+    loadActiveMission()
+  }, [user.id])
 
   // Initialize verbosity preference on mount
   useEffect(() => {
@@ -287,8 +294,18 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       }
       setMessages(prev => [...prev, userMessage])
 
-      // Track funnel action - user sent a message
-      trackFunnelAction('message', user.id).catch(console.error)
+      // Find or create mission for this conversation
+      const mission = await findOrCreateMission(user.id, content, messages.length + 1)
+      if (mission) {
+        setActiveMission(mission)
+        // Track message action on mission
+        trackMissionAction(mission.id, 'message', user.id).catch(console.error)
+
+        // Track question if message is a question
+        if (content.includes('?')) {
+          trackMissionAction(mission.id, 'question', user.id).catch(console.error)
+        }
+      }
 
       // Analyze message for verbosity signals
       const signals = analyzeMessageForVerbosity(content)
@@ -343,13 +360,13 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
       apiMessages.push({ role: 'user', content: currentMessageContent })
 
-      // Call streaming API with memory context and weather
+      // Call streaming API with memory context, weather, and active mission
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: apiMessages,
-          system: SYSTEM_PROMPT(profile, memoryContext, weather),
+          system: SYSTEM_PROMPT(profile, memoryContext, weather, activeMission),
         }),
       })
 
@@ -471,7 +488,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     } finally {
       setIsLoading(false)
     }
-  }, [messages, activeList, profile, voiceEnabled, memoryContext, user.id])
+  }, [messages, activeList, profile, voiceEnabled, memoryContext, weather, activeMission, user.id])
 
   // Save shopping list to database
   const saveListToDatabase = useCallback(async (list: ShoppingList) => {
@@ -543,8 +560,10 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     const catalogItem = getProductBySku(item.sku)
     const enrichedItem = catalogItem ? { ...catalogItem, ...item } : item
 
-    // Track funnel action - user added item to cart
-    trackFunnelAction('add_to_cart', user.id).catch(console.error)
+    // Track mission action - user added item to cart
+    if (activeMission) {
+      trackMissionAction(activeMission.id, 'add_to_cart', user.id).catch(console.error)
+    }
 
     setCart(prev => {
       const existing = prev.find(i => i.sku === item.sku)
@@ -600,7 +619,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       }
       return [...prev, { ...enrichedItem, quantity: enrichedItem.quantity || 1 }]
     })
-  }, [user.id])
+  }, [user.id, activeMission])
 
   // Remove item from cart
   const removeFromCart = useCallback((sku: string) => {
@@ -653,8 +672,10 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     const total = calculateCartTotal(cart)
     const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
 
-    // Track funnel action - user initiated checkout
-    trackFunnelAction('checkout', user.id).catch(console.error)
+    // Track mission action - user initiated checkout
+    if (activeMission) {
+      trackMissionAction(activeMission.id, 'checkout', user.id).catch(console.error)
+    }
 
     // Set flag to prevent duplicate order when OrderBlock comes back
     setIsCheckingOut(true)
@@ -727,7 +748,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       sendMessage(`Checkout my cart with ${itemCount} items totaling $${total.toFixed(2)}`)
       setIsCartOpen(false)
     }
-  }, [cart, sendMessage, user.id, calculateCartTotal])
+  }, [cart, sendMessage, user.id, calculateCartTotal, activeMission])
 
   // Find savings on current list (displayed in chat)
   const handleFindSavings = useCallback((items: CartItem[], title: string) => {
