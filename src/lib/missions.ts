@@ -191,7 +191,7 @@ export async function createMission(
         abandon_threshold_hours: ABANDON_THRESHOLDS[type] || 72,
         detection_confidence: confidence,
         last_active_at: new Date().toISOString(),
-      })
+      } as any)
       .select()
       .single()
 
@@ -220,7 +220,7 @@ export async function updateMissionFunnelStage(
       .update({
         funnel_stage: newStage,
         last_active_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('id', missionId)
 
     // Record transition in interaction history
@@ -294,7 +294,7 @@ export async function trackMissionAction(
 
     await supabase
       .from('missions')
-      .update(updates)
+      .update(updates as any)
       .eq('id', missionId)
   } catch (error) {
     console.error('Failed to track mission action:', error)
@@ -312,7 +312,7 @@ export async function pauseMission(missionId: string): Promise<void> {
       .from('missions')
       .update({
         paused_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('id', missionId)
   } catch (error) {
     console.error('Failed to pause mission:', error)
@@ -331,7 +331,7 @@ export async function resumeMission(missionId: string): Promise<void> {
       .update({
         paused_at: null,
         last_active_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('id', missionId)
   } catch (error) {
     console.error('Failed to resume mission:', error)
@@ -350,7 +350,7 @@ export async function completeMission(missionId: string): Promise<void> {
       .update({
         status: 'completed',
         completed_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('id', missionId)
   } catch (error) {
     console.error('Failed to complete mission:', error)
@@ -369,7 +369,7 @@ export async function abandonMission(missionId: string): Promise<void> {
       .update({
         status: 'abandoned',
         abandoned_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('id', missionId)
   } catch (error) {
     console.error('Failed to abandon mission:', error)
