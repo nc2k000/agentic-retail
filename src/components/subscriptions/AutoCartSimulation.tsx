@@ -190,17 +190,8 @@ export function AutoCartSimulation({ subscriptions }: AutoCartSimulationProps) {
                     {hasDeliveries && (
                       <div className="flex flex-wrap gap-0.5 items-center justify-center">
                         {deliveries.slice(0, 4).map((sub, i) => {
-                          const tooltipContent = (
-                            <div className="text-xs">
-                              <div className="font-semibold">{sub.product.name}</div>
-                              <div className="text-gray-200 mt-1">
-                                Qty: {sub.quantity} • {sub.frequency}
-                              </div>
-                              <div className="text-green-300 mt-1">
-                                Save {formatPrice(sub.product.price * sub.quantity * sub.discount / 100)}
-                              </div>
-                            </div>
-                          )
+                          const savings = formatPrice(sub.product.price * sub.quantity * sub.discount / 100)
+                          const tooltipContent = `${sub.product.name} - Qty: ${sub.quantity} • ${sub.frequency} - Save ${savings}`
 
                           return (
                             <Tooltip key={i} content={tooltipContent}>
