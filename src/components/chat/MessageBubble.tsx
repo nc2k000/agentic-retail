@@ -1,6 +1,6 @@
 'use client'
 
-import { Message, CartItem, ShoppingList } from '@/types'
+import { Message, CartItem, ShoppingList, Product, SubscriptionFrequency } from '@/types'
 import { ShopBlock } from '@/components/blocks/ShopBlock'
 import { SavingsBlock } from '@/components/blocks/SavingsBlock'
 import { RecipeBlock } from '@/components/blocks/RecipeBlock'
@@ -24,6 +24,8 @@ interface MessageBubbleProps {
   activeList: ShoppingList | null
   onUpdateActiveList: (list: ShoppingList | null) => void
   cart: CartItem[]
+  onSubscribe?: (product: Product, quantity: number, frequency: SubscriptionFrequency) => void
+  isProductSubscribed?: (sku: string) => boolean
 }
 
 export function MessageBubble({
@@ -38,6 +40,8 @@ export function MessageBubble({
   activeList,
   onUpdateActiveList,
   cart,
+  onSubscribe,
+  isProductSubscribed,
 }: MessageBubbleProps) {
   const isUser = message.role === 'user'
   const isStreaming = message.isStreaming
@@ -111,6 +115,8 @@ export function MessageBubble({
                         onFindSavings={() => onFindSavings(block.data.items, block.data.title)}
                         activeList={activeList}
                         onUpdateActiveList={onUpdateActiveList}
+                        onSubscribe={onSubscribe}
+                        isProductSubscribed={isProductSubscribed}
                       />
                     )
                   case 'savings':

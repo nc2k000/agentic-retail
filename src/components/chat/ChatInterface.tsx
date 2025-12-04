@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { User } from '@supabase/supabase-js'
-import { Message, CartItem, ShoppingList, Order, Block, MessageContent } from '@/types'
+import { Message, CartItem, ShoppingList, Order, Block, MessageContent, Product, SubscriptionFrequency } from '@/types'
 import { MessageBubble } from './MessageBubble'
 import { ChatInput } from './ChatInput'
 import { CartSidebar } from './CartSidebar'
@@ -14,6 +14,7 @@ import { SYSTEM_PROMPT } from '@/lib/prompts'
 import { createClient } from '@/lib/supabase/client'
 import { getTopReplenishmentSuggestions } from '@/lib/replenishment'
 import { getAllProducts, getProductBySku } from '@/lib/catalog'
+import { useSubscriptions } from '@/hooks/useSubscriptions'
 import {
   upsertPreference,
   updatePattern,
@@ -53,6 +54,21 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const [memoryContext, setMemoryContext] = useState<MemoryContext | null>(null)
   const [weather, setWeather] = useState<WeatherData | null>(null)
   const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false)
+
+  // Subscriptions
+  const { addSubscription, isProductSubscribed } = useSubscriptions(user.id)
+
+  const handleSubscribe = useCallback((product: Product, quantity: number, frequency: SubscriptionFrequency) => {
+    addSubscription(product, quantity, frequency, user.id)
+    // Show success message
+    const successMessage: Message = {
+      id: `msg-${Date.now()}`,
+      role: 'assistant',
+      content: `✅ Subscribed! You'll receive **${product.name}** (${frequency}) and save 10% on each delivery. Manage your subscriptions anytime from the menu.`,
+      createdAt: new Date().toISOString(),
+    }
+    setMessages(prev => [...prev, successMessage])
+  }, [addSubscription, user.id])
 
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -939,6 +955,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
                   activeList={activeList}
                   onUpdateActiveList={setActiveList}
                   cart={cart}
+                  onSubscribe={handleSubscribe}
+                  isProductSubscribed={isProductSubscribed}
                 />
               ))}
               <div ref={messagesEndRef} />

@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { CartItem, ShoppingList } from '@/types'
+import { CartItem, ShoppingList, Product, SubscriptionFrequency } from '@/types'
 import { formatPrice } from '@/lib/utils'
 import { Tooltip } from '@/components/ui/Tooltip'
+import { SubscribeModal } from '@/components/subscriptions/SubscribeModal'
 
 interface ShopBlockProps {
   data: {
@@ -16,6 +17,8 @@ interface ShopBlockProps {
   onFindSavings: () => void
   activeList: ShoppingList | null
   onUpdateActiveList: (list: ShoppingList | null) => void
+  onSubscribe?: (product: Product, quantity: number, frequency: SubscriptionFrequency) => void
+  isProductSubscribed?: (sku: string) => boolean
 }
 
 export function ShopBlock({
@@ -25,8 +28,11 @@ export function ShopBlock({
   onFindSavings,
   activeList,
   onUpdateActiveList,
+  onSubscribe,
+  isProductSubscribed,
 }: ShopBlockProps) {
   const [editedItems, setEditedItems] = useState<CartItem[] | null>(null)
+  const [subscribeModalProduct, setSubscribeModalProduct] = useState<{ product: Product; quantity: number } | null>(null)
   
   // Use edited items if available, otherwise original
   const isActiveList = activeList && activeList.title === data.title
@@ -214,6 +220,24 @@ export function ShopBlock({
                       </svg>
                     </button>
 
+                    {/* Subscribe Button */}
+                    {onSubscribe && !isProductSubscribed?.(item.sku) && (
+                      <button
+                        onClick={() => setSubscribeModalProduct({ product: item, quantity: item.quantity || 1 })}
+                        className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-green-500 hover:bg-green-600 text-white text-[10px] sm:text-xs font-medium rounded-lg transition-colors flex-shrink-0 whitespace-nowrap"
+                        title="Subscribe & Save 10%"
+                      >
+                        ♻️
+                      </button>
+                    )}
+
+                    {/* Subscribed Badge */}
+                    {isProductSubscribed?.(item.sku) && (
+                      <div className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-green-100 text-green-700 text-[10px] sm:text-xs font-medium rounded-lg flex-shrink-0 whitespace-nowrap">
+                        ✓ Sub
+                      </div>
+                    )}
+
                     {/* Add to Cart */}
                     <button
                       onClick={() => onAddToCart({ ...item, quantity: item.quantity || 1 })}
@@ -247,6 +271,18 @@ export function ShopBlock({
           <span className="sm:hidden">Add • {formatPrice(total)}</span>
         </button>
       </div>
+
+      {/* Subscribe Modal */}
+      {subscribeModalProduct && onSubscribe && (
+        <SubscribeModal
+          product={subscribeModalProduct.product}
+          quantity={subscribeModalProduct.quantity}
+          onSubscribe={(frequency) => {
+            onSubscribe(subscribeModalProduct.product, subscribeModalProduct.quantity, frequency)
+          }}
+          onClose={() => setSubscribeModalProduct(null)}
+        />
+      )}
     </div>
   )
 }
