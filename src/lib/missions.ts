@@ -177,8 +177,7 @@ export async function createMission(
   try {
     const supabase = createClient()
 
-    const { data, error } = await supabase
-      .from('missions')
+    const { data, error } = await (supabase.from('missions') as any)
       .insert({
         user_id: userId,
         query,
@@ -191,7 +190,7 @@ export async function createMission(
         abandon_threshold_hours: ABANDON_THRESHOLDS[type] || 72,
         detection_confidence: confidence,
         last_active_at: new Date().toISOString(),
-      } as any)
+      })
       .select()
       .single()
 
@@ -215,12 +214,11 @@ export async function updateMissionFunnelStage(
   try {
     const supabase = createClient()
 
-    await supabase
-      .from('missions')
+    await (supabase.from('missions') as any)
       .update({
         funnel_stage: newStage,
         last_active_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('id', missionId)
 
     // Record transition in interaction history
@@ -292,9 +290,8 @@ export async function trackMissionAction(
         break
     }
 
-    await supabase
-      .from('missions')
-      .update(updates as any)
+    await (supabase.from('missions') as any)
+      .update(updates)
       .eq('id', missionId)
   } catch (error) {
     console.error('Failed to track mission action:', error)
@@ -308,11 +305,10 @@ export async function pauseMission(missionId: string): Promise<void> {
   try {
     const supabase = createClient()
 
-    await supabase
-      .from('missions')
+    await (supabase.from('missions') as any)
       .update({
         paused_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('id', missionId)
   } catch (error) {
     console.error('Failed to pause mission:', error)
@@ -326,12 +322,11 @@ export async function resumeMission(missionId: string): Promise<void> {
   try {
     const supabase = createClient()
 
-    await supabase
-      .from('missions')
+    await (supabase.from('missions') as any)
       .update({
         paused_at: null,
         last_active_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('id', missionId)
   } catch (error) {
     console.error('Failed to resume mission:', error)
@@ -345,12 +340,11 @@ export async function completeMission(missionId: string): Promise<void> {
   try {
     const supabase = createClient()
 
-    await supabase
-      .from('missions')
+    await (supabase.from('missions') as any)
       .update({
         status: 'completed',
         completed_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('id', missionId)
   } catch (error) {
     console.error('Failed to complete mission:', error)
@@ -364,12 +358,11 @@ export async function abandonMission(missionId: string): Promise<void> {
   try {
     const supabase = createClient()
 
-    await supabase
-      .from('missions')
+    await (supabase.from('missions') as any)
       .update({
         status: 'abandoned',
         abandoned_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('id', missionId)
   } catch (error) {
     console.error('Failed to abandon mission:', error)
