@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 
     if (isSocialMedia) {
       return NextResponse.json({
-        error: 'Social media sites require JavaScript rendering. Please use the Image or Text tab to import the recipe instead.',
+        error: 'Social media recipe detected',
         suggestion: 'screenshot',
       }, { status: 400 })
     }

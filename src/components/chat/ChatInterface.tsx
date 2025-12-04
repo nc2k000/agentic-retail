@@ -690,27 +690,29 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
             setIsLoading(false)
             if (result.suggestion === 'screenshot') {
               // Social media sites - show helpful message
-              sendMessage(`${result.error}\n\nTip: Take a screenshot of the recipe and use the Image tab, or copy the text and use the Text tab.`)
+              const hostname = new URL(data.url).hostname.replace('www.', '')
+              sendMessage(`I can't access ${hostname} directly, but you can screenshot the recipe and upload it in the Image tab, or just copy and paste the text!`)
             } else {
-              sendMessage(result.error || 'Failed to fetch recipe. Please try using the Image or Text tab instead.')
+              sendMessage(`Hmm, I couldn't grab that recipe. Try screenshotting it or copying the text instead!`)
             }
             return
           }
 
           // Handle successful response
           if (result.success && result.content) {
-            const displayMessage = `Analyze recipe from ${result.url}`
+            const siteName = result.siteName.replace('www.', '').replace('.com', '').replace('.org', '')
+            const displayMessage = `Got it! Let me check out this recipe from ${siteName}...`
             const fullPrompt = `Extract ingredients from this recipe and create a shopping list. Match each ingredient to products in the catalog.\n\nSource: ${result.siteName}\n\n${result.content}`
 
             sendMessage(displayMessage, undefined, fullPrompt)
           } else {
             setIsLoading(false)
-            sendMessage(`I tried to fetch the recipe from ${data.url}, but couldn't extract the content. Try using the Image or Text tab instead.`)
+            sendMessage(`Couldn't find the recipe content on that page. Mind screenshotting it or pasting the text instead?`)
           }
         } catch (error) {
           console.error('URL fetch error:', error)
           setIsLoading(false)
-          sendMessage(`Network error while fetching recipe. Please try using the Image or Text tab instead.`)
+          sendMessage(`Oops, something went wrong loading that URL. Try the screenshot or text option instead!`)
         }
       } else if (data.text) {
         // Send text to Claude to parse ingredients
