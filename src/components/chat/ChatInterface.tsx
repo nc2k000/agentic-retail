@@ -9,6 +9,7 @@ import { CartSidebar } from './CartSidebar'
 import { Header } from './Header'
 import { WelcomeScreen } from './WelcomeScreen'
 import { RecipeImportModal } from './RecipeImportModal'
+import { MemoryConfirmationToast, type MemoryConfirmation } from './MemoryConfirmationToast'
 import { parseBlocks } from '@/lib/parser'
 import { SYSTEM_PROMPT } from '@/lib/prompts'
 import { createClient } from '@/lib/supabase/client'
@@ -41,6 +42,10 @@ import {
   analyzeMessageForVerbosity,
   inferVerbosityFromBehavior,
 } from '@/lib/verbosity'
+import {
+  confirmMemoryPreference,
+  rejectMemoryPreference,
+} from '@/lib/memory-confirmation'
 
 interface ChatInterfaceProps {
   user: User
@@ -76,6 +81,9 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     exploreMessages: 0,
     totalMessages: 0,
   })
+
+  // Memory confirmation
+  const [pendingConfirmation, setPendingConfirmation] = useState<MemoryConfirmation | null>(null)
 
   // Subscriptions
   const { addSubscription, isProductSubscribed } = useSubscriptions(user.id)
@@ -125,6 +133,27 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     }
     setMessages(prev => [...prev, successMessage])
   }, [addSubscription, user.id])
+
+  // Memory confirmation handlers
+  const handleMemoryConfirm = useCallback(async (confirmed: boolean) => {
+    if (!pendingConfirmation) return
+
+    if (confirmed) {
+      await confirmMemoryPreference(user.id, pendingConfirmation)
+      console.log('✅ Memory preference confirmed:', pendingConfirmation.key)
+    } else {
+      await rejectMemoryPreference(user.id, pendingConfirmation)
+      console.log('❌ Memory preference rejected:', pendingConfirmation.key)
+    }
+
+    setPendingConfirmation(null)
+  }, [pendingConfirmation, user.id])
+
+  const handleMemoryDismiss = useCallback(() => {
+    // User ignored - keep as inferred with current confidence
+    console.log('⏸️ Memory confirmation dismissed (keeping as inferred):', pendingConfirmation?.key)
+    setPendingConfirmation(null)
+  }, [pendingConfirmation])
 
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -221,6 +250,75 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
   }, [messages])
+
+  // Detect preferences from user message and trigger confirmation
+  const detectAndConfirmPreferences = useCallback((userMessage: string, aiResponse: string) => {
+    const lowerMessage = userMessage.toLowerCase()
+
+    // Dietary preferences
+    const dietaryPatterns = [
+      { key: 'vegan', pattern: /(i'm|im|i am)\s+(a\s+)?vegan|looking for vegan|vegan (diet|products|options)/i },
+      { key: 'vegetarian', pattern: /(i'm|im|i am)\s+(a\s+)?vegetarian|vegetarian (diet|products|options)/i },
+      { key: 'gluten-free', pattern: /(i'm|im|i am)\s+gluten[- ]free|gluten[- ]free (diet|products|bread)/i },
+      { key: 'dairy-free', pattern: /(i'm|im|i am)\s+dairy[- ]free|dairy[- ]free (products|milk)/i },
+      { key: 'keto', pattern: /(i'm|im|i am)\s+on\s+keto|keto (diet|products|options)/i },
+    ]
+
+    for (const { key, pattern } of dietaryPatterns) {
+      if (pattern.test(userMessage)) {
+        const confirmation: MemoryConfirmation = {
+          id: Date.now().toString(),
+          type: 'dietary',
+          key,
+          message: `I noticed you're ${key}. Is this correct?`,
+          confidence: 0.75,
+          reason: `User mentioned: "${userMessage.substring(0, 50)}..."`
+        }
+        setPendingConfirmation(confirmation)
+        console.log('🧠 Memory confirmation triggered:', confirmation)
+        return
+      }
+    }
+
+    // Allergy detection
+    const allergyPattern = /(i'm|im|i am)\s+allergic\s+to\s+(\w+)|(\w+)\s+allergy/i
+    const allergyMatch = userMessage.match(allergyPattern)
+    if (allergyMatch) {
+      const allergen = allergyMatch[2] || allergyMatch[3]
+      const confirmation: MemoryConfirmation = {
+        id: Date.now().toString(),
+        type: 'allergy',
+        key: allergen,
+        message: `I noticed you're allergic to ${allergen}. Is this correct?`,
+        confidence: 0.85,
+        reason: 'User explicitly mentioned allergy'
+      }
+      setPendingConfirmation(confirmation)
+      console.log('🧠 Memory confirmation triggered (allergy):', confirmation)
+      return
+    }
+
+    // Brand preferences
+    const brandPatterns = [
+      { key: 'organic', pattern: /i (always|usually|prefer|like)\s+(buy|buying|get|getting)?\s*organic/i },
+      { key: 'Great Value', pattern: /i (always|usually|prefer|like)\s+(buy|buying|get|getting)?\s*(great value|gv|store brand)/i },
+    ]
+
+    for (const { key, pattern } of brandPatterns) {
+      if (pattern.test(userMessage)) {
+        const confirmation: MemoryConfirmation = {
+          id: Date.now().toString(),
+          type: 'brand',
+          key,
+          message: `I noticed you prefer ${key} products. Is this correct?`,
+          confidence: 0.7,
+        }
+        setPendingConfirmation(confirmation)
+        console.log('🧠 Memory confirmation triggered (brand):', confirmation)
+        return
+      }
+    }
+  }, [])
 
   // Send message to Claude
   const sendMessage = useCallback(async (
@@ -470,6 +568,9 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
           setIsCheckingOut(false)
         }
       }
+
+      // Detect preferences from user message and trigger confirmation if needed
+      detectAndConfirmPreferences(content, fullContent)
 
       // Voice output if enabled
       if (voiceEnabled && fullContent) {
@@ -1120,6 +1221,13 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
           Import Recipe
         </span>
       </button>
+
+      {/* Memory Confirmation Toast */}
+      <MemoryConfirmationToast
+        confirmation={pendingConfirmation}
+        onConfirm={handleMemoryConfirm}
+        onDismiss={handleMemoryDismiss}
+      />
     </div>
   )
 }

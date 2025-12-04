@@ -25,6 +25,13 @@ const config: Config = {
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'bounce-custom': 'bounce 1s ease-in-out infinite',
+        'slide-up': 'slideUp 0.3s ease-out',
+      },
+      keyframes: {
+        slideUp: {
+          '0%': { transform: 'translateY(100%) translateX(-50%)', opacity: '0' },
+          '100%': { transform: 'translateY(0) translateX(-50%)', opacity: '1' },
+        },
       },
     },
   },
