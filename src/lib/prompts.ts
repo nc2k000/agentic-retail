@@ -1,7 +1,13 @@
 import { getCatalogSummary } from '@/lib/catalog'
 import type { MemoryContext } from '@/types/memory'
+import type { WeatherData } from '@/lib/weather'
+import { getWeatherPromptContext } from '@/lib/weather'
 
-export function SYSTEM_PROMPT(profile: any, memoryContext?: MemoryContext | null): string {
+export function SYSTEM_PROMPT(
+  profile: any,
+  memoryContext?: MemoryContext | null,
+  weather?: WeatherData | null
+): string {
   const catalogSummary = getCatalogSummary()
   const userName = profile?.name?.split(' ')[0] || 'there'
   const household = profile?.household || { size: 1, members: [], pets: [] }
@@ -62,6 +68,12 @@ export function SYSTEM_PROMPT(profile: any, memoryContext?: MemoryContext | null
     memorySection += '\n**Use this memory to provide personalized recommendations, but don\'t explicitly mention "I remember" or "based on your history" unless the user asks about it.**\n'
   }
 
+  // Format weather context for prompt
+  let weatherSection = ''
+  if (weather) {
+    weatherSection = '\n' + getWeatherPromptContext(weather)
+  }
+
   return `You are a friendly AI shopping assistant for a grocery store. Help users build shopping lists, find recipes, plan events, and save money.
 
 ## User Profile
@@ -77,7 +89,7 @@ export function SYSTEM_PROMPT(profile: any, memoryContext?: MemoryContext | null
 - Pets: ${pets.length > 0 ? pets.map((p: any) => `${p.name || 'Pet'} (${p.type})`).join(', ') : 'None'}
 - Preferred brands: ${preferences.brands?.join(', ') || 'None specified'}
 - Dietary restrictions: ${preferences.dietary?.join(', ') || 'None'}
-- Budget preference: ${preferences.budget || 'moderate'}${memorySection}
+- Budget preference: ${preferences.budget || 'moderate'}${memorySection}${weatherSection}
 
 ## Product Catalog
 ${catalogSummary}

@@ -8,6 +8,7 @@ import { ChatInput } from './ChatInput'
 import { CartSidebar } from './CartSidebar'
 import { Header } from './Header'
 import { WelcomeScreen } from './WelcomeScreen'
+import { RecipeImportModal } from './RecipeImportModal'
 import { parseBlocks } from '@/lib/parser'
 import { SYSTEM_PROMPT } from '@/lib/prompts'
 import { createClient } from '@/lib/supabase/client'
@@ -25,6 +26,7 @@ import {
   extractAllergy,
 } from '@/lib/memory'
 import type { MemoryContext } from '@/types/memory'
+import type { WeatherData } from '@/lib/weather'
 
 interface ChatInterfaceProps {
   user: User
@@ -49,6 +51,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const [cartSavingsData, setCartSavingsData] = useState<any>(null)
   const [isLoadingCartSavings, setIsLoadingCartSavings] = useState(false)
   const [memoryContext, setMemoryContext] = useState<MemoryContext | null>(null)
+  const [weather, setWeather] = useState<WeatherData | null>(null)
+  const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false)
 
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -82,6 +86,36 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     }
     loadMemoryContext()
   }, [user.id, orders.length]) // Refresh when new orders are placed
+
+  // Fetch weather on mount
+  useEffect(() => {
+    const loadWeather = async () => {
+      if (!navigator.geolocation) {
+        console.warn('Geolocation not supported - weather features disabled')
+        return
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords
+          try {
+            const response = await fetch(`/api/weather?lat=${latitude}&lon=${longitude}`)
+            if (response.ok) {
+              const weatherData = await response.json()
+              setWeather(weatherData)
+            }
+          } catch (error) {
+            console.error('Error fetching weather:', error)
+          }
+        },
+        (error) => {
+          console.warn('Geolocation permission denied - weather features disabled')
+        },
+        { timeout: 5000 }
+      )
+    }
+    loadWeather()
+  }, []) // Only run once on mount
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -201,13 +235,13 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
       apiMessages.push({ role: 'user', content: currentMessageContent })
 
-      // Call streaming API with memory context
+      // Call streaming API with memory context and weather
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: apiMessages,
-          system: SYSTEM_PROMPT(profile, memoryContext),
+          system: SYSTEM_PROMPT(profile, memoryContext, weather),
         }),
       })
 
@@ -598,6 +632,47 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     )
   }, [sendMessage, cart.length])
 
+  // Handle recipe import
+  const handleRecipeImport = useCallback(async (data: { url?: string; image?: File; text?: string }) => {
+    setIsLoading(true)
+
+    try {
+      if (data.image) {
+        // Convert image to base64 for Claude vision
+        const reader = new FileReader()
+        reader.onloadend = async () => {
+          const base64Image = reader.result as string
+          // Send message with image to Claude
+          const multimodalContent = [
+            {
+              type: 'image' as const,
+              source: {
+                type: 'base64' as const,
+                media_type: 'image/jpeg' as const,
+                data: base64Image.split(',')[1],
+              },
+            },
+            {
+              type: 'text' as const,
+              text: 'Extract the ingredients from this recipe image and create a shopping list. Match each ingredient to products in the catalog.',
+            },
+          ]
+          sendMessage('Extract recipe ingredients from image', multimodalContent)
+        }
+        reader.readAsDataURL(data.image)
+      } else if (data.url) {
+        // Send URL to Claude to extract recipe
+        sendMessage(`Extract ingredients from this recipe: ${data.url}`)
+      } else if (data.text) {
+        // Send text to Claude to parse ingredients
+        sendMessage(`Extract ingredients from this recipe and create a shopping list:\n\n${data.text}`)
+      }
+    } catch (error) {
+      console.error('Recipe import error:', error)
+      setIsLoading(false)
+    }
+  }, [sendMessage])
+
   // Handle swap in cart savings (inline swap without updating list)
   const handleCartSwap = useCallback((original: CartItem, replacement: CartItem) => {
     // Passive learning: User accepted swap, increase confidence in replacement brand
@@ -842,6 +917,25 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         onCartSwap={handleCartSwap}
         onAddToCart={addToCart}
       />
+
+      {/* Recipe Import Modal */}
+      <RecipeImportModal
+        isOpen={isRecipeModalOpen}
+        onClose={() => setIsRecipeModalOpen(false)}
+        onImport={handleRecipeImport}
+      />
+
+      {/* Floating Import Recipe Button */}
+      <button
+        onClick={() => setIsRecipeModalOpen(true)}
+        className="fixed bottom-24 right-6 md:right-8 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all z-40 flex items-center gap-2 group"
+        title="Import Recipe"
+      >
+        <span className="text-2xl">🍳</span>
+        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap font-medium">
+          Import Recipe
+        </span>
+      </button>
     </div>
   )
 }
