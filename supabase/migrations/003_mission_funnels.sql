@@ -39,14 +39,14 @@ ALTER TABLE missions ADD COLUMN IF NOT EXISTS detection_confidence DECIMAL(3,2) 
 ALTER TABLE missions ADD COLUMN IF NOT EXISTS items JSONB DEFAULT '[]'::jsonb;
 
 -- 5. Set default abandon thresholds based on mission type
--- Essential shops: 12 hours
--- Recipe/Event: 7 days (168 hours)
--- Research/Precision: 7 days (168 hours)
+-- Precision (single items): 6 hours (fast add to cart)
+-- Essentials (grocery baskets): 24 hours (more browsing freedom)
+-- Recipe/Event/Research: 7 days (168 hours)
 UPDATE missions
 SET abandon_threshold_hours = CASE
-  WHEN type = 'essentials' THEN 12
-  WHEN type IN ('recipe', 'event') THEN 168
-  WHEN type IN ('research', 'precision') THEN 168
+  WHEN type = 'precision' THEN 6
+  WHEN type = 'essentials' THEN 24
+  WHEN type IN ('recipe', 'event', 'research') THEN 168
   ELSE 72 -- Default: 3 days
 END
 WHERE abandon_threshold_hours IS NULL;

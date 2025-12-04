@@ -310,11 +310,11 @@ Mission marked abandoned:
 
 | Mission Type | Threshold | Rationale |
 |-------------|-----------|-----------|
-| **essentials** | 12 hours | Quick, transactional purchases ("I need milk") |
+| **precision** | 6 hours | Single item ("I need milk") - fast add to cart, then expand basket |
+| **essentials** | 24 hours | Grocery baskets ("weekly groceries") - more browsing freedom |
 | **recipe** | 7 days | Event-driven but flexible timing |
 | **event** | 7 days | Planning ahead, but still time-sensitive |
 | **research** | 7 days | High-consideration, but not indefinite |
-| **precision** | 7 days | Specific items, moderate urgency |
 
 **After abandonment:**
 - Stop nudging user about mission

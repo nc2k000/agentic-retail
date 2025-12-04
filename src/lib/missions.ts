@@ -18,11 +18,11 @@ import { recordInteraction } from './memory'
 
 // Abandon thresholds by mission type (in hours)
 const ABANDON_THRESHOLDS: Record<string, number> = {
-  essentials: 12,    // Quick grabs: 12 hours
+  precision: 6,      // Single items: 6 hours (fast add to cart, then expand)
+  essentials: 24,    // Grocery baskets: 24 hours (more browsing freedom)
   recipe: 168,       // Recipes: 7 days
   event: 168,        // Events: 7 days
   research: 168,     // Research: 7 days
-  precision: 168,    // Precision: 7 days
 }
 
 /**
@@ -33,14 +33,6 @@ export function detectMissionType(
   messageCount: number = 1
 ): { type: Mission['type']; confidence: number } | null {
   const lowerQuery = query.toLowerCase()
-
-  // Single item requests → essentials
-  if (
-    (lowerQuery.includes('need') || lowerQuery.includes('get') || lowerQuery.includes('buy')) &&
-    messageCount <= 2
-  ) {
-    return { type: 'essentials', confidence: 0.85 }
-  }
 
   // Recipe keywords → recipe
   if (
@@ -76,9 +68,32 @@ export function detectMissionType(
     return { type: 'research', confidence: 0.85 }
   }
 
-  // Multiple items or list → essentials (default)
-  if (messageCount >= 2) {
-    return { type: 'essentials', confidence: 0.70 }
+  // PRECISION: Single specific item request (e.g., "I need milk", "get me bread")
+  // Fast add to cart, then expand to essentials basket
+  const hasSingleItemIntent =
+    (lowerQuery.includes('need') || lowerQuery.includes('get') || lowerQuery.includes('buy')) &&
+    messageCount <= 2 &&
+    !lowerQuery.includes('list') &&
+    !lowerQuery.includes('groceries') &&
+    !lowerQuery.includes('weekly') &&
+    !lowerQuery.includes('stock up')
+
+  if (hasSingleItemIntent) {
+    return { type: 'precision', confidence: 0.85 }
+  }
+
+  // ESSENTIALS: Grocery basket/list building (e.g., "weekly groceries", "build a list")
+  // More browsing freedom, helpful suggestions
+  const hasBasketIntent =
+    lowerQuery.includes('groceries') ||
+    lowerQuery.includes('list') ||
+    lowerQuery.includes('weekly') ||
+    lowerQuery.includes('stock up') ||
+    lowerQuery.includes('shopping') ||
+    messageCount >= 2
+
+  if (hasBasketIntent) {
+    return { type: 'essentials', confidence: 0.75 }
   }
 
   return null
@@ -138,9 +153,8 @@ export async function getMissionsForNudge(userId: string): Promise<Mission[]> {
   try {
     const supabase = createClient()
 
-    // @ts-expect-error - Supabase type inference doesn't handle custom RPC functions well
     const { data, error } = await supabase
-      .rpc('get_missions_for_nudge', { p_user_id: userId })
+      .rpc('get_missions_for_nudge', { p_user_id: userId }) as any
 
     if (error || !data) return []
 
@@ -452,11 +466,11 @@ export function getMissionFunnelContext(mission: Mission | null): string {
 
   // Mission completion strategies by type
   const completionStrategies: Record<Mission['type'], string> = {
-    essentials: '⚡ FAST CHECKOUT - Minimize friction, ask minimal questions, get them to checkout quickly',
+    precision: '🎯 QUICK ADD → EXPAND BASKET - (1) Add requested item to cart ASAP, (2) Then ask: "Anything else while you\'re here?" to expand to essentials basket',
+    essentials: '🛒 HELPFUL BROWSING - Allow browsing freedom, suggest complementary items, help build complete grocery list',
     recipe: '🍳 COMPLETE INGREDIENTS - Ensure all recipe ingredients are covered, suggest missing items',
     event: '🎉 CATEGORY COVERAGE - Check all event categories (food, decorations, tableware, etc.), suggest gaps',
     research: '🔍 CONFIDENT DECISION - Provide comparisons, address concerns, help them feel confident',
-    precision: '🎯 EXACT MATCH - Find the specific item they want, validate it meets requirements',
   }
 
   const hoursActive = mission.lastActiveAt
@@ -472,11 +486,13 @@ export function getMissionFunnelContext(mission: Mission | null): string {
   // Detect if mission is stuck (lots of questions, few items added)
   const isStuck = mission.questionsAsked >= 3 && mission.itemsAdded === 0 && mission.funnelStage === 'browsing'
 
+  const timeWindowDisplay = mission.type === 'precision' ? '6hr' : mission.type === 'essentials' ? '24hr' : '7-day'
+
   return `
 ## ACTIVE SHOPPING MISSION
 
 **Mission:** ${mission.query}
-**Type:** ${mission.type} (${mission.type === 'essentials' ? '12hr' : '7-day'} window)
+**Type:** ${mission.type} (${timeWindowDisplay} window)
 **Status:** ${isPaused ? 'PAUSED (can resume)' : 'ACTIVE'}
 
 ### Funnel Stage: ${mission.funnelStage.toUpperCase()}
