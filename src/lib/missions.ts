@@ -113,11 +113,10 @@ export async function getActiveMission(userId: string): Promise<Mission | null> 
       .is('paused_at', null)
       .order('last_active_at', { ascending: false })
       .limit(1)
-      .single()
 
-    if (error || !data) return null
+    if (error || !data || data.length === 0) return null
 
-    return mapDatabaseMissionToType(data)
+    return mapDatabaseMissionToType(data[0])
   } catch {
     return null
   }
@@ -192,10 +191,19 @@ export async function createMission(
       .select()
       .single()
 
-    if (error || !data) return null
+    if (error) {
+      console.error('Error creating mission:', error)
+      return null
+    }
+
+    if (!data) {
+      console.error('No data returned from mission insert')
+      return null
+    }
 
     return mapDatabaseMissionToType(data)
-  } catch {
+  } catch (err) {
+    console.error('Exception creating mission:', err)
     return null
   }
 }
@@ -243,12 +251,20 @@ export async function trackMissionAction(
     const supabase = createClient()
 
     // Get current mission state
-    const { data: mission } = await (supabase.from('missions') as any)
+    const { data: mission, error: fetchError } = await (supabase.from('missions') as any)
       .select('*')
       .eq('id', missionId)
       .single()
 
-    if (!mission) return
+    if (fetchError) {
+      console.error('Error fetching mission:', fetchError)
+      return
+    }
+
+    if (!mission) {
+      console.error('Mission not found:', missionId)
+      return
+    }
 
     // Update metrics based on action
     const updates: any = {
@@ -263,33 +279,66 @@ export async function trackMissionAction(
         updates.items_added = (mission.items_added || 0) + 1
         // Transition to 'decided' stage
         if (mission.funnel_stage !== 'decided' && mission.funnel_stage !== 'checkout') {
-          await updateMissionFunnelStage(missionId, 'decided', 'add_to_cart', userId)
+          updates.funnel_stage = 'decided'
+          // Record transition in interaction history
+          await recordInteraction({
+            userId,
+            type: 'funnel_transition',
+            key: `mission_${missionId}`,
+            value: { trigger: 'add_to_cart', to: 'decided', timestamp: new Date().toISOString() },
+          })
         }
         break
       case 'question':
         updates.questions_asked = (mission.questions_asked || 0) + 1
-        // Transition to 'comparing' if browsing
-        if (mission.funnel_stage === 'browsing') {
-          await updateMissionFunnelStage(missionId, 'comparing', 'asked_question', userId)
+        // Transition to 'comparing' if browsing and multiple questions
+        if (mission.funnel_stage === 'browsing' && (mission.questions_asked || 0) >= 2) {
+          updates.funnel_stage = 'comparing'
+          // Record transition in interaction history
+          await recordInteraction({
+            userId,
+            type: 'funnel_transition',
+            key: `mission_${missionId}`,
+            value: { trigger: 'asked_question', to: 'comparing', timestamp: new Date().toISOString() },
+          })
         }
         break
       case 'message':
         // Transition from 'arriving' to 'browsing' after first message
         if (mission.funnel_stage === 'arriving') {
-          await updateMissionFunnelStage(missionId, 'browsing', 'first_interaction', userId)
+          updates.funnel_stage = 'browsing'
+          // Record transition in interaction history
+          await recordInteraction({
+            userId,
+            type: 'funnel_transition',
+            key: `mission_${missionId}`,
+            value: { trigger: 'first_interaction', to: 'browsing', timestamp: new Date().toISOString() },
+          })
         }
         break
       case 'checkout':
         // Transition to 'checkout' stage
         if (mission.funnel_stage !== 'checkout') {
-          await updateMissionFunnelStage(missionId, 'checkout', 'checkout_initiated', userId)
+          updates.funnel_stage = 'checkout'
+          // Record transition in interaction history
+          await recordInteraction({
+            userId,
+            type: 'funnel_transition',
+            key: `mission_${missionId}`,
+            value: { trigger: 'checkout_initiated', to: 'checkout', timestamp: new Date().toISOString() },
+          })
         }
         break
     }
 
-    await (supabase.from('missions') as any)
+    // Apply all updates in single query
+    const { error: updateError } = await (supabase.from('missions') as any)
       .update(updates)
       .eq('id', missionId)
+
+    if (updateError) {
+      console.error('Error updating mission:', updateError)
+    }
   } catch (error) {
     console.error('Failed to track mission action:', error)
   }
@@ -408,7 +457,9 @@ export async function findOrCreateMission(
 
   if (activeMission) {
     // Check for context deviation
-    if (detectContextDeviation(activeMission, userMessage)) {
+    const isDeviation = detectContextDeviation(activeMission, userMessage)
+
+    if (isDeviation) {
       // User is switching context - pause current mission
       await pauseMission(activeMission.id)
       // Fall through to create new mission
@@ -531,6 +582,6 @@ function mapDatabaseMissionToType(data: any): Mission {
     abandonThresholdHours: data.abandon_threshold_hours || 72,
     detectedAt: data.detected_at || data.started_at,
     detectionConfidence: data.detection_confidence || 0.80,
-    items: data.items ? JSON.parse(data.items) : [],
+    items: data.items || [], // JSONB is already parsed by Supabase
   }
 }
