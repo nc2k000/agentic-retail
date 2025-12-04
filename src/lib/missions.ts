@@ -450,11 +450,27 @@ export function getMissionFunnelContext(mission: Mission | null): string {
     checkout: 'Be brief and action-oriented',
   }
 
+  // Mission completion strategies by type
+  const completionStrategies: Record<Mission['type'], string> = {
+    essentials: '⚡ FAST CHECKOUT - Minimize friction, ask minimal questions, get them to checkout quickly',
+    recipe: '🍳 COMPLETE INGREDIENTS - Ensure all recipe ingredients are covered, suggest missing items',
+    event: '🎉 CATEGORY COVERAGE - Check all event categories (food, decorations, tableware, etc.), suggest gaps',
+    research: '🔍 CONFIDENT DECISION - Provide comparisons, address concerns, help them feel confident',
+    precision: '🎯 EXACT MATCH - Find the specific item they want, validate it meets requirements',
+  }
+
   const hoursActive = mission.lastActiveAt
     ? Math.floor((new Date().getTime() - new Date(mission.lastActiveAt).getTime()) / 1000 / 60 / 60)
     : 0
 
   const isPaused = mission.pausedAt !== null && mission.pausedAt !== undefined
+
+  // Calculate time remaining before abandonment
+  const hoursUntilAbandon = mission.abandonThresholdHours - hoursActive
+  const isNearAbandonment = hoursUntilAbandon <= (mission.abandonThresholdHours * 0.25) // 25% of threshold
+
+  // Detect if mission is stuck (lots of questions, few items added)
+  const isStuck = mission.questionsAsked >= 3 && mission.itemsAdded === 0 && mission.funnelStage === 'browsing'
 
   return `
 ## ACTIVE SHOPPING MISSION
@@ -472,10 +488,18 @@ export function getMissionFunnelContext(mission: Mission | null): string {
 - Items added to cart: ${mission.itemsAdded}
 - Questions asked: ${mission.questionsAsked}
 - Last active: ${hoursActive < 1 ? 'just now' : hoursActive === 1 ? '1 hour ago' : `${hoursActive} hours ago`}
+${isNearAbandonment ? `- ⚠️ **URGENCY**: Only ${hoursUntilAbandon} hours until mission abandons!\n` : ''}
 
-${isPaused ? '\n**Note:** This mission was paused (context switch). User may be resuming it now.\n' : ''}
+### MISSION COMPLETION STRATEGY:
+${completionStrategies[mission.type]}
 
-**Expected Next Action:** ${mission.expectedNextAction || 'Not set - infer from context'}
+${isPaused ? '\n**Note:** This mission was paused (context switch). Welcome them back and help them continue where they left off.\n' : ''}
+
+${isStuck ? '\n**⚠️ STUCK SIGNAL DETECTED**: User has asked many questions but added nothing to cart. Proactively suggest specific items to help them move forward.\n' : ''}
+
+**Your Goal:** Help complete this mission by guiding them to ${mission.funnelStage === 'checkout' ? 'complete checkout' : mission.funnelStage === 'decided' ? 'proceed to checkout' : mission.funnelStage === 'comparing' ? 'make a decision' : mission.funnelStage === 'browsing' ? 'find suitable items' : 'understand their needs'}
+
+**Expected Next Action:** ${mission.expectedNextAction || 'Not set - infer from context and guide them forward'}
 `.trim()
 }
 
