@@ -661,8 +661,32 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         }
         reader.readAsDataURL(data.image)
       } else if (data.url) {
-        // Send URL to Claude to extract recipe
-        sendMessage(`Extract ingredients from this recipe: ${data.url}`)
+        // Fetch URL content server-side first
+        try {
+          const response = await fetch('/api/recipe/fetch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: data.url }),
+          })
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch recipe')
+          }
+
+          const result = await response.json()
+
+          if (result.success && result.content) {
+            // Send extracted content to Claude
+            sendMessage(`Extract ingredients from this recipe and create a shopping list:\n\nSource: ${result.siteName}\n\n${result.content}`)
+          } else {
+            setIsLoading(false)
+            sendMessage(`I tried to fetch the recipe from ${data.url}, but couldn't extract the content. Could you paste the recipe text instead?`)
+          }
+        } catch (error) {
+          console.error('URL fetch error:', error)
+          setIsLoading(false)
+          sendMessage(`I couldn't access that URL. Could you try pasting the recipe text in the Text tab instead?`)
+        }
       } else if (data.text) {
         // Send text to Claude to parse ingredients
         sendMessage(`Extract ingredients from this recipe and create a shopping list:\n\n${data.text}`)
