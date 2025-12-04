@@ -106,8 +106,7 @@ export async function getActiveMission(userId: string): Promise<Mission | null> 
   try {
     const supabase = createClient()
 
-    const { data, error } = await supabase
-      .from('missions')
+    const { data, error } = await (supabase.from('missions') as any)
       .select('*')
       .eq('user_id', userId)
       .eq('status', 'active')
@@ -131,8 +130,7 @@ export async function getAllActiveMissions(userId: string): Promise<Mission[]> {
   try {
     const supabase = createClient()
 
-    const { data, error } = await supabase
-      .from('missions')
+    const { data, error } = await (supabase.from('missions') as any)
       .select('*')
       .eq('user_id', userId)
       .eq('status', 'active')
@@ -245,8 +243,7 @@ export async function trackMissionAction(
     const supabase = createClient()
 
     // Get current mission state
-    const { data: mission } = await supabase
-      .from('missions')
+    const { data: mission } = await (supabase.from('missions') as any)
       .select('*')
       .eq('id', missionId)
       .single()
