@@ -1,15 +1,15 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures/auth'
 
 /**
  * E2E Test: Recipe Import Journey
  * Tests URL, Image, and Text recipe import flows
  */
 test.describe('Recipe Import Journey', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ authenticatedPage: page }) => {
     await page.goto('/chat')
   })
 
-  test('should open recipe import modal', async ({ page }) => {
+  test('should open recipe import modal', async ({ authenticatedPage: page }) => {
     // Click floating recipe button
     await page.click('button[aria-label*="Import recipe"]')
 
@@ -22,7 +22,7 @@ test.describe('Recipe Import Journey', () => {
     await expect(page.locator('button:has-text("Text")')).toBeVisible()
   })
 
-  test('should import recipe from URL', async ({ page }) => {
+  test('should import recipe from URL', async ({ authenticatedPage: page }) => {
     // Open modal
     await page.click('button[aria-label*="Import recipe"]')
 
@@ -42,7 +42,7 @@ test.describe('Recipe Import Journey', () => {
     await page.waitForSelector('[data-block-type="shop"]', { timeout: 10000 })
   })
 
-  test('should show error for social media URLs', async ({ page }) => {
+  test('should show error for social media URLs', async ({ authenticatedPage: page }) => {
     await page.click('button[aria-label*="Import recipe"]')
 
     // Try Instagram URL
@@ -53,7 +53,7 @@ test.describe('Recipe Import Journey', () => {
     await expect(page.locator('text=can\'t access', { timeout: 5000 })).toBeVisible()
   })
 
-  test('should import recipe from text', async ({ page }) => {
+  test('should import recipe from text', async ({ authenticatedPage: page }) => {
     await page.click('button[aria-label*="Import recipe"]')
 
     // Switch to Text tab
@@ -90,7 +90,7 @@ Instructions:
     await expect(page.locator('text=flour')).toBeVisible()
   })
 
-  test('should import recipe from image', async ({ page }) => {
+  test('should import recipe from image', async ({ authenticatedPage: page }) => {
     await page.click('button[aria-label*="Import recipe"]')
 
     // Switch to Image tab
@@ -120,7 +120,7 @@ Instructions:
     await page.waitForSelector('[data-block-type="shop"]', { timeout: 15000 })
   })
 
-  test('should close modal when clicking cancel', async ({ page }) => {
+  test('should close modal when clicking cancel', async ({ authenticatedPage: page }) => {
     await page.click('button[aria-label*="Import recipe"]')
 
     await expect(page.locator('text=Import Recipe')).toBeVisible()
@@ -131,7 +131,7 @@ Instructions:
     await expect(page.locator('text=Import Recipe')).not.toBeVisible()
   })
 
-  test('should add recipe ingredients to cart', async ({ page }) => {
+  test('should add recipe ingredients to cart', async ({ authenticatedPage: page }) => {
     await page.click('button[aria-label*="Import recipe"]')
 
     await page.click('button:has-text("Text")')

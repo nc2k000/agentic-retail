@@ -1,16 +1,16 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures/auth'
 
 /**
  * E2E Test: Complete Shopping Journey
  * Tests cart operations, bulk deals, checkout flow
  */
 test.describe('Shopping Journey', () => {
-  test.beforeEach(async ({ page }) => {
-    // Assume user is already onboarded (or mock auth)
+  test.beforeEach(async ({ authenticatedPage: page }) => {
+    // User is authenticated, navigate to chat (skip onboarding for these tests)
     await page.goto('/chat')
   })
 
-  test('should add items to cart through chat', async ({ page }) => {
+  test('should add items to cart through chat', async ({ authenticatedPage: page }) => {
     // Type a shopping query
     await page.fill('textarea[placeholder*="message"]', 'I need milk and eggs')
     await page.click('button[type="submit"]')
@@ -32,7 +32,7 @@ test.describe('Shopping Journey', () => {
     await expect(page.locator('[data-testid="cart-item"]')).toHaveCount(1)
   })
 
-  test('should edit item quantities in cart', async ({ page }) => {
+  test('should edit item quantities in cart', async ({ authenticatedPage: page }) => {
     // Add item to cart first
     await page.fill('textarea', 'Get me bread')
     await page.press('textarea', 'Enter')
@@ -58,7 +58,7 @@ test.describe('Shopping Journey', () => {
     expect(newTotal).not.toBe(originalTotal)
   })
 
-  test('should remove items from cart', async ({ page }) => {
+  test('should remove items from cart', async ({ authenticatedPage: page }) => {
     // Add item
     await page.fill('textarea', 'I need cheese')
     await page.press('textarea', 'Enter')
@@ -77,7 +77,7 @@ test.describe('Shopping Journey', () => {
     await expect(page.locator('[data-cart-count]')).toContainText('0')
   })
 
-  test('should show bulk deal opportunities', async ({ page }) => {
+  test('should show bulk deal opportunities', async ({ authenticatedPage: page }) => {
     // Add item with bulk deal
     await page.fill('textarea', 'Add yogurt')
     await page.press('textarea', 'Enter')
@@ -101,7 +101,7 @@ test.describe('Shopping Journey', () => {
     }
   })
 
-  test('should complete checkout flow', async ({ page }) => {
+  test('should complete checkout flow', async ({ authenticatedPage: page }) => {
     // Add items to cart
     await page.fill('textarea', 'Weekly groceries')
     await page.press('textarea', 'Enter')
@@ -128,7 +128,7 @@ test.describe('Shopping Journey', () => {
     await expect(page.locator('text=Order')).toBeVisible()
   })
 
-  test('should show savings from swaps', async ({ page }) => {
+  test('should show savings from swaps', async ({ authenticatedPage: page }) => {
     // Request items that might have cheaper alternatives
     await page.fill('textarea', 'I need pasta sauce')
     await page.press('textarea', 'Enter')
@@ -151,7 +151,7 @@ test.describe('Shopping Journey', () => {
     }
   })
 
-  test('should preserve cart across page navigation', async ({ page }) => {
+  test('should preserve cart across page navigation', async ({ authenticatedPage: page }) => {
     // Add item
     await page.fill('textarea', 'Add coffee')
     await page.press('textarea', 'Enter')
@@ -169,7 +169,7 @@ test.describe('Shopping Journey', () => {
     await expect(page.locator('[data-cart-count]')).toContainText('1')
   })
 
-  test('should clear entire cart', async ({ page }) => {
+  test('should clear entire cart', async ({ authenticatedPage: page }) => {
     // Add multiple items
     await page.fill('textarea', 'I need bread, milk, and eggs')
     await page.press('textarea', 'Enter')

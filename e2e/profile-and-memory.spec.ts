@@ -1,11 +1,11 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures/auth'
 
 /**
  * E2E Test: Profile Management & Memory System
  * Tests profile editing, preferences, and AI personalization
  */
 test.describe('Profile & Memory Journey', () => {
-  test('should navigate to profile page', async ({ page }) => {
+  test('should navigate to profile page', async ({ authenticatedPage: page }) => {
     await page.goto('/chat')
 
     // Click profile link
@@ -16,7 +16,7 @@ test.describe('Profile & Memory Journey', () => {
     await expect(page.locator('h1:has-text("Profile")')).toBeVisible()
   })
 
-  test('should display user preferences', async ({ page }) => {
+  test('should display user preferences', async ({ authenticatedPage: page }) => {
     await page.goto('/profile')
 
     // Should show preference sections
@@ -25,7 +25,7 @@ test.describe('Profile & Memory Journey', () => {
     await expect(page.locator('text=Household')).toBeVisible()
   })
 
-  test('should edit dietary preferences', async ({ page }) => {
+  test('should edit dietary preferences', async ({ authenticatedPage: page }) => {
     await page.goto('/profile')
 
     // Add dietary preference
@@ -40,7 +40,7 @@ test.describe('Profile & Memory Journey', () => {
     await expect(page.locator('text=Vegan')).toBeVisible()
   })
 
-  test('should add household member', async ({ page }) => {
+  test('should add household member', async ({ authenticatedPage: page }) => {
     await page.goto('/profile')
 
     // Click add member
@@ -61,7 +61,7 @@ test.describe('Profile & Memory Journey', () => {
     await expect(page.locator('text=6 years')).toBeVisible()
   })
 
-  test('should delete preference', async ({ page }) => {
+  test('should delete preference', async ({ authenticatedPage: page }) => {
     await page.goto('/profile')
 
     // Find and click delete on first preference
@@ -81,7 +81,7 @@ test.describe('Profile & Memory Journey', () => {
     }
   })
 
-  test('should show maturity score', async ({ page }) => {
+  test('should show maturity score', async ({ authenticatedPage: page }) => {
     await page.goto('/profile')
 
     // Profile should show memory maturity
@@ -89,7 +89,7 @@ test.describe('Profile & Memory Journey', () => {
     await expect(maturityElement).toBeVisible()
   })
 
-  test('should respect dietary restrictions in AI responses', async ({ page }) => {
+  test('should respect dietary restrictions in AI responses', async ({ authenticatedPage: page }) => {
     // Set dietary preference
     await page.goto('/profile')
     await page.click('button:has-text("Add Dietary")')
@@ -113,7 +113,7 @@ test.describe('Profile & Memory Journey', () => {
     expect(responseText?.toLowerCase()).not.toContain('pork')
   })
 
-  test('should avoid allergens in suggestions', async ({ page }) => {
+  test('should avoid allergens in suggestions', async ({ authenticatedPage: page }) => {
     // Set allergy
     await page.goto('/profile')
     await page.click('button:has-text("Add Allergy")')
@@ -134,7 +134,7 @@ test.describe('Profile & Memory Journey', () => {
     expect(responseText?.toLowerCase()).not.toContain('peanut')
   })
 
-  test('should navigate to order history', async ({ page }) => {
+  test('should navigate to order history', async ({ authenticatedPage: page }) => {
     await page.goto('/chat')
 
     // Click history link
@@ -145,7 +145,7 @@ test.describe('Profile & Memory Journey', () => {
     await expect(page.locator('h1:has-text("Order History")')).toBeVisible()
   })
 
-  test('should display past orders', async ({ page }) => {
+  test('should display past orders', async ({ authenticatedPage: page }) => {
     await page.goto('/history')
 
     // Should show orders or empty state
@@ -155,7 +155,7 @@ test.describe('Profile & Memory Journey', () => {
     expect(hasOrders || hasEmptyState).toBeTruthy()
   })
 
-  test('should show replenishment suggestions on welcome screen', async ({ page }) => {
+  test('should show replenishment suggestions on welcome screen', async ({ authenticatedPage: page }) => {
     await page.goto('/chat')
 
     // Check welcome screen for replenishment chips

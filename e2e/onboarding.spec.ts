@@ -1,16 +1,13 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures/auth'
 
 /**
  * E2E Test: Complete Onboarding Flow (FTUX)
  * Tests the entire first-time user experience from landing to completion
  */
 test.describe('Onboarding Journey', () => {
-  test('should complete full onboarding flow as new user', async ({ page }) => {
-    // Navigate to app
-    await page.goto('/')
-
-    // Should redirect to onboarding if no profile
-    await expect(page).toHaveURL(/\/onboarding/)
+  test('should complete full onboarding flow as new user', async ({ authenticatedPage: page }) => {
+    // User is already authenticated and should be on onboarding page
+    await expect(page).toHaveURL(/\/onboarding/, { timeout: 10000 })
 
     // Step 1: Welcome screen
     await expect(page.locator('h1')).toContainText('Welcome')
@@ -63,8 +60,8 @@ test.describe('Onboarding Journey', () => {
     await expect(page.locator('text=Welcome, John')).toBeVisible()
   })
 
-  test('should allow skipping optional steps', async ({ page }) => {
-    await page.goto('/onboarding')
+  test('should allow skipping optional steps', async ({ authenticatedPage: page }) => {
+    await expect(page).toHaveURL(/\/onboarding/, { timeout: 10000 })
 
     // Welcome
     await page.click('button:has-text("Get Started")')
@@ -96,8 +93,8 @@ test.describe('Onboarding Journey', () => {
     await expect(page).toHaveURL(/\/chat/)
   })
 
-  test('should validate required fields', async ({ page }) => {
-    await page.goto('/onboarding')
+  test('should validate required fields', async ({ authenticatedPage: page }) => {
+    await expect(page).toHaveURL(/\/onboarding/, { timeout: 10000 })
 
     await page.click('button:has-text("Get Started")')
 
@@ -108,8 +105,8 @@ test.describe('Onboarding Journey', () => {
     await expect(page.locator('h2')).toContainText('name')
   })
 
-  test('should save progress and allow navigation back', async ({ page }) => {
-    await page.goto('/onboarding')
+  test('should save progress and allow navigation back', async ({ authenticatedPage: page }) => {
+    await expect(page).toHaveURL(/\/onboarding/, { timeout: 10000 })
 
     await page.click('button:has-text("Get Started")')
     await page.fill('input[type="text"]', 'Test User')
