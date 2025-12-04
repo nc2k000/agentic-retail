@@ -1,14 +1,16 @@
 import { getCatalogSummary } from '@/lib/catalog'
 import type { MemoryContext } from '@/types/memory'
 import type { WeatherData } from '@/lib/weather'
+import type { Mission } from '@/types'
 import { getWeatherPromptContext } from '@/lib/weather'
-import { getFunnelContext } from '@/lib/funnel'
+import { getMissionFunnelContext } from '@/lib/missions'
 import { getVerbosityContext } from '@/lib/verbosity'
 
 export function SYSTEM_PROMPT(
   profile: any,
   memoryContext?: MemoryContext | null,
-  weather?: WeatherData | null
+  weather?: WeatherData | null,
+  activeMission?: Mission | null
 ): string {
   const catalogSummary = getCatalogSummary()
   const userName = profile?.name?.split(' ')[0] || 'there'
@@ -76,8 +78,8 @@ export function SYSTEM_PROMPT(
     weatherSection = '\n' + getWeatherPromptContext(weather)
   }
 
-  // Get funnel context (journey stage)
-  const funnelSection = '\n' + getFunnelContext()
+  // Get mission funnel context (active shopping mission)
+  const missionSection = activeMission ? '\n' + getMissionFunnelContext(activeMission) : ''
 
   // Get verbosity context (response length preference)
   const verbositySection = '\n' + getVerbosityContext()
@@ -97,7 +99,7 @@ export function SYSTEM_PROMPT(
 - Pets: ${pets.length > 0 ? pets.map((p: any) => `${p.name || 'Pet'} (${p.type})`).join(', ') : 'None'}
 - Preferred brands: ${preferences.brands?.join(', ') || 'None specified'}
 - Dietary restrictions: ${preferences.dietary?.join(', ') || 'None'}
-- Budget preference: ${preferences.budget || 'moderate'}${memorySection}${weatherSection}${funnelSection}${verbositySection}
+- Budget preference: ${preferences.budget || 'moderate'}${memorySection}${weatherSection}${missionSection}${verbositySection}
 
 ## Product Catalog
 ${catalogSummary}

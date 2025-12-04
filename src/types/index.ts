@@ -244,6 +244,24 @@ export interface Mission {
   status: 'active' | 'completed' | 'abandoned'
   startedAt: string
   completedAt?: string
+
+  // Funnel state (missions ARE funnels)
+  funnelStage: FunnelStage
+  itemsViewed: number
+  itemsAdded: number
+  questionsAsked: number
+
+  // Mission lifecycle
+  expectedNextAction?: string
+  lastActiveAt: string
+  pausedAt?: string
+  abandonedAt?: string
+  abandonThresholdHours: number
+
+  // Context
+  detectedAt: string
+  detectionConfidence: number
+  items?: CartItem[]
 }
 
 // Subscription Types
