@@ -674,12 +674,22 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
             body: JSON.stringify({ url: data.url }),
           })
 
-          const result = await response.json()
+          // Try to parse JSON response (works for both success and error responses)
+          let result
+          try {
+            result = await response.json()
+          } catch (parseError) {
+            console.error('Failed to parse response:', parseError)
+            setIsLoading(false)
+            sendMessage(`Server error while fetching recipe. Please try using the Image or Text tab instead.`)
+            return
+          }
 
+          // Handle error responses (400, 500, etc.)
           if (!response.ok) {
-            // Handle specific error cases
             setIsLoading(false)
             if (result.suggestion === 'screenshot') {
+              // Social media sites - show helpful message
               sendMessage(`${result.error}\n\nTip: Take a screenshot of the recipe and use the Image tab, or copy the text and use the Text tab.`)
             } else {
               sendMessage(result.error || 'Failed to fetch recipe. Please try using the Image or Text tab instead.')
@@ -687,8 +697,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
             return
           }
 
+          // Handle successful response
           if (result.success && result.content) {
-            // Show clean message to user, send full content to Claude
             const displayMessage = `Analyze recipe from ${result.url}`
             const fullPrompt = `Extract ingredients from this recipe and create a shopping list. Match each ingredient to products in the catalog.\n\nSource: ${result.siteName}\n\n${result.content}`
 
@@ -700,7 +710,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         } catch (error) {
           console.error('URL fetch error:', error)
           setIsLoading(false)
-          sendMessage(`I couldn't access that URL. Please try using the Image or Text tab instead.`)
+          sendMessage(`Network error while fetching recipe. Please try using the Image or Text tab instead.`)
         }
       } else if (data.text) {
         // Send text to Claude to parse ingredients
