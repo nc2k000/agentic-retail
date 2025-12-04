@@ -376,3 +376,32 @@ export interface Database {
     }
   }
 }
+
+// Funnel & Journey Types
+export type FunnelStage = 'arriving' | 'browsing' | 'comparing' | 'decided' | 'checkout'
+
+export interface FunnelState {
+  stage: FunnelStage
+  enteredAt: string
+  actions: string[]
+  itemsViewed: number
+  itemsAdded: number
+  questionsAsked: number
+}
+
+export interface FunnelTransition {
+  from: FunnelStage
+  to: FunnelStage
+  trigger: string
+  timestamp: string
+}
+
+// Verbosity & Communication Types
+export type VerbosityLevel = 'concise' | 'balanced' | 'detailed'
+
+export interface CommunicationPreference {
+  verbosity: VerbosityLevel
+  confidence: number
+  learnedFrom: 'explicit' | 'behavior'
+  updatedAt: string
+}

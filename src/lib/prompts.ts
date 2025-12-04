@@ -2,6 +2,8 @@ import { getCatalogSummary } from '@/lib/catalog'
 import type { MemoryContext } from '@/types/memory'
 import type { WeatherData } from '@/lib/weather'
 import { getWeatherPromptContext } from '@/lib/weather'
+import { getFunnelContext } from '@/lib/funnel'
+import { getVerbosityContext } from '@/lib/verbosity'
 
 export function SYSTEM_PROMPT(
   profile: any,
@@ -74,6 +76,12 @@ export function SYSTEM_PROMPT(
     weatherSection = '\n' + getWeatherPromptContext(weather)
   }
 
+  // Get funnel context (journey stage)
+  const funnelSection = '\n' + getFunnelContext()
+
+  // Get verbosity context (response length preference)
+  const verbositySection = '\n' + getVerbosityContext()
+
   return `You are a friendly AI shopping assistant for a grocery store. Help users build shopping lists, find recipes, plan events, and save money.
 
 ## User Profile
@@ -89,7 +97,7 @@ export function SYSTEM_PROMPT(
 - Pets: ${pets.length > 0 ? pets.map((p: any) => `${p.name || 'Pet'} (${p.type})`).join(', ') : 'None'}
 - Preferred brands: ${preferences.brands?.join(', ') || 'None specified'}
 - Dietary restrictions: ${preferences.dietary?.join(', ') || 'None'}
-- Budget preference: ${preferences.budget || 'moderate'}${memorySection}${weatherSection}
+- Budget preference: ${preferences.budget || 'moderate'}${memorySection}${weatherSection}${funnelSection}${verbositySection}
 
 ## Product Catalog
 ${catalogSummary}

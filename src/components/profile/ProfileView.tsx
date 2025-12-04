@@ -8,6 +8,7 @@ import { MaturityScoreCard } from './MaturityScoreCard'
 import { PreferencesCard } from './PreferencesCard'
 import { PatternsCard } from './PatternsCard'
 import { HouseholdCard } from './HouseholdCard'
+import { MemoryManagementModal } from './MemoryManagementModal'
 
 interface ProfileViewProps {
   user: User
@@ -26,6 +27,7 @@ export function ProfileView({
 }: ProfileViewProps) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<'overview' | 'household'>('overview')
+  const [isMemoryModalOpen, setIsMemoryModalOpen] = useState(false)
 
   const handleBackToChat = () => {
     router.push('/chat')
@@ -109,6 +111,15 @@ export function ProfileView({
               avgConfidence={avgConfidence}
             />
 
+            {/* Memory Management Button */}
+            <button
+              onClick={() => setIsMemoryModalOpen(true)}
+              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-4 py-3 rounded-lg font-medium transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+            >
+              <span>🧠</span>
+              <span>Manage My Memory</span>
+            </button>
+
             {/* Preferences Card */}
             <PreferencesCard preferences={preferences} />
 
@@ -122,6 +133,13 @@ export function ProfileView({
           </>
         )}
       </div>
+
+      {/* Memory Management Modal */}
+      <MemoryManagementModal
+        isOpen={isMemoryModalOpen}
+        onClose={() => setIsMemoryModalOpen(false)}
+        userId={user.id}
+      />
     </div>
   )
 }

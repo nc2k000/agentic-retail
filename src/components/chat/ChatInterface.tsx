@@ -29,6 +29,13 @@ import {
 } from '@/lib/memory'
 import type { MemoryContext } from '@/types/memory'
 import type { WeatherData } from '@/lib/weather'
+import { initializeFunnel, getFunnelState, trackFunnelAction } from '@/lib/funnel'
+import {
+  initializeVerbosity,
+  getVerbosityPreference,
+  analyzeMessageForVerbosity,
+  inferVerbosityFromBehavior,
+} from '@/lib/verbosity'
 
 interface ChatInterfaceProps {
   user: User
@@ -55,6 +62,14 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const [memoryContext, setMemoryContext] = useState<MemoryContext | null>(null)
   const [weather, setWeather] = useState<WeatherData | null>(null)
   const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false)
+
+  // Verbosity tracking
+  const [verbositySignals, setVerbositySignals] = useState({
+    quickAdds: 0,
+    questions: 0,
+    exploreMessages: 0,
+    totalMessages: 0,
+  })
 
   // Subscriptions
   const { addSubscription, isProductSubscribed } = useSubscriptions(user.id)
@@ -129,6 +144,30 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       return sum + item.price * item.quantity
     }, 0)
   }, [])
+
+  // Initialize funnel state on mount
+  useEffect(() => {
+    const currentState = getFunnelState()
+    if (!currentState) {
+      initializeFunnel()
+    }
+  }, [])
+
+  // Initialize verbosity preference on mount
+  useEffect(() => {
+    const currentPreference = getVerbosityPreference()
+    if (!currentPreference) {
+      initializeVerbosity()
+    }
+  }, [])
+
+  // Infer verbosity from behavior after enough messages
+  useEffect(() => {
+    if (verbositySignals.totalMessages >= 5 && verbositySignals.totalMessages % 3 === 0) {
+      // Re-evaluate every 3 messages after we have 5+ messages
+      inferVerbosityFromBehavior(user.id, verbositySignals).catch(console.error)
+    }
+  }, [verbositySignals, user.id])
 
   // Fetch memory context on mount and when preferences change
   useEffect(() => {
@@ -247,6 +286,18 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         createdAt: new Date().toISOString(),
       }
       setMessages(prev => [...prev, userMessage])
+
+      // Track funnel action - user sent a message
+      trackFunnelAction('message', user.id).catch(console.error)
+
+      // Analyze message for verbosity signals
+      const signals = analyzeMessageForVerbosity(content)
+      setVerbositySignals(prev => ({
+        quickAdds: prev.quickAdds + (signals.isQuickAdd ? 1 : 0),
+        questions: prev.questions + (signals.isQuestion ? 1 : 0),
+        exploreMessages: prev.exploreMessages + (signals.isExploratory ? 1 : 0),
+        totalMessages: prev.totalMessages + 1,
+      }))
     }
     setIsLoading(true)
 
@@ -492,6 +543,9 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     const catalogItem = getProductBySku(item.sku)
     const enrichedItem = catalogItem ? { ...catalogItem, ...item } : item
 
+    // Track funnel action - user added item to cart
+    trackFunnelAction('add_to_cart', user.id).catch(console.error)
+
     setCart(prev => {
       const existing = prev.find(i => i.sku === item.sku)
 
@@ -598,6 +652,9 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
     const total = calculateCartTotal(cart)
     const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
+
+    // Track funnel action - user initiated checkout
+    trackFunnelAction('checkout', user.id).catch(console.error)
 
     // Set flag to prevent duplicate order when OrderBlock comes back
     setIsCheckingOut(true)
