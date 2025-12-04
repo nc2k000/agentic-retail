@@ -1,7 +1,7 @@
 // Memory System Types
 // TypeScript definitions for customer memory data structures
 
-export type PreferenceType = 'dietary' | 'brand' | 'favorite' | 'dislike' | 'allergy'
+export type PreferenceType = 'dietary' | 'brand' | 'favorite' | 'dislike' | 'allergy' | 'communication_style'
 export type PreferenceSource = 'explicit' | 'inferred' | 'pattern'
 
 export interface CustomerPreference {
@@ -38,7 +38,7 @@ export interface ShoppingPattern {
   updated_at: string
 }
 
-export type InteractionType = 'question' | 'search' | 'view_item' | 'swap' | 'reject_swap' | 'voice_used' | 'feature_used'
+export type InteractionType = 'question' | 'search' | 'view_item' | 'swap' | 'reject_swap' | 'voice_used' | 'feature_used' | 'funnel_transition'
 
 export interface InteractionHistory {
   id: string
