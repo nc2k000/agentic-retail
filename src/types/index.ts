@@ -246,6 +246,36 @@ export interface Mission {
   completedAt?: string
 }
 
+// Subscription Types
+export type SubscriptionFrequency =
+  | 'weekly'
+  | 'biweekly'
+  | 'monthly'
+
+export interface Subscription {
+  id: string
+  userId: string
+  productSku: string
+  product: Product
+  quantity: number
+  frequency: SubscriptionFrequency
+  discount: number // percentage (e.g., 10 for 10%)
+  status: 'active' | 'paused' | 'cancelled'
+  nextDelivery: string // ISO date string
+  createdAt: string
+  updatedAt?: string
+  pausedAt?: string
+  cancelledAt?: string
+}
+
+export interface SubscriptionSuggestion {
+  product: Product
+  reason: string
+  suggestedFrequency: SubscriptionFrequency
+  potentialSavings: number // monthly savings
+  confidence: 'high' | 'medium' | 'low'
+}
+
 // Database Types (for Supabase)
 export interface Database {
   public: {
@@ -305,6 +335,42 @@ export interface Database {
         Row: Mission
         Insert: Omit<Mission, 'id' | 'startedAt'>
         Update: Partial<Omit<Mission, 'id' | 'userId' | 'startedAt'>>
+      }
+      subscriptions: {
+        Row: {
+          id: string
+          user_id: string
+          product_sku: string
+          product: Product
+          quantity: number
+          frequency: SubscriptionFrequency
+          discount: number
+          status: 'active' | 'paused' | 'cancelled'
+          next_delivery: string
+          created_at: string
+          updated_at?: string | null
+          paused_at?: string | null
+          cancelled_at?: string | null
+        }
+        Insert: {
+          user_id: string
+          product_sku: string
+          product: Product
+          quantity: number
+          frequency: SubscriptionFrequency
+          discount: number
+          status: 'active' | 'paused' | 'cancelled'
+          next_delivery: string
+        }
+        Update: Partial<{
+          quantity: number
+          frequency: SubscriptionFrequency
+          status: 'active' | 'paused' | 'cancelled'
+          next_delivery: string
+          updated_at: string
+          paused_at: string | null
+          cancelled_at: string | null
+        }>
       }
     }
   }
