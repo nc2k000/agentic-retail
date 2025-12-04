@@ -674,11 +674,18 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
             body: JSON.stringify({ url: data.url }),
           })
 
-          if (!response.ok) {
-            throw new Error('Failed to fetch recipe')
-          }
-
           const result = await response.json()
+
+          if (!response.ok) {
+            // Handle specific error cases
+            setIsLoading(false)
+            if (result.suggestion === 'screenshot') {
+              sendMessage(`${result.error}\n\nTip: Take a screenshot of the recipe and use the Image tab, or copy the text and use the Text tab.`)
+            } else {
+              sendMessage(result.error || 'Failed to fetch recipe. Please try using the Image or Text tab instead.')
+            }
+            return
+          }
 
           if (result.success && result.content) {
             // Show clean message to user, send full content to Claude
@@ -688,12 +695,12 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
             sendMessage(displayMessage, undefined, fullPrompt)
           } else {
             setIsLoading(false)
-            sendMessage(`I tried to fetch the recipe from ${data.url}, but couldn't extract the content. Could you paste the recipe text instead?`)
+            sendMessage(`I tried to fetch the recipe from ${data.url}, but couldn't extract the content. Try using the Image or Text tab instead.`)
           }
         } catch (error) {
           console.error('URL fetch error:', error)
           setIsLoading(false)
-          sendMessage(`I couldn't access that URL. Could you try pasting the recipe text in the Text tab instead?`)
+          sendMessage(`I couldn't access that URL. Please try using the Image or Text tab instead.`)
         }
       } else if (data.text) {
         // Send text to Claude to parse ingredients

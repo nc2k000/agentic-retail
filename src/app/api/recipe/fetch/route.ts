@@ -49,6 +49,21 @@ export async function POST(request: NextRequest) {
     // Parse HTML and extract recipe content
     const $ = cheerio.load(html)
 
+    // Check if this is a social media site (requires different handling)
+    const hostname = parsedUrl.hostname.toLowerCase()
+    const isSocialMedia = hostname.includes('instagram.com') ||
+                          hostname.includes('tiktok.com') ||
+                          hostname.includes('facebook.com') ||
+                          hostname.includes('twitter.com') ||
+                          hostname.includes('x.com')
+
+    if (isSocialMedia) {
+      return NextResponse.json({
+        error: 'Social media sites require JavaScript rendering. Please use the Image or Text tab to import the recipe instead.',
+        suggestion: 'screenshot',
+      }, { status: 400 })
+    }
+
     // Remove script, style, nav, footer, and other non-content elements
     $('script, style, nav, footer, header, aside, .ad, .advertisement, .social-share').remove()
 
@@ -87,28 +102,82 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Strategy 2: Look for common recipe selectors
+    // Strategy 2: Look for meta tags (og:description, description)
+    if (!recipeContent) {
+      const metaDescription = $('meta[property="og:description"]').attr('content') ||
+                             $('meta[name="description"]').attr('content') ||
+                             ''
+      if (metaDescription.length > 100) {
+        const title = $('meta[property="og:title"]').attr('content') ||
+                     $('title').text() ||
+                     'Recipe'
+        recipeContent = `${title}\n\n${metaDescription}`
+      }
+    }
+
+    // Strategy 3: Look for common recipe selectors (expanded list)
     if (!recipeContent) {
       const recipeSelectors = [
+        // Recipe-specific selectors
         '.recipe-content',
-        '.recipe',
-        '[class*="recipe"]',
+        '.recipe-details',
+        '.recipe-body',
+        '.recipe-container',
+        '[class*="recipe-content"]',
+        '[class*="recipe__content"]',
+
+        // Ingredient selectors
+        '.ingredients-section',
+        '.ingredient-list',
         '[class*="ingredients"]',
         '.ingredients',
+
+        // Instruction selectors
+        '.instructions',
+        '.directions',
+        '.recipe-steps',
+        '[class*="instructions"]',
+
+        // Generic content selectors
+        'article[class*="recipe"]',
+        'div[class*="recipe"]',
+        'section[class*="recipe"]',
         'article',
         'main',
+        '.entry-content',
+        '.post-content',
       ]
 
       for (const selector of recipeSelectors) {
         const element = $(selector).first()
-        if (element.length && element.text().trim().length > 100) {
-          recipeContent = element.text()
+        const text = element.text().trim()
+        if (element.length && text.length > 200) {
+          recipeContent = text
           break
         }
       }
     }
 
-    // Strategy 3: Get body text as fallback
+    // Strategy 4: Try to find ingredients + instructions sections separately
+    if (!recipeContent) {
+      const ingredientsEl = $('.ingredients, [class*="ingredient"]').first()
+      const instructionsEl = $('.instructions, .directions, [class*="instructions"], [class*="directions"]').first()
+
+      if (ingredientsEl.length || instructionsEl.length) {
+        const title = $('h1').first().text() || $('title').text() || 'Recipe'
+        recipeContent = `${title}\n\n`
+
+        if (ingredientsEl.length) {
+          recipeContent += 'Ingredients:\n' + ingredientsEl.text().trim() + '\n\n'
+        }
+
+        if (instructionsEl.length) {
+          recipeContent += 'Instructions:\n' + instructionsEl.text().trim()
+        }
+      }
+    }
+
+    // Strategy 5: Get body text as fallback
     if (!recipeContent) {
       recipeContent = $('body').text()
     }
