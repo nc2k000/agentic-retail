@@ -153,8 +153,7 @@ export async function getMissionsForNudge(userId: string): Promise<Mission[]> {
   try {
     const supabase = createClient()
 
-    const { data, error } = await supabase
-      .rpc('get_missions_for_nudge', { p_user_id: userId }) as any
+    const { data, error } = await (supabase.rpc as any)('get_missions_for_nudge', { p_user_id: userId })
 
     if (error || !data) return []
 
