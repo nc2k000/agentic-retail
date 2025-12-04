@@ -422,23 +422,47 @@ export function detectContextDeviation(
   currentMission: Mission,
   userMessage: string
 ): boolean {
-  if (!currentMission.expectedNextAction) {
-    // No expectation set, can't detect deviation
-    return false
+  const lowerMessage = userMessage.toLowerCase()
+
+  // First, detect if the new message would create a DIFFERENT mission type
+  const newMissionDetection = detectMissionType(userMessage, 1)
+
+  if (newMissionDetection && newMissionDetection.type !== currentMission.type) {
+    // Different mission type detected - this is a context switch
+    console.log('🔄 Mission type change:', currentMission.type, '→', newMissionDetection.type)
+    return true
   }
 
-  const lowerMessage = userMessage.toLowerCase()
-  const lowerExpected = currentMission.expectedNextAction.toLowerCase()
+  // Check for explicit mission type keywords that differ from current
+  const explicitSwitches: Record<string, string[]> = {
+    precision: ['weekly', 'groceries', 'list', 'stock up', 'party', 'event', 'recipe', 'cook'],
+    essentials: ['party', 'event', 'recipe', 'cook', 'best', 'compare'],
+    event: ['need', 'groceries', 'list', 'recipe', 'cook'],
+    recipe: ['party', 'event', 'groceries', 'list'],
+    research: ['party', 'event', 'groceries', 'list', 'recipe', 'cook']
+  }
 
-  // Check if message is completely unrelated to current mission
+  const switchKeywords = explicitSwitches[currentMission.type] || []
+  const hasExplicitSwitch = switchKeywords.some(keyword => lowerMessage.includes(keyword))
+
+  if (hasExplicitSwitch) {
+    console.log('🔄 Explicit context switch detected')
+    return true
+  }
+
+  // Check if message is completely unrelated to current mission query
   const missionKeywords = currentMission.query.toLowerCase().split(' ')
   const hasRelatedKeyword = missionKeywords.some(keyword =>
     keyword.length > 3 && lowerMessage.includes(keyword)
   )
 
-  // If no related keywords and doesn't match expected action → deviation
-  if (!hasRelatedKeyword && !lowerMessage.includes(lowerExpected)) {
-    return true
+  // If no related keywords and we have an expected action that doesn't match
+  if (!hasRelatedKeyword && currentMission.expectedNextAction) {
+    const lowerExpected = currentMission.expectedNextAction.toLowerCase()
+    if (!lowerMessage.includes(lowerExpected)) {
+      console.log('🔄 No related keywords and expectation not met')
+      return true
+    }
   }
 
   return false
@@ -452,19 +476,25 @@ export async function findOrCreateMission(
   userMessage: string,
   messageCount: number
 ): Promise<Mission | null> {
+  console.log('🔍 findOrCreateMission called:', userMessage, 'messageCount:', messageCount)
+
   // Try to get active mission first
   const activeMission = await getActiveMission(userId)
+  console.log('🔍 Active mission found:', activeMission?.id, 'Type:', activeMission?.type)
 
   if (activeMission) {
     // Check for context deviation
     const isDeviation = detectContextDeviation(activeMission, userMessage)
+    console.log('🔍 Context deviation detected?', isDeviation)
 
     if (isDeviation) {
       // User is switching context - pause current mission
+      console.log('⏸️ Pausing mission:', activeMission.id)
       await pauseMission(activeMission.id)
       // Fall through to create new mission
     } else {
       // Continue with current mission
+      console.log('✅ Continuing with mission:', activeMission.id)
       return activeMission
     }
   }
@@ -472,13 +502,16 @@ export async function findOrCreateMission(
   // Detect if this is a new mission (after 1-2 turns)
   if (messageCount >= 1) {
     const detection = detectMissionType(userMessage, messageCount)
+    console.log('🔍 Mission detection:', detection)
 
     if (detection) {
       // Create new mission
+      console.log('🆕 Creating new mission type:', detection.type)
       return await createMission(userId, userMessage, detection.type, detection.confidence)
     }
   }
 
+  console.log('❌ No mission created')
   return null
 }
 
