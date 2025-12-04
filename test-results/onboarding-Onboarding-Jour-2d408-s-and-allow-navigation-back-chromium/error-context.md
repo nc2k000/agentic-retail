@@ -12,11 +12,11 @@
       - generic [ref=e10]:
         - generic [ref=e11]:
           - generic [ref=e12]: Email
-          - textbox "you@example.com" [ref=e13]: test-1764812257007@example.com
+          - textbox "you@example.com" [ref=e13]: test-1764812257012@example.com
         - generic [ref=e14]:
           - generic [ref=e15]: Password
           - textbox "••••••••" [ref=e16]: TestPassword123!
-        - generic [ref=e17]: Email address "test-1764812257007@example.com" is invalid
+        - generic [ref=e17]: Email address "test-1764812257012@example.com" is invalid
         - button "Sign Up" [ref=e18] [cursor=pointer]
       - generic [ref=e23]: or continue with
       - button "Google" [ref=e24] [cursor=pointer]:

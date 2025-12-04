@@ -640,6 +640,201 @@ export const CATALOG: Record<string, Product[]> = {
     { sku: 'mouse-wireless', name: 'Logitech Wireless Mouse', price: 19.99, category: 'Electronics', image: '🖱️' },
     { sku: 'webcam-logitech', name: 'Logitech C920 HD Webcam', price: 79.99, category: 'Electronics', image: '📹' },
   ],
+
+  'Appliances': [
+    // Coffee Makers - High Consideration (budget to premium)
+    { sku: 'coffee-mr-coffee', name: 'Mr. Coffee 12-Cup Coffee Maker', price: 29.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-cuisinart', name: 'Cuisinart 14-Cup Programmable', price: 89.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-ninja', name: 'Ninja 12-Cup Programmable Brewer', price: 99.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-keurig-k-mini', name: 'Keurig K-Mini Single Serve', price: 79.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-keurig-k-elite', name: 'Keurig K-Elite Single Serve', price: 169.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-nespresso', name: 'Nespresso Vertuo Plus', price: 179.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-breville-espresso', name: 'Breville Barista Express Espresso', price: 699.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-french-press', name: 'Bodum French Press 34oz', price: 34.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-grinder', name: 'Cuisinart Coffee Grinder', price: 39.99, category: 'Appliances', image: '☕' },
+    { sku: 'kettle-electric', name: 'Hamilton Beach Electric Kettle 1.7L', price: 29.99, category: 'Appliances', image: '🫖' },
+    { sku: 'kettle-cuisinart', name: 'Cuisinart Gooseneck Electric Kettle', price: 89.99, category: 'Appliances', image: '🫖' },
+
+    // Blenders & Food Processors - High Consideration
+    { sku: 'blender-ninja', name: 'Ninja Personal Blender', price: 49.99, category: 'Appliances', image: '🔪' },
+    { sku: 'blender-nutribullet', name: 'NutriBullet 600W Blender', price: 59.99, category: 'Appliances', image: '🔪' },
+    { sku: 'blender-ninja-pro', name: 'Ninja Professional Blender 1000W', price: 89.99, category: 'Appliances', image: '🔪' },
+    { sku: 'blender-vitamix', name: 'Vitamix E310 Explorian', price: 349.99, category: 'Appliances', image: '🔪' },
+    { sku: 'blender-vitamix-pro', name: 'Vitamix Professional Series 750', price: 599.99, category: 'Appliances', image: '🔪' },
+    { sku: 'food-processor-cuisinart', name: 'Cuisinart 14-Cup Food Processor', price: 199.99, category: 'Appliances', image: '🔪' },
+    { sku: 'food-processor-ninja', name: 'Ninja 8-Cup Food Processor', price: 79.99, category: 'Appliances', image: '🔪' },
+    { sku: 'immersion-blender', name: 'Cuisinart Smart Stick Hand Blender', price: 39.99, category: 'Appliances', image: '🔪' },
+
+    // Mixers - High Consideration
+    { sku: 'mixer-hand', name: 'Hamilton Beach Hand Mixer', price: 24.99, category: 'Appliances', image: '🥄' },
+    { sku: 'mixer-kitchenaid-artisan', name: 'KitchenAid Artisan Stand Mixer 5qt', price: 449.99, category: 'Appliances', image: '🥄' },
+    { sku: 'mixer-kitchenaid-classic', name: 'KitchenAid Classic Stand Mixer 4.5qt', price: 329.99, category: 'Appliances', image: '🥄' },
+    { sku: 'mixer-cuisinart-stand', name: 'Cuisinart Stand Mixer 5.5qt', price: 299.99, category: 'Appliances', image: '🥄' },
+
+    // Toasters & Toaster Ovens - High Consideration
+    { sku: 'toaster-2-slice', name: 'Black+Decker 2-Slice Toaster', price: 19.99, category: 'Appliances', image: '🍞' },
+    { sku: 'toaster-4-slice', name: 'Cuisinart 4-Slice Toaster', price: 59.99, category: 'Appliances', image: '🍞' },
+    { sku: 'toaster-oven-basic', name: 'Black+Decker Toaster Oven 4-Slice', price: 49.99, category: 'Appliances', image: '🍞' },
+    { sku: 'toaster-oven-cuisinart', name: 'Cuisinart Convection Toaster Oven', price: 229.99, category: 'Appliances', image: '🍞' },
+    { sku: 'toaster-oven-breville', name: 'Breville Smart Oven Air Fryer', price: 399.99, category: 'Appliances', image: '🍞' },
+
+    // Air Fryers - High Consideration (popular!)
+    { sku: 'air-fryer-dash', name: 'Dash Compact Air Fryer 2qt', price: 49.99, category: 'Appliances', image: '🍟' },
+    { sku: 'air-fryer-ninja', name: 'Ninja Air Fryer 4qt', price: 99.99, category: 'Appliances', image: '🍟' },
+    { sku: 'air-fryer-cosori', name: 'Cosori Air Fryer 5.8qt', price: 119.99, category: 'Appliances', image: '🍟' },
+    { sku: 'air-fryer-ninja-foodi', name: 'Ninja Foodi 8qt XL Air Fryer', price: 199.99, category: 'Appliances', image: '🍟' },
+    { sku: 'air-fryer-instant-pot', name: 'Instant Pot Vortex Plus 6qt', price: 139.99, category: 'Appliances', image: '🍟' },
+
+    // Slow Cookers & Pressure Cookers - High Consideration
+    { sku: 'slow-cooker-3qt', name: 'Crock-Pot 3qt Slow Cooker', price: 29.99, category: 'Appliances', image: '🍲' },
+    { sku: 'slow-cooker-6qt', name: 'Crock-Pot 6qt Programmable', price: 49.99, category: 'Appliances', image: '🍲' },
+    { sku: 'slow-cooker-8qt', name: 'Hamilton Beach 8qt Slow Cooker', price: 59.99, category: 'Appliances', image: '🍲' },
+    { sku: 'instant-pot-duo', name: 'Instant Pot Duo 6qt 7-in-1', price: 99.99, category: 'Appliances', image: '🍲' },
+    { sku: 'instant-pot-ultra', name: 'Instant Pot Ultra 8qt 10-in-1', price: 149.99, category: 'Appliances', image: '🍲' },
+    { sku: 'ninja-foodi-cooker', name: 'Ninja Foodi 6.5qt Pressure Cooker', price: 179.99, category: 'Appliances', image: '🍲' },
+
+    // Rice Cookers & Specialty
+    { sku: 'rice-cooker-basic', name: 'Aroma 8-Cup Rice Cooker', price: 29.99, category: 'Appliances', image: '🍚' },
+    { sku: 'rice-cooker-zojirushi', name: 'Zojirushi 10-Cup Rice Cooker', price: 299.99, category: 'Appliances', image: '🍚' },
+    { sku: 'waffle-maker', name: 'Cuisinart Belgian Waffle Maker', price: 49.99, category: 'Appliances', image: '🧇' },
+    { sku: 'griddle-electric', name: 'Presto Electric Griddle 22"', price: 39.99, category: 'Appliances', image: '🍳' },
+    { sku: 'panini-press', name: 'Cuisinart Panini Press', price: 69.99, category: 'Appliances', image: '🥪' },
+    { sku: 'juicer-centrifugal', name: 'Hamilton Beach Juicer', price: 49.99, category: 'Appliances', image: '🍊' },
+    { sku: 'juicer-masticating', name: 'Omega Masticating Juicer', price: 299.99, category: 'Appliances', image: '🍊' },
+
+    // Microwaves - High Consideration
+    { sku: 'microwave-07cu', name: 'Commercial Chef 0.7cu ft Microwave', price: 59.99, category: 'Appliances', image: '📦' },
+    { sku: 'microwave-09cu', name: 'GE 0.9cu ft Countertop Microwave', price: 89.99, category: 'Appliances', image: '📦' },
+    { sku: 'microwave-11cu', name: 'Panasonic 1.1cu ft Inverter', price: 149.99, category: 'Appliances', image: '📦' },
+    { sku: 'microwave-13cu', name: 'Toshiba 1.3cu ft Smart Sensor', price: 179.99, category: 'Appliances', image: '📦' },
+    { sku: 'microwave-20cu', name: 'GE 2.0cu ft Over-the-Range', price: 349.99, category: 'Appliances', image: '📦' },
+
+    // Vacuums - High Consideration (major purchase)
+    { sku: 'vacuum-dirt-devil', name: 'Dirt Devil Upright Vacuum', price: 49.99, category: 'Appliances', image: '🧹' },
+    { sku: 'vacuum-bissell-upright', name: 'Bissell CleanView Upright', price: 89.99, category: 'Appliances', image: '🧹' },
+    { sku: 'vacuum-shark-navigator', name: 'Shark Navigator Lift-Away', price: 199.99, category: 'Appliances', image: '🧹' },
+    { sku: 'vacuum-shark-rotator', name: 'Shark Rotator Powered Lift-Away', price: 299.99, category: 'Appliances', image: '🧹' },
+    { sku: 'vacuum-dyson-v8', name: 'Dyson V8 Cordless Stick Vacuum', price: 449.99, category: 'Appliances', image: '🧹' },
+    { sku: 'vacuum-dyson-v11', name: 'Dyson V11 Torque Drive Cordless', price: 599.99, category: 'Appliances', image: '🧹' },
+    { sku: 'vacuum-dyson-v15', name: 'Dyson V15 Detect Cordless', price: 749.99, category: 'Appliances', image: '🧹' },
+    { sku: 'vacuum-roomba-694', name: 'iRobot Roomba 694 Robot Vacuum', price: 274.99, category: 'Appliances', image: '🤖' },
+    { sku: 'vacuum-roomba-j7', name: 'iRobot Roomba j7+ Self-Emptying', price: 799.99, category: 'Appliances', image: '🤖' },
+    { sku: 'vacuum-eufy-robovac', name: 'eufy RoboVac 11S Robot Vacuum', price: 199.99, category: 'Appliances', image: '🤖' },
+    { sku: 'vacuum-handheld', name: 'Black+Decker Handheld Vacuum', price: 39.99, category: 'Appliances', image: '🧹' },
+    { sku: 'vacuum-shop-vac', name: 'Shop-Vac 6gal Wet/Dry Vacuum', price: 79.99, category: 'Appliances', image: '🧹' },
+
+    // Air Quality & Climate
+    { sku: 'air-purifier-levoit', name: 'Levoit Core 300 Air Purifier', price: 99.99, category: 'Appliances', image: '💨' },
+    { sku: 'air-purifier-dyson', name: 'Dyson Pure Cool Air Purifier Fan', price: 499.99, category: 'Appliances', image: '💨' },
+    { sku: 'humidifier-cool-mist', name: 'Honeywell Cool Mist Humidifier', price: 49.99, category: 'Appliances', image: '💧' },
+    { sku: 'humidifier-ultrasonic', name: 'TaoTronics Ultrasonic Humidifier', price: 39.99, category: 'Appliances', image: '💧' },
+    { sku: 'dehumidifier-30pint', name: 'hOmeLabs 30-Pint Dehumidifier', price: 189.99, category: 'Appliances', image: '💧' },
+    { sku: 'fan-tower', name: 'Lasko 42" Tower Fan', price: 49.99, category: 'Appliances', image: '💨' },
+    { sku: 'fan-box', name: 'Lasko 20" Box Fan', price: 24.99, category: 'Appliances', image: '💨' },
+    { sku: 'heater-space', name: 'Lasko Ceramic Space Heater', price: 39.99, category: 'Appliances', image: '🔥' },
+
+    // Irons & Garment Care
+    { sku: 'iron-basic', name: 'Black+Decker Steam Iron', price: 19.99, category: 'Appliances', image: '👔' },
+    { sku: 'iron-rowenta', name: 'Rowenta Professional Steam Iron', price: 89.99, category: 'Appliances', image: '👔' },
+    { sku: 'steamer-garment', name: 'Conair Handheld Garment Steamer', price: 29.99, category: 'Appliances', image: '👔' },
+    { sku: 'steamer-professional', name: 'Jiffy Pro Line Garment Steamer', price: 179.99, category: 'Appliances', image: '👔' },
+
+    // Personal Care Appliances
+    { sku: 'hair-dryer-conair', name: 'Conair 1875W Hair Dryer', price: 24.99, category: 'Appliances', image: '💇' },
+    { sku: 'hair-dryer-dyson', name: 'Dyson Supersonic Hair Dryer', price: 429.99, category: 'Appliances', image: '💇' },
+    { sku: 'shaver-electric', name: 'Philips Norelco Electric Shaver', price: 89.99, category: 'Appliances', image: '🪒' },
+    { sku: 'scale-bathroom', name: 'Etekcity Digital Bathroom Scale', price: 19.99, category: 'Appliances', image: '⚖️' },
+    { sku: 'scale-smart', name: 'Withings Body+ Smart Scale', price: 99.99, category: 'Appliances', image: '⚖️' },
+    { sku: 'scale-kitchen', name: 'Ozeri Digital Kitchen Scale', price: 14.99, category: 'Appliances', image: '⚖️' },
+  ],
+
+  'Clothing & Accessories': [
+    // Men's Basics - Outcome: Moving In, Everyday
+    { sku: 'mens-tshirt-white', name: 'Hanes Men\'s White T-Shirts 6pk', price: 14.99, category: 'Clothing & Accessories', image: '👕' },
+    { sku: 'mens-tshirt-black', name: 'Hanes Men\'s Black T-Shirts 6pk', price: 14.99, category: 'Clothing & Accessories', image: '👕' },
+    { sku: 'mens-tshirt-gray', name: 'Fruit of Loom Men\'s Gray T-Shirts 5pk', price: 12.99, category: 'Clothing & Accessories', image: '👕' },
+    { sku: 'mens-polo', name: 'George Men\'s Polo Shirt', price: 9.99, category: 'Clothing & Accessories', image: '👕' },
+    { sku: 'mens-jeans', name: 'Wrangler Men\'s Regular Fit Jeans', price: 24.99, category: 'Clothing & Accessories', image: '👖' },
+    { sku: 'mens-khakis', name: 'Dickies Men\'s Work Pants', price: 29.99, category: 'Clothing & Accessories', image: '👖' },
+    { sku: 'mens-shorts', name: 'Hanes Men\'s Jersey Shorts', price: 9.99, category: 'Clothing & Accessories', image: '🩳' },
+    { sku: 'mens-socks-athletic', name: 'Hanes Men\'s Athletic Socks 12pk', price: 12.99, category: 'Clothing & Accessories', image: '🧦' },
+    { sku: 'mens-socks-dress', name: 'Gold Toe Men\'s Dress Socks 6pk', price: 14.99, category: 'Clothing & Accessories', image: '🧦' },
+    { sku: 'mens-underwear-briefs', name: 'Hanes Men\'s Briefs 7pk', price: 16.99, category: 'Clothing & Accessories', image: '🩲' },
+    { sku: 'mens-underwear-boxers', name: 'Fruit of Loom Men\'s Boxers 5pk', price: 14.99, category: 'Clothing & Accessories', image: '🩲' },
+
+    // Women's Basics - Outcome: Moving In, Everyday
+    { sku: 'womens-tshirt-white', name: 'Hanes Women\'s V-Neck Tees 4pk', price: 12.99, category: 'Clothing & Accessories', image: '👚' },
+    { sku: 'womens-tshirt-black', name: 'Hanes Women\'s Crew Neck Tees 4pk', price: 12.99, category: 'Clothing & Accessories', image: '👚' },
+    { sku: 'womens-tank-tops', name: 'Fruit of Loom Women\'s Tank Tops 5pk', price: 14.99, category: 'Clothing & Accessories', image: '👚' },
+    { sku: 'womens-leggings', name: 'No Boundaries Women\'s Leggings', price: 7.99, category: 'Clothing & Accessories', image: '👖' },
+    { sku: 'womens-jeans', name: 'Time & Tru Women\'s Skinny Jeans', price: 19.99, category: 'Clothing & Accessories', image: '👖' },
+    { sku: 'womens-yoga-pants', name: 'Athletic Works Women\'s Yoga Pants', price: 12.99, category: 'Clothing & Accessories', image: '👖' },
+    { sku: 'womens-socks', name: 'Hanes Women\'s No Show Socks 10pk', price: 9.99, category: 'Clothing & Accessories', image: '🧦' },
+    { sku: 'womens-underwear', name: 'Hanes Women\'s Underwear 6pk', price: 12.99, category: 'Clothing & Accessories', image: '👙' },
+    { sku: 'womens-sports-bra', name: 'Athletic Works Women\'s Sports Bra 2pk', price: 12.99, category: 'Clothing & Accessories', image: '👙' },
+
+    // Kids Basics - Outcome: Back to School, New Wardrobe
+    { sku: 'boys-tshirts', name: 'Garanimals Boys\' T-Shirts 5pk', price: 9.99, category: 'Clothing & Accessories', image: '👕' },
+    { sku: 'boys-jeans', name: 'Wrangler Boys\' Jeans', price: 14.99, category: 'Clothing & Accessories', image: '👖' },
+    { sku: 'boys-shorts', name: 'Garanimals Boys\' Shorts', price: 7.99, category: 'Clothing & Accessories', image: '🩳' },
+    { sku: 'boys-socks', name: 'Hanes Boys\' Crew Socks 10pk', price: 7.99, category: 'Clothing & Accessories', image: '🧦' },
+    { sku: 'boys-underwear', name: 'Fruit of Loom Boys\' Briefs 7pk', price: 9.99, category: 'Clothing & Accessories', image: '🩲' },
+    { sku: 'girls-tshirts', name: 'Garanimals Girls\' Tees 5pk', price: 9.99, category: 'Clothing & Accessories', image: '👚' },
+    { sku: 'girls-leggings', name: 'Garanimals Girls\' Leggings 3pk', price: 8.99, category: 'Clothing & Accessories', image: '👖' },
+    { sku: 'girls-shorts', name: 'Garanimals Girls\' Shorts', price: 7.99, category: 'Clothing & Accessories', image: '🩳' },
+    { sku: 'girls-socks', name: 'Hanes Girls\' No Show Socks 10pk', price: 7.99, category: 'Clothing & Accessories', image: '🧦' },
+    { sku: 'girls-underwear', name: 'Fruit of Loom Girls\' Underwear 7pk', price: 9.99, category: 'Clothing & Accessories', image: '👙' },
+
+    // Athletic Wear - Outcome: Workout Journey, Fitness
+    { sku: 'mens-athletic-shirt', name: 'Athletic Works Men\'s Performance Tee', price: 6.99, category: 'Clothing & Accessories', image: '👕' },
+    { sku: 'mens-athletic-shorts', name: 'Athletic Works Men\'s Athletic Shorts', price: 9.99, category: 'Clothing & Accessories', image: '🩳' },
+    { sku: 'mens-athletic-pants', name: 'Athletic Works Men\'s Track Pants', price: 12.99, category: 'Clothing & Accessories', image: '👖' },
+    { sku: 'womens-athletic-shirt', name: 'Athletic Works Women\'s Performance Tee', price: 6.99, category: 'Clothing & Accessories', image: '👚' },
+    { sku: 'womens-athletic-shorts', name: 'Athletic Works Women\'s Athletic Shorts', price: 9.99, category: 'Clothing & Accessories', image: '🩳' },
+    { sku: 'womens-athletic-capris', name: 'Athletic Works Women\'s Capri Leggings', price: 10.99, category: 'Clothing & Accessories', image: '👖' },
+    { sku: 'athletic-headband', name: 'Athletic Works Sweatbands 3pk', price: 4.99, category: 'Clothing & Accessories', image: '🎀' },
+    { sku: 'compression-socks', name: 'Athletic Compression Socks 3pk', price: 9.99, category: 'Clothing & Accessories', image: '🧦' },
+
+    // Baby Clothing - Outcome: New Baby
+    { sku: 'baby-onesies-nb', name: 'Gerber Baby Onesies Newborn 5pk', price: 12.99, category: 'Clothing & Accessories', image: '👶' },
+    { sku: 'baby-onesies-6m', name: 'Gerber Baby Onesies 6-9 Months 5pk', price: 12.99, category: 'Clothing & Accessories', image: '👶' },
+    { sku: 'baby-sleepers', name: 'Gerber Baby Sleepers 3pk', price: 16.99, category: 'Clothing & Accessories', image: '👶' },
+    { sku: 'baby-socks', name: 'Gerber Baby Socks 8pk', price: 6.99, category: 'Clothing & Accessories', image: '🧦' },
+    { sku: 'baby-bibs', name: 'Gerber Baby Bibs 8pk', price: 7.99, category: 'Clothing & Accessories', image: '👶' },
+    { sku: 'baby-hats', name: 'Gerber Baby Caps 4pk', price: 8.99, category: 'Clothing & Accessories', image: '🧢' },
+    { sku: 'baby-mittens', name: 'Gerber Baby Mittens 4pk', price: 5.99, category: 'Clothing & Accessories', image: '🧤' },
+
+    // Shoes - Outcome: Back to School, Everyday
+    { sku: 'mens-sneakers', name: 'Athletic Works Men\'s Sneakers', price: 19.99, category: 'Clothing & Accessories', image: '👟' },
+    { sku: 'mens-slides', name: 'Men\'s Comfort Slides', price: 12.99, category: 'Clothing & Accessories', image: '🩴' },
+    { sku: 'womens-sneakers', name: 'Athletic Works Women\'s Sneakers', price: 19.99, category: 'Clothing & Accessories', image: '👟' },
+    { sku: 'womens-sandals', name: 'Women\'s Comfort Sandals', price: 14.99, category: 'Clothing & Accessories', image: '👡' },
+    { sku: 'kids-sneakers-boys', name: 'Athletic Works Boys\' Sneakers', price: 14.99, category: 'Clothing & Accessories', image: '👟' },
+    { sku: 'kids-sneakers-girls', name: 'Athletic Works Girls\' Sneakers', price: 14.99, category: 'Clothing & Accessories', image: '👟' },
+
+    // Bags & Backpacks - Outcome: Back to School, Travel
+    { sku: 'backpack-classic', name: 'Trailmaker 17" Classic Backpack', price: 9.99, category: 'Clothing & Accessories', image: '🎒' },
+    { sku: 'backpack-laptop', name: 'Swiss Gear Laptop Backpack', price: 39.99, category: 'Clothing & Accessories', image: '🎒' },
+    { sku: 'backpack-kids', name: 'Kids Character Backpack 16"', price: 12.99, category: 'Clothing & Accessories', image: '🎒' },
+    { sku: 'lunchbox', name: 'Insulated Lunch Box', price: 7.99, category: 'Clothing & Accessories', image: '🍱' },
+    { sku: 'gym-bag', name: 'Everest Gym Duffel Bag', price: 14.99, category: 'Clothing & Accessories', image: '👜' },
+    { sku: 'tote-bag', name: 'Reusable Shopping Tote 3pk', price: 5.99, category: 'Clothing & Accessories', image: '👜' },
+    { sku: 'diaper-bag', name: 'Baby Essentials Diaper Bag', price: 24.99, category: 'Clothing & Accessories', image: '👜' },
+
+    // Accessories - Outcome: Various
+    { sku: 'belt-mens', name: 'George Men\'s Leather Belt', price: 9.99, category: 'Clothing & Accessories', image: '⚡' },
+    { sku: 'belt-womens', name: 'Time & Tru Women\'s Belt', price: 7.99, category: 'Clothing & Accessories', image: '⚡' },
+    { sku: 'baseball-cap', name: 'No Boundaries Baseball Cap', price: 5.99, category: 'Clothing & Accessories', image: '🧢' },
+    { sku: 'beanie', name: 'Winter Knit Beanie', price: 6.99, category: 'Clothing & Accessories', image: '🧢' },
+    { sku: 'gloves-winter', name: 'Fleece Winter Gloves', price: 7.99, category: 'Clothing & Accessories', image: '🧤' },
+    { sku: 'scarf', name: 'Knit Winter Scarf', price: 9.99, category: 'Clothing & Accessories', image: '🧣' },
+    { sku: 'sunglasses', name: 'Foster Grant Sunglasses', price: 12.99, category: 'Clothing & Accessories', image: '🕶️' },
+    { sku: 'wallet-mens', name: 'George Men\'s Bifold Wallet', price: 12.99, category: 'Clothing & Accessories', image: '👛' },
+    { sku: 'wallet-womens', name: 'Time & Tru Women\'s Wallet', price: 14.99, category: 'Clothing & Accessories', image: '👛' },
+    { sku: 'umbrella', name: 'Compact Travel Umbrella', price: 8.99, category: 'Clothing & Accessories', image: '☂️' },
+    { sku: 'watch-mens', name: 'Timex Men\'s Digital Watch', price: 29.99, category: 'Clothing & Accessories', image: '⌚' },
+    { sku: 'watch-womens', name: 'Timex Women\'s Analog Watch', price: 34.99, category: 'Clothing & Accessories', image: '⌚' },
+  ],
 }
 
 // Helper functions
