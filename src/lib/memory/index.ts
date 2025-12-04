@@ -391,8 +391,8 @@ export function extractAllergy(message: string): string | null {
   if (lower.includes('egg')) return 'eggs'
   if (lower.includes('soy')) return 'soy'
   if (lower.includes('wheat') || lower.includes('gluten')) return 'wheat'
+  if (lower.includes('shellfish')) return 'shellfish' // Check shellfish before fish
   if (lower.includes('fish')) return 'fish'
-  if (lower.includes('shellfish')) return 'shellfish'
 
   return null
 }
