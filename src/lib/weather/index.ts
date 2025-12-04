@@ -160,7 +160,7 @@ export function generateWeatherContext(weather: WeatherData): WeatherContext {
 
   return {
     summary,
-    suggestions: [...new Set(suggestions)], // Remove duplicates
+    suggestions: Array.from(new Set(suggestions)), // Remove duplicates
   }
 }
 
