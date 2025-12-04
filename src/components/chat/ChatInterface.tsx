@@ -125,9 +125,14 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   }, [messages])
 
   // Send message to Claude
-  const sendMessage = useCallback(async (content: string, multimodalContent?: MessageContent) => {
+  const sendMessage = useCallback(async (
+    content: string,
+    multimodalContent?: MessageContent,
+    apiContent?: string  // Optional: different content to send to API vs display to user
+  ) => {
     const isSystemMessage = content.startsWith('[SYSTEM]')
     const displayContent = content
+    const apiText = apiContent || content  // Use apiContent if provided, otherwise use display content
 
     // Capture user intent for auto-add to cart
     if (!isSystemMessage) {
@@ -224,8 +229,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       if (multimodalContent) {
         currentMessageContent = multimodalContent
       } else {
-        // Text message with optional active list context
-        let textContent = content
+        // Text message with optional active list context (use apiText for full content)
+        let textContent = apiText
         if (activeList && activeList.items && activeList.items.length > 0) {
           const listContext = `\n\n[IMPORTANT - CURRENT LIST STATE]\nThe user's "${activeList.title}" has been EDITED since it was created.\nIGNORE any previous shop blocks - use THIS as the authoritative list:\n${activeList.items.map(i => `- ${i.name} (×${i.quantity || 1})`).join('\n')}\n\nIf the user asks to add something already on this list, help them. If they ask about something NOT on this list, it has been REMOVED - do not say it's already there.`
           textContent += listContext
@@ -676,8 +681,11 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
           const result = await response.json()
 
           if (result.success && result.content) {
-            // Send extracted content to Claude
-            sendMessage(`Extract ingredients from this recipe and create a shopping list:\n\nSource: ${result.siteName}\n\n${result.content}`)
+            // Show clean message to user, send full content to Claude
+            const displayMessage = `Analyze recipe from ${result.url}`
+            const fullPrompt = `Extract ingredients from this recipe and create a shopping list. Match each ingredient to products in the catalog.\n\nSource: ${result.siteName}\n\n${result.content}`
+
+            sendMessage(displayMessage, undefined, fullPrompt)
           } else {
             setIsLoading(false)
             sendMessage(`I tried to fetch the recipe from ${data.url}, but couldn't extract the content. Could you paste the recipe text instead?`)
