@@ -1,13 +1,21 @@
 'use client'
 
-import { OrderBlock as OrderBlockType } from '@/types'
+import { OrderBlock as OrderBlockType, SuggestionChip } from '@/types'
+import { SuggestionChips } from '@/components/blocks/SuggestionChips'
 import { formatPrice } from '@/lib/utils'
 
 interface OrderBlockProps {
   data: OrderBlockType['data']
+  onSendMessage?: (message: string) => void
 }
 
-export function OrderBlock({ data }: OrderBlockProps) {
+export function OrderBlock({ data, onSendMessage }: OrderBlockProps) {
+  // Default suggestions if none provided
+  const suggestions: SuggestionChip[] = data.suggestions || [
+    { label: 'Reorder essentials', prompt: 'Reorder my essential items' },
+    { label: 'Track delivery', prompt: 'Track my order' },
+    { label: 'Shop again', prompt: 'Show me what I usually buy' }
+  ]
   return (
     <div className="mt-3 sm:mt-4 bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl overflow-hidden w-full max-w-full">
       {/* Success Header */}
@@ -73,6 +81,13 @@ export function OrderBlock({ data }: OrderBlockProps) {
         <p className="text-center text-sm text-stone-600">
           Thank you for shopping with us! 🎉
         </p>
+
+        {/* Suggestion Chips */}
+        {onSendMessage && suggestions.length > 0 && (
+          <div className="pt-2">
+            <SuggestionChips chips={suggestions} onSelect={onSendMessage} />
+          </div>
+        )}
       </div>
     </div>
   )

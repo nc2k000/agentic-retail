@@ -53,6 +53,9 @@ export function parseBlocks(content: string): Block[] {
         case 'bulk':
           blocks.push({ type: 'bulkdeal', data })
           break
+        case 'carousel':
+          blocks.push({ type: 'carousel', data })
+          break
         default:
           // Unknown block type, skip
           console.warn('Unknown block type:', blockType)

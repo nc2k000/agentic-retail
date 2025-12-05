@@ -9,6 +9,7 @@ import { UpsellBlock } from '@/components/blocks/UpsellBlock'
 import { BulkDealBlock } from '@/components/blocks/BulkDealBlock'
 import { CompareBlock } from '@/components/blocks/CompareBlock'
 import { SuggestionChips } from '@/components/blocks/SuggestionChips'
+import ProductCarousel from '@/components/chat/ProductCarousel'
 import { LoadingIndicator, SkeletonShopBlock } from '@/components/ui/LoadingIndicator'
 import { extractTextContent } from '@/lib/parser'
 
@@ -117,6 +118,7 @@ export function MessageBubble({
                         onUpdateActiveList={onUpdateActiveList}
                         onSubscribe={onSubscribe}
                         isProductSubscribed={isProductSubscribed}
+                        onSendMessage={onSendMessage}
                       />
                     )
                   case 'savings':
@@ -149,6 +151,7 @@ export function MessageBubble({
                       <OrderBlock
                         key={i}
                         data={block.data}
+                        onSendMessage={onSendMessage}
                       />
                     )
                   case 'upsell':
@@ -178,6 +181,19 @@ export function MessageBubble({
                         key={i}
                         data={block.data}
                         onAddToCart={onAddToCart}
+                      />
+                    )
+                  case 'carousel':
+                    return (
+                      <ProductCarousel
+                        key={i}
+                        title={block.data.title}
+                        items={block.data.items}
+                        reasoning={block.data.reasoning}
+                        category={block.data.category}
+                        suggestions={block.data.suggestions}
+                        onAddToCart={onAddToCart}
+                        onSendMessage={onSendMessage}
                       />
                     )
                   default:

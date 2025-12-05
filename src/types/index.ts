@@ -78,6 +78,8 @@ export type BlockType =
   | 'suggestions'
   | 'order'
   | 'bulkdeal'
+  | 'carousel'
+  | 'category_carousel'
 
 export interface Block {
   type: BlockType
@@ -166,6 +168,7 @@ export interface OrderBlock {
     status: 'confirmed' | 'pending'
     estimatedDelivery?: string
     pickupReady?: string
+    suggestions?: SuggestionChip[]
   }
 }
 
@@ -182,6 +185,39 @@ export interface BulkDealBlock {
   data: {
     opportunities: BulkDealOpportunity[]
     totalPotentialSavings: number
+  }
+}
+
+// Ranked Product for Carousels
+export interface RankedProduct extends Product {
+  rank: number
+  score: number
+  matchReason?: string
+  badges?: Array<'favorite' | 'organic' | 'best_value' | 'new' | 'usual_choice' | 'brand_match'>
+  personalScore: number
+  popularityScore: number
+  valueScore: number
+}
+
+export interface CarouselBlock {
+  type: 'carousel'
+  data: {
+    title: string
+    category?: string
+    items: RankedProduct[]
+    reasoning?: string
+    suggestions?: SuggestionChip[]
+  }
+}
+
+export interface CategoryCarouselBlock {
+  type: 'category_carousel'
+  data: {
+    title: string
+    categories: Array<{
+      name: string
+      items: RankedProduct[]
+    }>
   }
 }
 
@@ -422,4 +458,31 @@ export interface CommunicationPreference {
   confidence: number
   learnedFrom: 'explicit' | 'behavior'
   updatedAt: string
+}
+
+// User Maturity & Personalization Types
+export enum UserMaturityLevel {
+  COLD_START = 'cold_start',
+  ONBOARDING = 'onboarding',
+  EMERGING = 'emerging',
+  ESTABLISHED = 'established',
+  POWER_USER = 'power_user'
+}
+
+export interface UserMaturityScore {
+  level: UserMaturityLevel
+  score: number // 0-100
+  purchase_count: number
+  preference_count: number
+  avg_confidence: number
+  days_since_first_purchase: number
+  calculated_at: string
+}
+
+export interface RecommendationStrategy {
+  accuracy_weight: number
+  relevancy_weight: number
+  strategy: 'popular' | 'hybrid' | 'personalized'
+  ask_frequency: 'high' | 'medium' | 'low' | 'minimal'
+  show_confidence: boolean
 }

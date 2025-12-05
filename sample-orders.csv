@@ -1,0 +1,16 @@
+order_id,order_date,item_sku,item_name,category,brand,price,quantity
+ORD001,2024-06-01,milk-org-2p,Organic Valley 2% Milk,Dairy,Organic Valley,4.99,1
+ORD001,2024-06-01,banana-org,Organic Bananas,Produce,,2.99,1
+ORD001,2024-06-01,bread-org,Organic Whole Wheat Bread,Bakery,Dave's Killer Bread,5.49,1
+ORD002,2024-06-08,milk-org-2p,Organic Valley 2% Milk,Dairy,Organic Valley,4.99,1
+ORD002,2024-06-08,eggs-org,Organic Eggs,Dairy,Happy Egg Co,5.99,1
+ORD002,2024-06-08,spinach-org,Organic Baby Spinach,Produce,,3.99,1
+ORD003,2024-06-15,milk-org-2p,Organic Valley 2% Milk,Dairy,Organic Valley,4.99,1
+ORD003,2024-06-15,bread-org,Organic Whole Wheat Bread,Bakery,Dave's Killer Bread,5.49,1
+ORD003,2024-06-15,butter-org,Organic Valley Butter,Dairy,Organic Valley,6.99,1
+ORD004,2024-06-22,milk-org-2p,Organic Valley 2% Milk,Dairy,Organic Valley,4.99,1
+ORD004,2024-06-22,eggs-org,Organic Eggs,Dairy,Happy Egg Co,5.99,1
+ORD004,2024-06-22,chicken-org,Organic Chicken Breast,Meat,,9.99,2
+ORD005,2024-06-29,milk-org-2p,Organic Valley 2% Milk,Dairy,Organic Valley,4.99,1
+ORD005,2024-06-29,bread-org,Organic Whole Wheat Bread,Bakery,Dave's Killer Bread,5.49,1
+ORD005,2024-06-29,yogurt-org,Organic Greek Yogurt,Dairy,Organic Valley,4.49,2

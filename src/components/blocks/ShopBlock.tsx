@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { CartItem, ShoppingList, Product, SubscriptionFrequency } from '@/types'
+import { CartItem, ShoppingList, Product, SubscriptionFrequency, SuggestionChip } from '@/types'
+import { SuggestionChips } from '@/components/blocks/SuggestionChips'
 import { formatPrice } from '@/lib/utils'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { SubscribeModal } from '@/components/subscriptions/SubscribeModal'
@@ -12,6 +13,7 @@ interface ShopBlockProps {
     title: string
     items: CartItem[]
     source?: string
+    suggestions?: SuggestionChip[]
   }
   onAddToCart: (item: CartItem) => void
   onAddAllToCart: (items: CartItem[]) => void
@@ -20,6 +22,7 @@ interface ShopBlockProps {
   onUpdateActiveList: (list: ShoppingList | null) => void
   onSubscribe?: (product: Product, quantity: number, frequency: SubscriptionFrequency) => void
   isProductSubscribed?: (sku: string) => boolean
+  onSendMessage?: (message: string) => void
 }
 
 export function ShopBlock({
@@ -31,6 +34,7 @@ export function ShopBlock({
   onUpdateActiveList,
   onSubscribe,
   isProductSubscribed,
+  onSendMessage,
 }: ShopBlockProps) {
   const [editedItems, setEditedItems] = useState<CartItem[] | null>(null)
   const [subscribeModalProduct, setSubscribeModalProduct] = useState<{ product: Product; quantity: number } | null>(null)
@@ -272,6 +276,13 @@ export function ShopBlock({
           <span className="sm:hidden">Add • {formatPrice(total)}</span>
         </button>
       </div>
+
+      {/* Suggestion Chips */}
+      {data.suggestions && data.suggestions.length > 0 && onSendMessage && (
+        <div className="px-3 sm:px-4 pb-3 sm:pb-4">
+          <SuggestionChips chips={data.suggestions} onSelect={onSendMessage} />
+        </div>
+      )}
 
       {/* Subscribe Modal */}
       {subscribeModalProduct && onSubscribe && (
