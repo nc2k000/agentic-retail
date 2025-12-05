@@ -46,12 +46,6 @@ import {
   confirmMemoryPreference,
   rejectMemoryPreference,
 } from '@/lib/memory-confirmation'
-import {
-  getUserMaturity,
-  getRecommendationStrategy,
-  getMaturityDescription,
-} from '@/lib/personalization/maturity'
-import type { UserMaturityScore, RecommendationStrategy } from '@/types'
 
 interface ChatInterfaceProps {
   user: User
@@ -90,10 +84,6 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
   // Memory confirmation
   const [pendingConfirmation, setPendingConfirmation] = useState<MemoryConfirmation | null>(null)
-
-  // User maturity & personalization
-  const [userMaturity, setUserMaturity] = useState<UserMaturityScore | null>(null)
-  const [recommendationStrategy, setRecommendationStrategy] = useState<RecommendationStrategy | null>(null)
 
   // Subscriptions
   const { addSubscription, isProductSubscribed } = useSubscriptions(user.id)
@@ -206,25 +196,6 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       initializeVerbosity()
     }
   }, [])
-
-  // Load user maturity & recommendation strategy on mount
-  useEffect(() => {
-    const loadMaturity = async () => {
-      const maturity = await getUserMaturity(user.id)
-      setUserMaturity(maturity)
-
-      const strategy = getRecommendationStrategy(maturity)
-      setRecommendationStrategy(strategy)
-
-      console.log('👤 User Maturity Loaded:', {
-        level: maturity.level,
-        score: `${maturity.score}/100`,
-        description: getMaturityDescription(maturity.level),
-        strategy: strategy.strategy
-      })
-    }
-    loadMaturity()
-  }, [user.id, orders.length]) // Recalculate when orders change
 
   // Infer verbosity from behavior after enough messages
   useEffect(() => {
