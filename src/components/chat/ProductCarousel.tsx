@@ -33,6 +33,7 @@ export default function ProductCarousel({
   const [addedItems, setAddedItems] = useState<Set<string>>(new Set())
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const handleStartList = (product: RankedProduct) => {
@@ -50,13 +51,19 @@ export default function ProductCarousel({
   }
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
     checkScroll()
     const el = scrollRef.current
     if (el) {
       el.addEventListener('scroll', checkScroll)
       return () => el.removeEventListener('scroll', checkScroll)
     }
-  }, [items])
+  }, [items, mounted])
 
   const handleAddToCart = (product: RankedProduct) => {
     onAddToCart({
@@ -295,8 +302,8 @@ export default function ProductCarousel({
           })}
         </div>
 
-        {/* Left Scroll Arrow */}
-        {canScrollLeft && (
+        {/* Left Scroll Arrow - Only render after mount to avoid hydration mismatch */}
+        {mounted && canScrollLeft && (
           <div className="absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none">
             <div className="bg-gradient-to-r from-white via-white to-transparent w-16 h-full" />
             <div className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400">
@@ -317,8 +324,8 @@ export default function ProductCarousel({
           </div>
         )}
 
-        {/* Right Scroll Arrow */}
-        {canScrollRight && (
+        {/* Right Scroll Arrow - Only render after mount to avoid hydration mismatch */}
+        {mounted && canScrollRight && (
           <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none">
             <div className="bg-gradient-to-l from-white via-white to-transparent w-16 h-full" />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400">
