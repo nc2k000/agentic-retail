@@ -5,12 +5,15 @@ import type { Mission } from '@/types'
 import { getWeatherPromptContext } from '@/lib/weather'
 import { getMissionFunnelContext } from '@/lib/missions'
 import { getVerbosityContext } from '@/lib/verbosity'
+import type { HouseholdMap } from '@/lib/household/types'
+import { getHouseholdContextSummary } from '@/lib/household/map-builder'
 
 export function SYSTEM_PROMPT(
   profile: any,
   memoryContext?: MemoryContext | null,
   weather?: WeatherData | null,
-  activeMission?: Mission | null
+  activeMission?: Mission | null,
+  householdMap?: HouseholdMap | null
 ): string {
   const catalogSummary = getCatalogSummary()
   const userName = profile?.name?.split(' ')[0] || 'there'
@@ -70,6 +73,13 @@ export function SYSTEM_PROMPT(
     }
 
     memorySection += '\n**Use this memory to provide personalized recommendations, but don\'t explicitly mention "I remember" or "based on your history" unless the user asks about it.**\n'
+  }
+
+  // Format household map context for prompt
+  let householdSection = ''
+  if (householdMap && householdMap.facts.length > 0) {
+    householdSection = '\n' + getHouseholdContextSummary(householdMap)
+    householdSection += '\n**Use this household context to provide personalized recommendations. For example, if the user has a dog, suggest pet products. If they have a baby, suggest baby items. This information was discovered progressively from their chat and purchases.**\n'
   }
 
   // Format weather context for prompt
@@ -144,7 +154,7 @@ User: "Hi!" or "What do I need?"
 - Pets: ${pets.length > 0 ? pets.map((p: any) => `${p.name || 'Pet'} (${p.type})`).join(', ') : 'None'}
 - Preferred brands: ${preferences.brands?.join(', ') || 'None specified'}
 - Dietary restrictions: ${preferences.dietary?.join(', ') || 'None'}
-- Budget preference: ${preferences.budget || 'moderate'}${memorySection}${weatherSection}${missionSection}${verbositySection}
+- Budget preference: ${preferences.budget || 'moderate'}${memorySection}${householdSection}${weatherSection}${missionSection}${verbositySection}
 
 ## Product Catalog
 ${catalogSummary}

@@ -31,6 +31,7 @@ import {
 } from '@/lib/memory'
 import type { MemoryContext } from '@/types/memory'
 import type { WeatherData } from '@/lib/weather'
+import type { HouseholdMap } from '@/lib/household/types'
 import {
   findOrCreateMission,
   trackMissionAction,
@@ -71,6 +72,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   const [cartSavingsData, setCartSavingsData] = useState<any>(null)
   const [isLoadingCartSavings, setIsLoadingCartSavings] = useState(false)
   const [memoryContext, setMemoryContext] = useState<MemoryContext | null>(null)
+  const [householdMap, setHouseholdMap] = useState<HouseholdMap | null>(null)
   const [weather, setWeather] = useState<WeatherData | null>(null)
   const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false)
   const [activeMission, setActiveMission] = useState<Mission | null>(null)
@@ -213,6 +215,22 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       setMemoryContext(context)
     }
     loadMemoryContext()
+  }, [user.id, orders.length]) // Refresh when new orders are placed
+
+  // Fetch household map on mount and when orders change
+  useEffect(() => {
+    const loadHouseholdMap = async () => {
+      try {
+        const response = await fetch('/api/household')
+        if (response.ok) {
+          const data = await response.json()
+          setHouseholdMap(data.map)
+        }
+      } catch (error) {
+        console.error('Failed to load household map:', error)
+      }
+    }
+    loadHouseholdMap()
   }, [user.id, orders.length]) // Refresh when new orders are placed
 
   // Fetch weather on mount
@@ -465,7 +483,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: apiMessages,
-          system: SYSTEM_PROMPT(profile, memoryContext, weather, activeMission),
+          system: SYSTEM_PROMPT(profile, memoryContext, weather, activeMission, householdMap),
         }),
       })
 
