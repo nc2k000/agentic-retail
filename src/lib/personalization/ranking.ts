@@ -131,12 +131,28 @@ function calculatePersonalScore(
   }
 
   // Brand preference boost
-  const brandMatch = preferences.find(
-    (p) =>
-      p.preference_type === 'brand' &&
-      (product.tags?.some((tag) => tag.toLowerCase() === p.preference_key.toLowerCase()) ||
-        product.name.toLowerCase().includes(p.preference_key.toLowerCase()))
-  )
+  const brandMatch = preferences.find((p) => {
+    if (p.preference_type !== 'brand') return false
+
+    const brandLower = p.preference_key.toLowerCase()
+    const productNameLower = product.name.toLowerCase()
+
+    // Check tags first
+    if (product.tags?.some((tag) => tag.toLowerCase() === brandLower)) {
+      return true
+    }
+
+    // For brand names with multiple words (e.g., "Dave's Killer Bread"),
+    // match if product name starts with the significant brand words
+    // "Dave's Killer Bread" should match "Dave's Killer 21 Grain"
+    const brandWords = brandLower.split(' ').filter(w => w.length > 2) // Skip short words like "co"
+    const matchesAllSignificantWords = brandWords.slice(0, 2).every(word =>
+      productNameLower.includes(word)
+    )
+
+    return matchesAllSignificantWords || productNameLower.includes(brandLower)
+  })
+
   if (brandMatch) {
     score *= 1 + brandMatch.confidence * 0.5 // Up to 1.5x boost
   }
