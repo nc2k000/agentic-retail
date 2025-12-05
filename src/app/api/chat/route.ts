@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest } from 'next/server'
+import { discoverFromMessage } from '@/lib/household/discovery'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -54,6 +55,43 @@ export async function POST(request: NextRequest) {
 
     console.log('🚀 Chat API called with', messages.length, 'messages')
     console.log('🔧 Tools available:', tools.length, 'tools')
+
+    // Progressive Discovery: Learn from user messages (async, non-blocking)
+    // Extract the last user message to discover household facts
+    const lastMessage = messages[messages.length - 1]
+    if (lastMessage && lastMessage.role === 'user') {
+      // Get the text content from the message
+      let messageText = ''
+      if (typeof lastMessage.content === 'string') {
+        messageText = lastMessage.content
+      } else if (Array.isArray(lastMessage.content)) {
+        // Handle content blocks (multimodal)
+        const textBlocks = lastMessage.content.filter((b: any) => b.type === 'text')
+        messageText = textBlocks.map((b: any) => b.text).join(' ')
+      }
+
+      if (messageText.length > 0) {
+        // Discover facts asynchronously (fire-and-forget)
+        // Don't wait for this to complete - it runs in the background
+        fetch(`${request.nextUrl.origin}/api/household/discover`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': request.headers.get('cookie') || '',
+          },
+          body: JSON.stringify({
+            type: 'message',
+            data: {
+              message: messageText,
+              timestamp: new Date().toISOString(),
+            },
+          }),
+        }).catch(err => {
+          // Silently log error, don't block chat response
+          console.error('⚠️ Background discovery error:', err.message)
+        })
+      }
+    }
 
     const encoder = new TextEncoder()
 
