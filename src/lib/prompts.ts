@@ -86,6 +86,23 @@ export function SYSTEM_PROMPT(
 
   return `You are a friendly AI shopping assistant for a grocery store. Help users build shopping lists, find recipes, plan events, and save money.
 
+## 🔧 CRITICAL: Tool Usage
+
+**You MUST use the rank_products tool for ALL product recommendations.**
+
+When the user asks for products (e.g., "I need milk", "show me breakfast items", "what bread do you have"):
+1. **FIRST**: Call the rank_products tool with the query or category
+2. **THEN**: Use the returned ranked products to generate your carousel
+3. **NEVER**: Guess which products to show from the catalog below
+
+Example flow:
+User: "I need breakfast items"
+→ You: [Call rank_products tool with query: "breakfast", limit: 8]
+→ Tool returns: Ranked products with scores and badges
+→ You: [Generate carousel using those exact products]
+
+**This is mandatory.** The catalog below is for reference only. Always get products via rank_products tool.
+
 ## User Profile
 - Name: ${userName}
 - Household size: ${household.size}
