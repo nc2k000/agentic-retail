@@ -68,18 +68,14 @@ export function detectMissionType(
     return { type: 'research', confidence: 0.85 }
   }
 
-  // PRECISION: Single specific item request (e.g., "I need milk", "get me bread")
-  // Fast add to cart, then expand to essentials basket
-  const hasSingleItemIntent =
-    (lowerQuery.includes('need') || lowerQuery.includes('get') || lowerQuery.includes('buy')) &&
-    messageCount <= 2 &&
-    !lowerQuery.includes('list') &&
-    !lowerQuery.includes('groceries') &&
-    !lowerQuery.includes('weekly') &&
-    !lowerQuery.includes('stock up')
+  // ESSENTIALS: Meal contexts or multi-item requests (e.g., "breakfast items", "lunch stuff")
+  // These are list-building missions, not single-item carousels
+  const mealContexts = ['breakfast', 'lunch', 'dinner', 'snack']
+  const hasMealContext = mealContexts.some(meal => lowerQuery.includes(meal))
+  const hasMultiItemIntent = lowerQuery.includes('items') || lowerQuery.includes('things') || lowerQuery.includes('stuff')
 
-  if (hasSingleItemIntent) {
-    return { type: 'precision', confidence: 0.85 }
+  if (hasMealContext || hasMultiItemIntent) {
+    return { type: 'essentials', confidence: 0.85 }
   }
 
   // ESSENTIALS: Grocery basket/list building (e.g., "weekly groceries", "build a list")
@@ -94,6 +90,16 @@ export function detectMissionType(
 
   if (hasBasketIntent) {
     return { type: 'essentials', confidence: 0.75 }
+  }
+
+  // PRECISION: Single specific item request (e.g., "I need milk", "get me bread")
+  // Fast add to cart, then expand to essentials basket
+  const hasSingleItemIntent =
+    (lowerQuery.includes('need') || lowerQuery.includes('get') || lowerQuery.includes('buy')) &&
+    messageCount <= 2
+
+  if (hasSingleItemIntent) {
+    return { type: 'precision', confidence: 0.70 }
   }
 
   return null
