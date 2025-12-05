@@ -131,13 +131,26 @@ export async function POST(request: NextRequest) {
     // Filter by query if provided
     if (query) {
       const lowerQuery = query.toLowerCase()
+
+      // Expand meal/context queries to include related items
+      const mealExpansions: Record<string, string[]> = {
+        breakfast: ['bread', 'cereal', 'eggs', 'milk', 'bacon', 'sausage', 'yogurt', 'oatmeal', 'juice', 'coffee', 'bagel', 'muffin', 'pancake', 'waffle', 'syrup', 'butter', 'jam'],
+        lunch: ['bread', 'sandwich', 'deli', 'turkey', 'ham', 'cheese', 'lettuce', 'tomato', 'mayo', 'mustard', 'chips', 'soup', 'salad'],
+        dinner: ['meat', 'chicken', 'beef', 'pork', 'fish', 'pasta', 'rice', 'vegetables', 'potato', 'sauce', 'seasoning'],
+        snack: ['chips', 'cookies', 'crackers', 'candy', 'nuts', 'fruit', 'cheese', 'yogurt', 'granola'],
+      }
+
+      // Check if query is a meal context that should be expanded
+      const expandedTerms = mealExpansions[lowerQuery] || [lowerQuery]
+
       filteredProducts = filteredProducts.filter(
-        (p) =>
-          p.name.toLowerCase().includes(lowerQuery) ||
-          p.category.toLowerCase().includes(lowerQuery) ||
-          p.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery))
+        (p) => {
+          const productText = `${p.name} ${p.category} ${p.tags?.join(' ')}`.toLowerCase()
+          // Match if product contains the original query OR any expanded terms
+          return expandedTerms.some(term => productText.includes(term))
+        }
       )
-      console.log(`   Filtered to ${filteredProducts.length} products matching: ${query}`)
+      console.log(`   Filtered to ${filteredProducts.length} products matching: ${query}${expandedTerms.length > 1 ? ` (expanded to: ${expandedTerms.slice(0, 5).join(', ')}${expandedTerms.length > 5 ? '...' : ''})` : ''}`)
     }
 
     if (filteredProducts.length === 0) {
