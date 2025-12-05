@@ -42,11 +42,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Group preferences by type
-    const brandPreferences = preferences?.filter(p => p.preference_type === 'brand') || []
-    const dietaryPreferences = preferences?.filter(p => p.preference_type === 'dietary') || []
-    const allergies = preferences?.filter(p => p.preference_type === 'allergy') || []
-    const favorites = preferences?.filter(p => p.preference_type === 'favorite') || []
-    const dislikes = preferences?.filter(p => p.preference_type === 'dislike') || []
+    const allPreferences = preferences || []
+    const brandPreferences = allPreferences.filter((p: any) => p.preference_type === 'brand')
+    const dietaryPreferences = allPreferences.filter((p: any) => p.preference_type === 'dietary')
+    const allergies = allPreferences.filter((p: any) => p.preference_type === 'allergy')
+    const favorites = allPreferences.filter((p: any) => p.preference_type === 'favorite')
+    const dislikes = allPreferences.filter((p: any) => p.preference_type === 'dislike')
 
     // Get purchase history for life stage detection and restock
     const { data: orders, error: orderError } = await supabase
@@ -129,7 +130,7 @@ export async function GET(request: NextRequest) {
         allergies,
         favorites,
         dislikes,
-        total: preferences?.length || 0,
+        total: allPreferences.length,
       },
 
       // Life stage
