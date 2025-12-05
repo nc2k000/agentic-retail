@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { ReplenishmentSuggestion } from '@/lib/replenishment'
 import { formatPrice } from '@/lib/utils'
 
@@ -15,16 +16,23 @@ export function WelcomeScreen({
   replenishmentSuggestions = []
 }: WelcomeScreenProps) {
   const name = profile?.name?.split(' ')[0] || 'there'
-  
-  // Get time-based greeting
-  const hour = new Date().getHours()
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
-  // Seasonal suggestions
-  const month = new Date().getMonth()
-  const isHolidaySeason = month === 11 || month === 0 // Dec or Jan
-  const isSummer = month >= 5 && month <= 8
-  const isFootballSeason = month >= 8 || month <= 1
+  // Use state to avoid hydration mismatch - default to generic greeting
+  const [greeting, setGreeting] = useState('Hello')
+  const [isHolidaySeason, setIsHolidaySeason] = useState(false)
+  const [isSummer, setIsSummer] = useState(false)
+  const [isFootballSeason, setIsFootballSeason] = useState(false)
+
+  // Calculate time-based values after mount to avoid hydration mismatch
+  useEffect(() => {
+    const hour = new Date().getHours()
+    setGreeting(hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening')
+
+    const month = new Date().getMonth()
+    setIsHolidaySeason(month === 11 || month === 0) // Dec or Jan
+    setIsSummer(month >= 5 && month <= 8)
+    setIsFootballSeason(month >= 8 || month <= 1)
+  }, [])
 
   const quickActions = [
     {
