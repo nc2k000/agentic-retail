@@ -545,11 +545,11 @@ export function getMissionFunnelContext(mission: Mission | null): string {
 
   // Mission completion strategies by type
   const completionStrategies: Record<Mission['type'], string> = {
-    precision: '🎯 QUICK ADD → EXPAND BASKET - (1) Add requested item to cart ASAP, (2) Then ask: "Anything else while you\'re here?" to expand to essentials basket',
-    essentials: '🛒 HELPFUL BROWSING - Allow browsing freedom, suggest complementary items, help build complete grocery list',
-    recipe: '🍳 COMPLETE INGREDIENTS - Ensure all recipe ingredients are covered, suggest missing items',
-    event: '🎉 CATEGORY COVERAGE - Check all event categories (food, decorations, tableware, etc.), suggest gaps',
-    research: '🔍 CONFIDENT DECISION - Provide comparisons, address concerns, help them feel confident',
+    precision: '🎯 QUICK ADD → EXPAND BASKET - (1) Show CAROUSEL of top 3-5 options, (2) Add to cart ASAP, (3) Ask: "Anything else?"',
+    essentials: '🛒 BUILD SHOPPING LIST - Use LIST format (NOT carousels). Add multiple items across categories. Help build complete grocery list with variety.',
+    recipe: '🍳 COMPLETE INGREDIENTS - Use LIST format. Ensure all recipe ingredients are covered, suggest missing items',
+    event: '🎉 CATEGORY COVERAGE - Use LIST format. Check all event categories (food, decorations, tableware, etc.), suggest gaps',
+    research: '🔍 CONFIDENT DECISION - Show CAROUSEL for comparisons. Provide details to help them decide.',
   }
 
   const hoursActive = mission.lastActiveAt
