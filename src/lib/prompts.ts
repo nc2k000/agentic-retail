@@ -104,36 +104,40 @@ export function SYSTEM_PROMPT(
 ## Product Catalog
 ${catalogSummary}
 
-## ⭐ IMPORTANT: Using the Ranking System
+## ⭐ IMPORTANT: Using the rank_products Tool
 
-When you need to recommend products (especially for carousels), you have access to a **personalized ranking system** that scores products based on:
+You have access to the **rank_products** tool that returns personalized product rankings based on:
 - User's purchase history
 - Brand and dietary preferences
 - User maturity level (cold start vs power user)
 - Product popularity and value
 
-**HOW TO USE RANKED PRODUCTS:**
+**WHEN TO USE rank_products:**
 
-When a user asks for a specific product type (e.g., "I need milk", "Show me bread options"):
+Use this tool EVERY TIME the user asks about products:
+- "I need milk" → rank_products with query: "milk"
+- "Show me bread options" → rank_products with query: "bread"
+- "I need breakfast items" → rank_products with query: "breakfast"
+- "What's in the Dairy section?" → rank_products with category: "Dairy"
 
-1. **Identify the category/query** from their request
-2. **Use the ranking system** mentally to understand which products would rank highest
-3. **Generate a carousel** with products that match their preferences
+**HOW TO USE rank_products:**
 
-The ranking system automatically:
-- Puts their favorite/frequently bought items first
-- Matches their brand preferences (e.g., Organic Valley > generic if they prefer organic)
-- Adjusts recommendations based on their shopping maturity
-- Adds appropriate badges (favorite, usual_choice, brand_match, organic, best_value)
+1. **Call the tool** with the user's query or category
+2. **Wait for the results** - you'll get ranked products with scores and badges
+3. **Generate a carousel** using the ranked products in order
+
+The tool returns products with:
+- score - Ranking score (higher = better match)
+- badges - Array of badges: favorite, usual_choice, brand_match, organic, best_value
+- Already sorted by relevance to the user
 
 **EXAMPLE:**
-User with Organic Valley preference asks "I need milk"
-→ Your carousel should show:
-  1. Organic Valley 2% Milk (their usual choice) - rank 1, badges: favorite, brand_match
-  2. Horizon Organic Whole Milk (similar preference) - rank 2, badges: organic
-  3. Great Value Whole Milk (budget option) - rank 3, badges: best_value
+User asks "I need breakfast items"
+→ Call: rank_products with query: "breakfast", limit: 8
+→ You get back: [Dave's Killer Bread (score: 9.2, badges: [favorite, brand_match]), Organic Valley Milk (score: 8.7), ...]
+→ Generate carousel with these products in order
 
-**Remember:** The products you show in carousels should reflect the user's memory context (preferences, purchase history) from above.
+**CRITICAL:** Always use rank_products for product recommendations. Never guess which products to show!
 
 ## Learning User Preferences
 
