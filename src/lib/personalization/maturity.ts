@@ -5,7 +5,6 @@
  * Determines personalization strategy (accuracy vs relevancy weighting).
  */
 
-import { createClient } from '@/lib/supabase/server'
 import { UserMaturityLevel, UserMaturityScore, RecommendationStrategy } from '@/types'
 
 /**
@@ -18,6 +17,8 @@ import { UserMaturityLevel, UserMaturityScore, RecommendationStrategy } from '@/
  * - Tenure: Max 5 points (days / 3, capped at 5)
  */
 export async function calculateUserMaturity(userId: string): Promise<UserMaturityScore> {
+  // Dynamic import to avoid pulling in server-only code at module level
+  const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
 
   // Get order count
