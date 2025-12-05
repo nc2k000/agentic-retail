@@ -5,7 +5,7 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 })
 
-// Tool definition for ranking products
+// Tool definitions
 const tools = [
   {
     name: 'rank_products',
@@ -24,6 +24,20 @@ const tools = [
         limit: {
           type: 'number' as const,
           description: 'Maximum number of products to return. Default: 10',
+        },
+      },
+      required: [] as string[],
+    },
+  },
+  {
+    name: 'get_restock_suggestions',
+    description: 'Get items the user needs to restock based on purchase patterns. Use this proactively when greeting users or when they ask what they need. Shows items that are running low or overdue.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        urgentOnly: {
+          type: 'boolean' as const,
+          description: 'If true, only return items that need ordering now or soon. Default: true',
         },
       },
       required: [] as string[],
@@ -99,6 +113,31 @@ export async function POST(request: NextRequest) {
                       type: 'tool_result',
                       tool_use_id: toolUse.id,
                       content: JSON.stringify(rankData, null, 2),
+                    }
+                  }
+
+                  if (toolUse.name === 'get_restock_suggestions') {
+                    const { urgentOnly = true } = toolUse.input
+
+                    console.log('🔄 Calling get_restock_suggestions:', { urgentOnly })
+
+                    // Call the restock API
+                    const restockResponse = await fetch(
+                      `${request.nextUrl.origin}/api/restock?urgentOnly=${urgentOnly}`,
+                      {
+                        method: 'GET',
+                        headers: {
+                          'Cookie': request.headers.get('cookie') || '',
+                        },
+                      }
+                    )
+
+                    const restockData = await restockResponse.json()
+
+                    return {
+                      type: 'tool_result',
+                      tool_use_id: toolUse.id,
+                      content: JSON.stringify(restockData, null, 2),
                     }
                   }
 

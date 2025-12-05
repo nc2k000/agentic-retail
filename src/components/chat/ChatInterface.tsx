@@ -10,6 +10,7 @@ import { Header } from './Header'
 import { WelcomeScreen } from './WelcomeScreen'
 import { RecipeImportModal } from './RecipeImportModal'
 import { MemoryConfirmationToast, type MemoryConfirmation } from './MemoryConfirmationToast'
+import { RestockNotification } from './RestockNotification'
 import { parseBlocks } from '@/lib/parser'
 import { SYSTEM_PROMPT } from '@/lib/prompts'
 import { createClient } from '@/lib/supabase/client'
@@ -1148,6 +1149,11 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
+          {/* Restock Notification - Only show when there are messages (not on welcome screen) */}
+          {messages.length > 0 && (
+            <RestockNotification userId={user.id} onStartShopping={sendMessage} />
+          )}
+
           {messages.length === 0 ? (
             <WelcomeScreen
               profile={profile}
