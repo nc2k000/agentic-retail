@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { rankProducts } from '@/lib/personalization/ranking'
 import { getUserMaturity } from '@/lib/personalization/maturity'
 import { getAllProducts } from '@/lib/catalog'
+import { buildHouseholdMap } from '@/lib/household/map-builder'
 
 /**
  * POST /api/products/rank
@@ -117,6 +118,14 @@ export async function POST(request: NextRequest) {
       })
     })
 
+    // Get household map
+    const { data: householdFacts } = await supabase
+      .from('household_facts')
+      .select('*')
+      .eq('user_id', user.id)
+
+    const householdMap = buildHouseholdMap(user.id, householdFacts || [])
+
     // Filter products
     let filteredProducts = getAllProducts()
 
@@ -167,7 +176,8 @@ export async function POST(request: NextRequest) {
       user.id,
       userMaturity,
       preferences || [],
-      purchaseHistory
+      purchaseHistory,
+      householdMap
     )
 
     // Limit results

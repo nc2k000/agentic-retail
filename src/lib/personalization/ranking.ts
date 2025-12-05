@@ -7,6 +7,7 @@
 
 import { Product, UserMaturityScore, RecommendationStrategy } from '@/types'
 import { getRecommendationStrategy } from './maturity'
+import type { HouseholdMap } from '@/lib/household/types'
 
 export interface RankedProduct extends Product {
   rank: number
@@ -42,16 +43,20 @@ export async function rankProducts(
   userId: string,
   userMaturity: UserMaturityScore,
   preferences: UserPreference[],
-  purchaseHistory: PurchaseHistory[]
+  purchaseHistory: PurchaseHistory[],
+  householdMap?: HouseholdMap
 ): Promise<RankedProduct[]> {
   const strategy = getRecommendationStrategy(userMaturity)
 
   console.log(`🎯 Ranking ${products.length} products for user maturity: ${userMaturity.level}`)
   console.log(`   Strategy: ${strategy.strategy} (${(strategy.accuracy_weight * 100).toFixed(0)}% accuracy, ${(strategy.relevancy_weight * 100).toFixed(0)}% relevancy)`)
+  if (householdMap && householdMap.facts.length > 0) {
+    console.log(`   🏠 Household context: ${householdMap.people.length} people, ${householdMap.pets.length} pets`)
+  }
 
   const rankedProducts: RankedProduct[] = products.map((product) => {
     // Calculate individual scores
-    const personalScore = calculatePersonalScore(product, preferences, purchaseHistory)
+    const personalScore = calculatePersonalScore(product, preferences, purchaseHistory, householdMap)
     const popularityScore = calculatePopularityScore(product)
     const valueScore = calculateValueScore(product)
 
@@ -99,12 +104,13 @@ export async function rankProducts(
 }
 
 /**
- * Calculate personalized score based on preferences and history
+ * Calculate personalized score based on preferences, history, and household context
  */
 function calculatePersonalScore(
   product: Product,
   preferences: UserPreference[],
-  purchaseHistory: PurchaseHistory[]
+  purchaseHistory: PurchaseHistory[],
+  householdMap?: HouseholdMap
 ): number {
   let score = 1.0
 
@@ -189,6 +195,60 @@ function calculatePersonalScore(
     // Recency boost (purchased recently = higher score)
     if (historyMatch.days_since_last < 30) {
       score *= 1.2 // 20% boost for recent purchases
+    }
+  }
+
+  // Household context boosts
+  if (householdMap && householdMap.facts.length > 0) {
+    const productName = product.name.toLowerCase()
+    const productCategory = product.category.toLowerCase()
+    const productTags = product.tags?.map(t => t.toLowerCase()) || []
+
+    // Boost pet products if user has pets
+    for (const pet of householdMap.pets) {
+      const petType = pet.type.toLowerCase()
+      if (productCategory.includes('pet') ||
+          productName.includes(petType) ||
+          productTags.some(tag => tag.includes(petType) || tag.includes('pet'))) {
+        score *= 1 + pet.confidence * 0.4 // Up to 1.4x boost for pet products
+      }
+    }
+
+    // Boost baby/kid products if user has children
+    for (const person of householdMap.people) {
+      if (person.role === 'baby' || person.age === 'baby') {
+        if (productCategory.includes('baby') || productCategory.includes('kids') ||
+            productName.includes('baby') || productName.includes('infant') ||
+            productTags.some(tag => tag.includes('baby') || tag.includes('infant'))) {
+          score *= 1.5 // Strong boost for baby products
+        }
+      }
+      if (person.role === 'toddler' || person.age === 'toddler') {
+        if (productCategory.includes('kids') || productCategory.includes('toddler') ||
+            productName.includes('toddler') || productName.includes('kid') ||
+            productTags.some(tag => tag.includes('toddler') || tag.includes('kid'))) {
+          score *= 1.4 // Strong boost for toddler products
+        }
+      }
+    }
+
+    // Boost products based on lifestyle
+    if (householdMap.lifestyle) {
+      // Organic preference from lifestyle
+      if (householdMap.lifestyle.dietaryPreferences.includes('organic')) {
+        if (productName.includes('organic') || productTags.some(tag => tag === 'organic')) {
+          score *= 1.3 // Boost organic products
+        }
+      }
+
+      // Fitness-oriented boosts
+      if (householdMap.lifestyle.fitnessLevel === 'active' || householdMap.lifestyle.fitnessLevel === 'moderately_active') {
+        if (productCategory.includes('produce') || productCategory.includes('health') ||
+            productName.includes('protein') || productName.includes('energy') ||
+            productTags.some(tag => tag.includes('protein') || tag.includes('health'))) {
+          score *= 1.2 // Boost healthy products for active households
+        }
+      }
     }
   }
 
