@@ -202,7 +202,7 @@ export default function MemoryMapPage() {
             </div>
 
             {/* Household Map */}
-            {household && household.totalFacts > 0 && (
+            {household && household.facts && household.facts.length > 0 && (
               <div className="bg-white rounded-lg p-6 border border-stone-200">
                 <h2 className="text-lg font-semibold text-stone-900 mb-4">Household Overview</h2>
 

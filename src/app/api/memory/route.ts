@@ -109,7 +109,7 @@ export async function GET(request: NextRequest) {
       .select('*')
       .eq('user_id', user.id)
 
-    const householdMap = buildHouseholdMap(householdFacts || [])
+    const householdMap = buildHouseholdMap(user.id, householdFacts || [])
 
     // Get purchase statistics
     const totalOrders = orders?.length || 0
