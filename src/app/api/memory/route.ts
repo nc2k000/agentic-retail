@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { calculateRestockPredictions } from '@/lib/patterns/restock'
 import { detectLifeStage } from '@/lib/patterns/life-stage'
 import { getUserMaturity } from '@/lib/personalization/maturity'
+import { buildHouseholdMap } from '@/lib/household/map-builder'
 
 /**
  * GET /api/memory
@@ -102,6 +103,14 @@ export async function GET(request: NextRequest) {
     // Get user maturity
     const maturity = await getUserMaturity(user.id)
 
+    // Get household map
+    const { data: householdFacts } = await supabase
+      .from('household_facts')
+      .select('*')
+      .eq('user_id', user.id)
+
+    const householdMap = buildHouseholdMap(householdFacts || [])
+
     // Get purchase statistics
     const totalOrders = orders?.length || 0
     const totalItems = purchaseHistory.length
@@ -135,6 +144,9 @@ export async function GET(request: NextRequest) {
 
       // Life stage
       lifeStage,
+
+      // Household map
+      household: householdMap,
 
       // Restock predictions
       restock: {

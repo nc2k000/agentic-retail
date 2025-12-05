@@ -14,6 +14,7 @@ interface MemoryData {
     total: number
   }
   lifeStage: any
+  household?: any
   restock: {
     items: any[]
     urgentCount: number
@@ -81,7 +82,7 @@ export default function MemoryMapPage() {
     )
   }
 
-  const { preferences, lifeStage, restock, maturity, stats } = data
+  const { preferences, lifeStage, household, restock, maturity, stats } = data
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -199,6 +200,77 @@ export default function MemoryMapPage() {
                 </div>
               </div>
             </div>
+
+            {/* Household Map */}
+            {household && household.totalFacts > 0 && (
+              <div className="bg-white rounded-lg p-6 border border-stone-200">
+                <h2 className="text-lg font-semibold text-stone-900 mb-4">Household Overview</h2>
+
+                {/* Completeness */}
+                <div className="mb-4">
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-stone-600">Map Completeness</span>
+                    <span className="font-medium text-stone-900">{household.completeness}%</span>
+                  </div>
+                  <div className="bg-stone-200 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="bg-green-600 h-full transition-all"
+                      style={{ width: `${household.completeness}%` }}
+                    ></div>
+                  </div>
+                  <div className="text-xs text-stone-500 mt-1">
+                    {household.totalFacts} {household.totalFacts === 1 ? 'fact' : 'facts'} discovered
+                  </div>
+                </div>
+
+                {/* Property */}
+                {household.physicalSpace?.propertyType && (
+                  <div className="border-t border-stone-200 pt-3 mt-3">
+                    <div className="text-xs font-medium text-stone-500 uppercase mb-2">Property</div>
+                    <div className="text-sm text-stone-900 capitalize">
+                      {household.physicalSpace.propertyType.replace('_', ' ')}
+                    </div>
+                    {household.physicalSpace.features && household.physicalSpace.features.length > 0 && (
+                      <div className="text-xs text-stone-600 mt-1">
+                        {household.physicalSpace.features.join(', ')}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Pets */}
+                {household.pets && household.pets.length > 0 && (
+                  <div className="border-t border-stone-200 pt-3 mt-3">
+                    <div className="text-xs font-medium text-stone-500 uppercase mb-2">Pets</div>
+                    <div className="space-y-1">
+                      {household.pets.map((pet: any, index: number) => (
+                        <div key={index} className="text-sm text-stone-900 flex items-center justify-between">
+                          <span className="capitalize">{pet.type}</span>
+                          <span className="text-xs text-stone-500">
+                            {(pet.confidence * 100).toFixed(0)}% confident
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* People */}
+                {household.people && household.people.length > 0 && (
+                  <div className="border-t border-stone-200 pt-3 mt-3">
+                    <div className="text-xs font-medium text-stone-500 uppercase mb-2">Household Members</div>
+                    <div className="space-y-1">
+                      {household.people.map((person: any, index: number) => (
+                        <div key={index} className="text-sm text-stone-900">
+                          {person.role && <span className="capitalize">{person.role}</span>}
+                          {person.ageRange && <span className="text-stone-600"> ({person.ageRange})</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Middle Column - Preferences */}
