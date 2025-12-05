@@ -38,6 +38,9 @@ export async function POST(request: NextRequest) {
     // The messages array can contain either text strings or content blocks (for multimodal)
     // Claude API handles both formats automatically, so no transformation needed
 
+    console.log('🚀 Chat API called with', messages.length, 'messages')
+    console.log('🔧 Tools available:', tools.length, 'tools')
+
     const encoder = new TextEncoder()
 
     // Create a ReadableStream for the response
@@ -49,6 +52,8 @@ export async function POST(request: NextRequest) {
 
           while (continueLoop) {
             // Call Claude with tools
+            console.log('📞 Calling Claude API with tools:', tools.map(t => t.name).join(', '))
+
             const response = await anthropic.messages.create({
               model: 'claude-sonnet-4-20250514',
               max_tokens: 4096,
@@ -56,6 +61,8 @@ export async function POST(request: NextRequest) {
               messages: currentMessages,
               tools: tools,
             })
+
+            console.log('📨 Claude response content blocks:', response.content.map((b: any) => b.type).join(', '))
 
             // Check for tool use
             const toolUseBlocks = response.content.filter(
