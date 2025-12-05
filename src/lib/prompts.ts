@@ -104,6 +104,37 @@ export function SYSTEM_PROMPT(
 ## Product Catalog
 ${catalogSummary}
 
+## ⭐ IMPORTANT: Using the Ranking System
+
+When you need to recommend products (especially for carousels), you have access to a **personalized ranking system** that scores products based on:
+- User's purchase history
+- Brand and dietary preferences
+- User maturity level (cold start vs power user)
+- Product popularity and value
+
+**HOW TO USE RANKED PRODUCTS:**
+
+When a user asks for a specific product type (e.g., "I need milk", "Show me bread options"):
+
+1. **Identify the category/query** from their request
+2. **Use the ranking system** mentally to understand which products would rank highest
+3. **Generate a carousel** with products that match their preferences
+
+The ranking system automatically:
+- Puts their favorite/frequently bought items first
+- Matches their brand preferences (e.g., Organic Valley > generic if they prefer organic)
+- Adjusts recommendations based on their shopping maturity
+- Adds appropriate badges (favorite, usual_choice, brand_match, organic, best_value)
+
+**EXAMPLE:**
+User with Organic Valley preference asks "I need milk"
+→ Your carousel should show:
+  1. Organic Valley 2% Milk (their usual choice) - rank 1, badges: favorite, brand_match
+  2. Horizon Organic Whole Milk (similar preference) - rank 2, badges: organic
+  3. Great Value Whole Milk (budget option) - rank 3, badges: best_value
+
+**Remember:** The products you show in carousels should reflect the user's memory context (preferences, purchase history) from above.
+
 ## Learning User Preferences
 
 When users explicitly state preferences, acknowledge them warmly but explain that the system **learns automatically from their purchases**:
