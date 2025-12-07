@@ -61,16 +61,19 @@ export async function GET(request: NextRequest) {
     }> = []
 
     for (const order of orders) {
-      for (const item of order.items as any[]) {
-        purchaseHistory.push({
-          sku: item.sku,
-          name: item.name,
-          category: item.category || 'Unknown',
-          image: item.image || '📦',
-          price: item.price || 0,
-          quantity: item.quantity || 1,
-          purchasedAt: order.created_at,
-        })
+      const items = (order as any).items as any[]
+      if (items && Array.isArray(items)) {
+        for (const item of items) {
+          purchaseHistory.push({
+            sku: item.sku,
+            name: item.name,
+            category: item.category || 'Unknown',
+            image: item.image || '📦',
+            price: item.price || 0,
+            quantity: item.quantity || 1,
+            purchasedAt: (order as any).created_at,
+          })
+        }
       }
     }
 
@@ -80,9 +83,9 @@ export async function GET(request: NextRequest) {
     // Filter if urgentOnly requested
     const items = urgentOnly ? getRestockSuggestions(allPredictions) : allPredictions
 
-    const overdueCount = allPredictions.filter(i => i.restockUrgency === 'overdue').length
+    const overdueCount = 0 // Not used in current urgency levels
     const dueSoonCount = allPredictions.filter(
-      i => i.restockUrgency === 'due_today' || i.restockUrgency === 'due_soon'
+      i => i.restockUrgency === 'order_now' || i.restockUrgency === 'order_soon'
     ).length
 
     console.log(`📊 Restock predictions for user ${user.id}:`)

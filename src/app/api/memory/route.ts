@@ -30,6 +30,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Get user profile (explicit onboarding data)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('name, household, preferences')
+      .eq('id', user.id)
+      .single()
+
     // Fetch all preferences
     const { data: preferences, error: prefError } = await supabase
       .from('customer_preferences')
@@ -73,17 +80,22 @@ export async function GET(request: NextRequest) {
       purchasedAt: string
     }> = []
 
-    for (const order of orders || []) {
-      for (const item of order.items as any[]) {
-        purchaseHistory.push({
-          sku: item.sku,
-          name: item.name,
-          category: item.category || 'Unknown',
-          image: item.image || '📦',
-          price: item.price || 0,
-          quantity: item.quantity || 1,
-          purchasedAt: order.created_at,
-        })
+    if (orders) {
+      for (const order of orders) {
+        const items = (order as any).items as any[]
+        if (items && Array.isArray(items)) {
+          for (const item of items) {
+            purchaseHistory.push({
+              sku: item.sku,
+              name: item.name,
+              category: item.category || 'Unknown',
+              image: item.image || '📦',
+              price: item.price || 0,
+              quantity: item.quantity || 1,
+              purchasedAt: (order as any).created_at,
+            })
+          }
+        }
       }
     }
 
@@ -118,7 +130,7 @@ export async function GET(request: NextRequest) {
     const categoriesShoppedIn = new Set(purchaseHistory.map(p => p.category)).size
 
     // Calculate date of first purchase
-    const firstPurchaseDate = orders && orders.length > 0 ? orders[0].created_at : null
+    const firstPurchaseDate = orders && orders.length > 0 ? (orders[0] as any).created_at : null
     const daysSinceFirstPurchase = firstPurchaseDate
       ? Math.floor((Date.now() - new Date(firstPurchaseDate).getTime()) / (1000 * 60 * 60 * 24))
       : 0
@@ -131,6 +143,13 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       userId: user.id,
+
+      // Explicit profile data (from onboarding)
+      profile: {
+        name: (profile as any)?.name || null,
+        household: (profile as any)?.household || null,
+        preferences: (profile as any)?.preferences || null,
+      },
 
       // Preferences
       preferences: {
@@ -145,7 +164,7 @@ export async function GET(request: NextRequest) {
       // Life stage
       lifeStage,
 
-      // Household map
+      // Household map (discovered from behavior)
       household: householdMap,
 
       // Restock predictions

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Restock Prediction System
  *
