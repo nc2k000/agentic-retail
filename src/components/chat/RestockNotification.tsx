@@ -2,18 +2,29 @@
 
 import { useEffect, useState } from 'react'
 import { RestockItem } from '@/lib/patterns/restock'
+import type { Mission } from '@/types'
 
 interface RestockNotificationProps {
   userId: string
   onStartShopping: (message: string) => void
+  activeMission?: Mission | null
 }
 
-export function RestockNotification({ userId, onStartShopping }: RestockNotificationProps) {
+export function RestockNotification({ userId, onStartShopping, activeMission }: RestockNotificationProps) {
   const [urgentItems, setUrgentItems] = useState<RestockItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isDismissed, setIsDismissed] = useState(false)
 
+  // Check if active mission is a decision tree mission
+  const isTreeMission = activeMission?.treeId !== undefined && activeMission?.treeId !== null
+
   useEffect(() => {
+    // Don't fetch restock data during tree missions
+    if (isTreeMission) {
+      setIsLoading(false)
+      return
+    }
+
     async function fetchRestockSuggestions() {
       try {
         const response = await fetch('/api/restock?urgentOnly=true')
@@ -30,10 +41,10 @@ export function RestockNotification({ userId, onStartShopping }: RestockNotifica
     }
 
     fetchRestockSuggestions()
-  }, [userId])
+  }, [userId, isTreeMission])
 
-  // Don't show if loading, dismissed, or no urgent items
-  if (isLoading || isDismissed || urgentItems.length === 0) {
+  // Don't show if loading, dismissed, no urgent items, or tree mission active
+  if (isLoading || isDismissed || urgentItems.length === 0 || isTreeMission) {
     return null
   }
 

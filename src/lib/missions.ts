@@ -246,6 +246,27 @@ export async function updateMissionFunnelStage(
 }
 
 /**
+ * Update mission tree ID (for decision tree missions)
+ */
+export async function updateMissionTreeId(
+  missionId: string,
+  treeId: string
+): Promise<void> {
+  try {
+    const supabase = createClient()
+
+    await (supabase.from('missions') as any)
+      .update({
+        tree_id: treeId,
+        last_active_at: new Date().toISOString(),
+      })
+      .eq('id', missionId)
+  } catch (error) {
+    console.error('Failed to update mission tree ID:', error)
+  }
+}
+
+/**
  * Track action on mission
  */
 export async function trackMissionAction(
@@ -430,6 +451,28 @@ export function detectContextDeviation(
 ): boolean {
   const lowerMessage = userMessage.toLowerCase()
 
+  // SPECIAL CASE: Decision tree categories
+  const treeCategories = {
+    'tv-purchase': ['tv', 'television'],
+    'appliance-purchase': ['washer', 'dryer', 'fridge', 'refrigerator', 'dishwasher', 'appliance'],
+    'furniture-purchase': ['couch', 'sofa', 'mattress', 'desk', 'table', 'furniture']
+  }
+
+  // Check if user message mentions ANY decision tree category
+  let mentionedTreeId: string | null = null
+  for (const [treeId, keywords] of Object.entries(treeCategories)) {
+    if (keywords.some(keyword => lowerMessage.includes(keyword))) {
+      mentionedTreeId = treeId
+      break
+    }
+  }
+
+  // If user mentions a tree category AND current mission has a DIFFERENT treeId (or no treeId), it's a context switch
+  if (mentionedTreeId && mentionedTreeId !== currentMission.treeId) {
+    console.log('🔄 Decision tree switch detected:', currentMission.treeId || 'none', '→', mentionedTreeId)
+    return true
+  }
+
   // First, detect if the new message would create a DIFFERENT mission type
   const newMissionDetection = detectMissionType(userMessage, 1)
 
@@ -489,19 +532,140 @@ export async function findOrCreateMission(
   console.log('🔍 Active mission found:', activeMission?.id, 'Type:', activeMission?.type)
 
   if (activeMission) {
-    // Check for context deviation
-    const isDeviation = detectContextDeviation(activeMission, userMessage)
-    console.log('🔍 Context deviation detected?', isDeviation)
+    // CRITICAL: If we're in an active decision tree, check if user is asking for a DIFFERENT tree
+    // If same tree category, continue. If different tree category, pause and create new mission.
+    if (activeMission.treeId) {
+      // Check if user is mentioning a DIFFERENT tree category
+      const lowerMessage = userMessage.toLowerCase()
+      const treeCategories = {
+        'tv-purchase': ['tv', 'television'],
+        'appliance-purchase': ['washer', 'dryer', 'fridge', 'refrigerator', 'dishwasher', 'appliance'],
+        'furniture-purchase': ['couch', 'sofa', 'desk', 'table', 'furniture'],
+        'coffee-machine-purchase': ['coffee machine', 'coffee maker', 'espresso machine', 'espresso maker', 'coffee'],
+        'paint-purchase': ['paint', 'stain', 'primer', 'coating'],
+        'mattress-purchase': ['mattress', 'bed'],
+        'power-tool-purchase': ['drill', 'saw', 'sander', 'power tool', 'power tools', 'impact driver', 'impact wrench']
+      }
 
-    if (isDeviation) {
-      // User is switching context - pause current mission
-      console.log('⏸️ Pausing mission:', activeMission.id)
-      await pauseMission(activeMission.id)
-      // Fall through to create new mission
+      // Find if user is mentioning a different tree category
+      let mentionedTreeId: string | null = null
+      for (const [treeId, keywords] of Object.entries(treeCategories)) {
+        if (keywords.some(keyword => lowerMessage.includes(keyword))) {
+          mentionedTreeId = treeId
+          break
+        }
+      }
+
+      // If user is asking for a DIFFERENT tree, pause current mission
+      if (mentionedTreeId && mentionedTreeId !== activeMission.treeId) {
+        console.log('🔄 User asked for different tree:', activeMission.treeId, '→', mentionedTreeId)
+        console.log('⏸️ Pausing current tree mission:', activeMission.id)
+        await pauseMission(activeMission.id)
+        // Fall through to create new mission - skip context deviation check
+      } else if (mentionedTreeId === activeMission.treeId) {
+        // Same tree - but check if this active mission has products
+        // If not, look for a paused mission with products
+        const hasProducts = activeMission.recommendedProducts && activeMission.recommendedProducts.length > 0
+        if (!hasProducts && activeMission.treeCompleted) {
+          console.log('⚠️ Active tree mission has no products - checking for paused mission with products')
+          const supabase = createClient()
+          const { data: user } = await supabase.auth.getUser()
+          if (user.user) {
+            const { data: pausedMissions } = await (supabase.from('missions') as any)
+              .select('*')
+              .eq('user_id', user.user.id)
+              .eq('status', 'active')
+              .eq('tree_id', activeMission.treeId)
+              .not('paused_at', 'is', null)
+              .not('id', 'eq', activeMission.id) // Exclude current mission
+
+            if (pausedMissions && pausedMissions.length > 0) {
+              const missionWithProducts = pausedMissions.find((m: any) =>
+                m.recommended_products && Array.isArray(m.recommended_products) && m.recommended_products.length > 0
+              )
+              if (missionWithProducts) {
+                console.log('✅ Found better paused mission with products - switching to it')
+                await pauseMission(activeMission.id)
+                const betterMission = mapDatabaseMissionToType(missionWithProducts)
+                await resumeMission(betterMission.id)
+                return betterMission
+              }
+            }
+          }
+        }
+        // Same tree category - continue current mission
+        console.log('✅ Active tree mission - continuing:', activeMission.treeId)
+        return activeMission
+      } else {
+        // No tree detected in message - continue current mission
+        console.log('✅ Active tree mission - continuing:', activeMission.treeId)
+        return activeMission
+      }
     } else {
-      // Continue with current mission
-      console.log('✅ Continuing with mission:', activeMission.id)
-      return activeMission
+      // Not a tree mission - check for context deviation
+      // Check for context deviation
+      const isDeviation = detectContextDeviation(activeMission, userMessage)
+      console.log('🔍 Context deviation detected?', isDeviation)
+
+      if (isDeviation) {
+        // User is switching context - pause current mission
+        console.log('⏸️ Pausing mission:', activeMission.id)
+        await pauseMission(activeMission.id)
+        // Fall through to create new mission
+      } else {
+        // Continue with current mission
+        console.log('✅ Continuing with mission:', activeMission.id)
+        return activeMission
+      }
+    }
+  }
+
+  // Check for paused missions matching the requested tree type
+  const lowerMessage = userMessage.toLowerCase()
+  const treeCategories = {
+    'tv-purchase': ['tv', 'television'],
+    'appliance-purchase': ['washer', 'dryer', 'fridge', 'refrigerator', 'dishwasher', 'appliance'],
+    'furniture-purchase': ['couch', 'sofa', 'desk', 'table', 'furniture'],
+    'coffee-machine-purchase': ['coffee machine', 'coffee maker', 'espresso machine', 'espresso maker', 'coffee'],
+    'paint-purchase': ['paint', 'stain', 'primer', 'coating'],
+    'mattress-purchase': ['mattress', 'bed'],
+    'power-tool-purchase': ['drill', 'saw', 'sander', 'power tool', 'power tools', 'impact driver', 'impact wrench']
+  }
+
+  let requestedTreeId: string | null = null
+  for (const [treeId, keywords] of Object.entries(treeCategories)) {
+    if (keywords.some(keyword => lowerMessage.includes(keyword))) {
+      requestedTreeId = treeId
+      break
+    }
+  }
+
+  // If user is requesting a tree, check for paused missions with that tree
+  if (requestedTreeId) {
+    const supabase = createClient()
+    const { data: user } = await supabase.auth.getUser()
+    if (user.user) {
+      const { data: pausedMissions } = await (supabase.from('missions') as any)
+        .select('*')
+        .eq('user_id', user.user.id)
+        .eq('status', 'active')
+        .eq('tree_id', requestedTreeId)
+        .not('paused_at', 'is', null)
+        .order('paused_at', { ascending: false })
+
+      if (pausedMissions && pausedMissions.length > 0) {
+        // Prefer missions with cached products
+        const missionWithProducts = pausedMissions.find((m: any) =>
+          m.recommended_products && Array.isArray(m.recommended_products) && m.recommended_products.length > 0
+        )
+        const missionToResume = missionWithProducts || pausedMissions[0]
+        const pausedMission = mapDatabaseMissionToType(missionToResume)
+
+        console.log('▶️ Found paused mission for requested tree - resuming:', pausedMission.id,
+          'Products:', pausedMission.recommendedProducts?.length || 0)
+        await resumeMission(pausedMission.id)
+        return pausedMission
+      }
     }
   }
 
@@ -511,9 +675,37 @@ export async function findOrCreateMission(
     console.log('🔍 Mission detection:', detection)
 
     if (detection) {
+      // Detect if this is a decision tree query (reuse treeCategories from above)
+      const treeCategories = {
+        'tv-purchase': ['tv', 'television'],
+        'appliance-purchase': ['washer', 'dryer', 'fridge', 'refrigerator', 'dishwasher', 'appliance'],
+        'furniture-purchase': ['couch', 'sofa', 'desk', 'table', 'furniture'],
+        'coffee-machine-purchase': ['coffee machine', 'coffee maker', 'espresso machine', 'espresso maker', 'coffee'],
+        'paint-purchase': ['paint', 'stain', 'primer', 'coating'],
+        'mattress-purchase': ['mattress', 'bed'],
+        'power-tool-purchase': ['drill', 'saw', 'sander', 'power tool', 'power tools', 'impact driver', 'impact wrench']
+      }
+
+      let detectedTreeId: string | null = null
+      for (const [treeId, keywords] of Object.entries(treeCategories)) {
+        if (keywords.some(keyword => lowerMessage.includes(keyword))) {
+          detectedTreeId = treeId
+          break
+        }
+      }
+
       // Create new mission
-      console.log('🆕 Creating new mission type:', detection.type)
-      return await createMission(userId, userMessage, detection.type, detection.confidence)
+      console.log('🆕 Creating new mission type:', detection.type, 'treeId:', detectedTreeId)
+      const mission = await createMission(userId, userMessage, detection.type, detection.confidence)
+
+      // If we detected a tree ID, update the mission with it
+      if (mission && detectedTreeId) {
+        console.log('🌲 Updating mission with treeId:', detectedTreeId)
+        await updateMissionTreeId(mission.id, detectedTreeId)
+        mission.treeId = detectedTreeId // Update the local object too
+      }
+
+      return mission
     }
   }
 
@@ -567,12 +759,97 @@ export function getMissionFunnelContext(mission: Mission | null): string {
 
   const timeWindowDisplay = mission.type === 'precision' ? '6hr' : mission.type === 'essentials' ? '24hr' : '7-day'
 
+  // Decision tree resumption info
+  const hasTreeData = mission.treeId && mission.treeAnswers && Object.keys(mission.treeAnswers).length > 0
+  let treeResumptionSection = ''
+
+  if (hasTreeData) {
+    const answers = Object.entries(mission.treeAnswers!)
+      .map(([q, a]) => `  - ${q}: ${a}`)
+      .join('\n')
+
+    const hasSavedProducts = mission.recommendedProducts && mission.recommendedProducts.length > 0
+    const savedProductsNote = hasSavedProducts
+      ? `\n**Saved Product SKUs:** ${mission.recommendedProducts!.join(', ')}\n**CRITICAL:** These are the EXACT products you showed last time. You MUST render a carousel block with ONLY these SKUs (do not run rank_products or any other search!).`
+      : '\n**No saved products yet** - Will need to run rank_products on resume.'
+
+    console.log('🌲 Tree resumption context detected:', {
+      treeId: mission.treeId,
+      completed: mission.treeCompleted,
+      answerCount: Object.keys(mission.treeAnswers!).length,
+      savedProducts: mission.recommendedProducts?.length || 0,
+      productSkus: mission.recommendedProducts
+    })
+
+    treeResumptionSection = `
+# ⚠️ CRITICAL: PREVIOUS DECISION TREE DETECTED
+
+The user has ALREADY completed a decision tree for this exact product category.
+
+**Tree ID:** ${mission.treeId}
+**Completed:** ${mission.treeCompleted ? 'YES - ALL ANSWERS COLLECTED' : 'NO (in progress)'}
+**User's Previous Answers:**
+${answers}
+${savedProductsNote}
+
+## 🚨 CRITICAL INSTRUCTIONS - READ BEFORE RESPONDING 🚨
+
+${hasSavedProducts ? `
+YOU MUST FOLLOW THESE EXACT STEPS. DO NOT DEVIATE.
+
+**WHAT HAPPENED:** The user completed a decision tree and saw products. They came back and said "${mission.treeId?.replace('-', ' ').replace('purchase', '')}".
+
+**WHAT YOU MUST DO RIGHT NOW:**
+
+Write this EXACT response (replace SKUs with the list above):
+
+---
+I see you already searched for ${mission.treeId?.replace('-', ' ').replace('purchase', '')}s. Here are your recommendations again:
+
+\`\`\`carousel
+{"skus": ${JSON.stringify(mission.recommendedProducts)}, "title": "Your ${mission.treeId?.replace('-', ' ').replace('purchase', '')} recommendations"}
+\`\`\`
+
+Would you like to refine these results or start a fresh search?
+---
+
+**DO NOT:**
+- Call rank_products (the SKUs are already saved above!)
+- Call get_restock_suggestions (this is a durable good purchase, not groceries!)
+- Generate a \`\`\`running-out\`\`\` block (NO restock suggestions for durable goods!)
+- Ask them what they want first
+- Describe the products in text
+- Create a tree block
+- Do ANYTHING other than the exact response above
+
+**IF YOU CALL rank_products OR ANY OTHER TOOL, YOU WILL SHOW DIFFERENT PRODUCTS AND BREAK THE EXPERIENCE.**
+` : `
+**NO SAVED PRODUCTS - NEED TO SEARCH**
+
+1. Acknowledge: "I see you searched for ${mission.treeId?.replace('-', ' ').replace('purchase', '')}s before"
+2. Offer: "Would you like me to show products based on your previous answers, or start fresh?"
+3. If continue: call rank_products with their filters
+4. If fresh: show tree block
+`}
+
+This is MANDATORY. The user will be frustrated if you don't follow these instructions exactly.
+`
+  } else {
+    console.log('❌ No tree resumption context:', {
+      treeId: mission.treeId,
+      hasAnswers: !!mission.treeAnswers,
+      answerCount: mission.treeAnswers ? Object.keys(mission.treeAnswers).length : 0
+    })
+  }
+
   return `
+${treeResumptionSection ? treeResumptionSection + '\n' : ''}
 ## ACTIVE SHOPPING MISSION
 
 **Mission:** ${mission.query}
 **Type:** ${mission.type} (${timeWindowDisplay} window)
 **Status:** ${isPaused ? 'PAUSED (can resume)' : 'ACTIVE'}
+${mission.treeId ? `**Tree ID:** ${mission.treeId}` : ''}
 
 ### Funnel Stage: ${mission.funnelStage.toUpperCase()}
 - ${stageDescriptions[mission.funnelStage]}
@@ -602,6 +879,14 @@ ${isStuck ? '\n**⚠️ STUCK SIGNAL DETECTED**: User has asked many questions b
  * Map database mission to TypeScript type
  */
 function mapDatabaseMissionToType(data: any): Mission {
+  console.log('🗺️ Mapping database mission:', {
+    id: data.id,
+    tree_id: data.tree_id,
+    recommended_products_raw: data.recommended_products,
+    recommended_products_type: typeof data.recommended_products,
+    recommended_products_length: data.recommended_products?.length
+  })
+
   return {
     id: data.id,
     userId: data.user_id,
@@ -622,5 +907,10 @@ function mapDatabaseMissionToType(data: any): Mission {
     detectedAt: data.detected_at || data.started_at,
     detectionConfidence: data.detection_confidence || 0.80,
     items: data.items || [], // JSONB is already parsed by Supabase
+    treeId: data.tree_id,
+    treeAnswers: data.tree_answers || {},
+    treeFilters: data.tree_filters || {},
+    treeCompleted: data.tree_completed || false,
+    recommendedProducts: data.recommended_products || [],
   }
 }

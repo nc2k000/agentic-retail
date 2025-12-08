@@ -988,14 +988,21 @@ export const CATALOG: Record<string, Product[]> = {
   ],
 
   'Appliances': [
-    // Coffee Makers - High Consideration (budget to premium)
+    // Coffee Makers - High Consideration (budget to premium) - EXPANDED FOR DECISION TREE
     { sku: 'coffee-mr-coffee', name: 'Mr. Coffee 12-Cup Coffee Maker', price: 29.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-black-decker-5cup', name: 'Black+Decker 5-Cup Coffee Maker', price: 19.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-hamilton-beach-12cup', name: 'Hamilton Beach 12-Cup Programmable', price: 39.99, category: 'Appliances', image: '☕' },
     { sku: 'coffee-cuisinart', name: 'Cuisinart 14-Cup Programmable', price: 89.99, category: 'Appliances', image: '☕' },
     { sku: 'coffee-ninja', name: 'Ninja 12-Cup Programmable Brewer', price: 99.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-moccamaster', name: 'Technivorm Moccamaster 10-Cup', price: 359.99, category: 'Appliances', image: '☕' },
     { sku: 'coffee-keurig-k-mini', name: 'Keurig K-Mini Single Serve', price: 79.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-keurig-k-classic', name: 'Keurig K-Classic Single Serve', price: 119.99, category: 'Appliances', image: '☕' },
     { sku: 'coffee-keurig-k-elite', name: 'Keurig K-Elite Single Serve', price: 169.99, category: 'Appliances', image: '☕' },
     { sku: 'coffee-nespresso', name: 'Nespresso Vertuo Plus', price: 179.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-nespresso-lattissima', name: 'Nespresso Lattissima Pro', price: 549.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-delonghi-espresso', name: 'De\'Longhi Dedica Espresso Machine', price: 379.99, category: 'Appliances', image: '☕' },
     { sku: 'coffee-breville-espresso', name: 'Breville Barista Express Espresso', price: 699.99, category: 'Appliances', image: '☕' },
+    { sku: 'coffee-breville-oracle', name: 'Breville Oracle Touch Espresso', price: 2499.99, category: 'Appliances', image: '☕' },
     { sku: 'coffee-french-press', name: 'Bodum French Press 34oz', price: 34.99, category: 'Appliances', image: '☕' },
     { sku: 'coffee-grinder', name: 'Cuisinart Coffee Grinder', price: 39.99, category: 'Appliances', image: '☕' },
     { sku: 'kettle-electric', name: 'Hamilton Beach Electric Kettle 1.7L', price: 29.99, category: 'Appliances', image: '🫖' },
@@ -1888,6 +1895,96 @@ export const CATALOG: Record<string, Product[]> = {
     { sku: 'toolbox-22inch', name: '22" Pro Tool Box', price: 34.99, category: 'Tools & Hardware', image: '🧰' },
     { sku: 'tool-bag', name: 'Tool Bag 16" with Pockets', price: 24.99, category: 'Tools & Hardware', image: '👜' },
     { sku: 'pegboard-kit', name: 'Pegboard Organizer Kit 48"', price: 39.99, category: 'Tools & Hardware', image: '🗄️' },
+  ],
+
+  // NEW DECISION TREE CATEGORIES - High Consideration Products
+  'Paint & Coatings': [
+    // Interior Paint - Flat/Matte Finish
+    { sku: 'paint-behr-flat-white', name: 'Behr Premium Plus Flat - Ultra Pure White', price: 28.98, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-behr-flat-eggshell', name: 'Behr Premium Plus Flat - Swiss Coffee', price: 28.98, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-sw-flat-white', name: 'Sherwin-Williams Cashmere Flat - Pure White', price: 69.99, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-sw-flat-gray', name: 'Sherwin-Williams Cashmere Flat - Repose Gray', price: 69.99, category: 'Paint & Coatings', image: '🎨' },
+
+    // Interior Paint - Eggshell/Satin Finish
+    { sku: 'paint-behr-eggshell-white', name: 'Behr Premium Plus Eggshell - Polar Bear', price: 29.98, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-behr-eggshell-beige', name: 'Behr Premium Plus Eggshell - Almond Wisp', price: 29.98, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-behr-satin-gray', name: 'Behr Premium Plus Satin - Silver Drop', price: 30.98, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-sw-satin-white', name: 'Sherwin-Williams Duration Satin - Alabaster', price: 79.99, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-sw-satin-blue', name: 'Sherwin-Williams Duration Satin - Sea Salt', price: 79.99, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-valspar-satin-green', name: 'Valspar Signature Satin - Pale Moss', price: 39.98, category: 'Paint & Coatings', image: '🎨' },
+
+    // Interior Paint - Semi-Gloss Finish
+    { sku: 'paint-behr-semigloss-white', name: 'Behr Premium Plus Semi-Gloss - Ultra Pure White', price: 31.98, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-sw-semigloss-white', name: 'Sherwin-Williams ProClassic Semi-Gloss - Extra White', price: 84.99, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-behr-semigloss-navy', name: 'Behr Premium Plus Semi-Gloss - Starless Night', price: 31.98, category: 'Paint & Coatings', image: '🎨' },
+
+    // Exterior Paint
+    { sku: 'paint-behr-ext-flat-white', name: 'Behr Premium Exterior Flat - Ultra Pure White', price: 34.98, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-behr-ext-satin-gray', name: 'Behr Premium Exterior Satin - Dolphin Fin', price: 36.98, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-sw-ext-satin-white', name: 'Sherwin-Williams Duration Exterior Satin - Pure White', price: 89.99, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-sw-ext-satin-beige', name: 'Sherwin-Williams Duration Exterior Satin - Accessible Beige', price: 89.99, category: 'Paint & Coatings', image: '🎨' },
+
+    // Specialty Paint
+    { sku: 'paint-ceiling-white', name: 'Behr Premium Ceiling Paint - Flat White', price: 23.98, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-primer-combo', name: 'Behr Premium Plus Paint & Primer - Ultra Pure White', price: 32.98, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-primer-gray', name: 'Kilz Premium Primer - Gray', price: 21.98, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-chalk-white', name: 'Rust-Oleum Chalked Ultra Matte - Linen White', price: 19.98, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-stain-oak', name: 'Minwax Wood Stain - Special Walnut', price: 15.98, category: 'Paint & Coatings', image: '🎨' },
+    { sku: 'paint-stain-cherry', name: 'Minwax Wood Stain - Cherry', price: 15.98, category: 'Paint & Coatings', image: '🎨' },
+  ],
+
+  'Mattresses & Bedding': [
+    // Twin Mattresses
+    { sku: 'mattress-twin-basic-innerspring', name: 'Linenspa 6" Innerspring Twin Mattress', price: 89.99, category: 'Mattresses & Bedding', image: '🛏️' },
+    { sku: 'mattress-twin-memory-foam-8in', name: 'Zinus Memory Foam 8" Twin Mattress', price: 159.99, category: 'Mattresses & Bedding', image: '🛏️' },
+    { sku: 'mattress-twin-hybrid-10in', name: 'Lucid Hybrid 10" Twin Mattress', price: 229.99, category: 'Mattresses & Bedding', image: '🛏️' },
+
+    // Full Mattresses
+    { sku: 'mattress-full-innerspring-8in', name: 'Linenspa 8" Innerspring Full Mattress', price: 149.99, category: 'Mattresses & Bedding', image: '🛏️' },
+    { sku: 'mattress-full-memory-foam-10in', name: 'Zinus Memory Foam 10" Full Mattress', price: 249.99, category: 'Mattresses & Bedding', image: '🛏️' },
+    { sku: 'mattress-full-hybrid-12in', name: 'Lucid Hybrid 12" Full Mattress', price: 349.99, category: 'Mattresses & Bedding', image: '🛏️' },
+
+    // Queen Mattresses
+    { sku: 'mattress-queen-innerspring-8in', name: 'Linenspa 8" Innerspring Queen Mattress', price: 189.99, category: 'Mattresses & Bedding', image: '🛏️' },
+    { sku: 'mattress-queen-memory-foam-10in', name: 'Zinus Memory Foam 10" Queen Mattress', price: 299.99, category: 'Mattresses & Bedding', image: '🛏️' },
+    { sku: 'mattress-queen-memory-foam-12in', name: 'Zinus Green Tea Memory Foam 12" Queen', price: 369.99, category: 'Mattresses & Bedding', image: '🛏️' },
+    { sku: 'mattress-queen-hybrid-12in', name: 'Lucid Hybrid 12" Queen Mattress', price: 449.99, category: 'Mattresses & Bedding', image: '🛏️' },
+    { sku: 'mattress-queen-hybrid-14in', name: 'Sealy Response Hybrid 14" Queen', price: 699.99, category: 'Mattresses & Bedding', image: '🛏️' },
+    { sku: 'mattress-queen-memory-foam-premium', name: 'Tempur-Pedic Adapt 11" Queen Mattress', price: 1799.99, category: 'Mattresses & Bedding', image: '🛏️' },
+
+    // King Mattresses
+    { sku: 'mattress-king-innerspring-10in', name: 'Linenspa 10" Innerspring King Mattress', price: 249.99, category: 'Mattresses & Bedding', image: '🛏️' },
+    { sku: 'mattress-king-memory-foam-12in', name: 'Zinus Green Tea Memory Foam 12" King', price: 449.99, category: 'Mattresses & Bedding', image: '🛏️' },
+    { sku: 'mattress-king-hybrid-14in', name: 'Lucid Hybrid 14" King Mattress', price: 599.99, category: 'Mattresses & Bedding', image: '🛏️' },
+    { sku: 'mattress-king-hybrid-premium', name: 'Sealy Posturepedic Hybrid 14" King', price: 999.99, category: 'Mattresses & Bedding', image: '🛏️' },
+  ],
+
+  'Power Tools': [
+    // Drills - Cordless (Budget to Pro)
+    { sku: 'drill-black-decker-12v', name: 'Black+Decker 12V Cordless Drill', price: 39.99, category: 'Power Tools', image: '🔧' },
+    { sku: 'drill-ryobi-18v', name: 'Ryobi ONE+ 18V Cordless Drill Kit', price: 79.99, category: 'Power Tools', image: '🔧' },
+    { sku: 'drill-dewalt-20v', name: 'DeWalt 20V MAX Cordless Drill/Driver Kit', price: 149.99, category: 'Power Tools', image: '🔧' },
+    { sku: 'drill-milwaukee-18v', name: 'Milwaukee M18 18V Hammer Drill Kit', price: 199.99, category: 'Power Tools', image: '🔧' },
+    { sku: 'drill-makita-18v', name: 'Makita 18V LXT Brushless Hammer Driver-Drill', price: 229.99, category: 'Power Tools', image: '🔧' },
+
+    // Drills - Corded
+    { sku: 'drill-corded-black-decker', name: 'Black+Decker 5.2A Corded Drill', price: 29.99, category: 'Power Tools', image: '🔧' },
+    { sku: 'drill-corded-dewalt-8amp', name: 'DeWalt 8A Corded Hammer Drill', price: 99.99, category: 'Power Tools', image: '🔧' },
+
+    // Impact Drivers
+    { sku: 'impact-ryobi-18v', name: 'Ryobi ONE+ 18V Impact Driver', price: 69.99, category: 'Power Tools', image: '🔩' },
+    { sku: 'impact-dewalt-20v', name: 'DeWalt 20V MAX Impact Driver Kit', price: 179.99, category: 'Power Tools', image: '🔩' },
+    { sku: 'impact-milwaukee-18v', name: 'Milwaukee M18 FUEL Impact Driver', price: 249.99, category: 'Power Tools', image: '🔩' },
+
+    // Circular Saws
+    { sku: 'saw-circular-skil-15amp', name: 'Skil 15A Corded 7-1/4" Circular Saw', price: 49.99, category: 'Power Tools', image: '⚙️' },
+    { sku: 'saw-circular-dewalt-20v', name: 'DeWalt 20V MAX 6-1/2" Circular Saw', price: 159.99, category: 'Power Tools', image: '⚙️' },
+    { sku: 'saw-circular-milwaukee-18v', name: 'Milwaukee M18 FUEL 7-1/4" Circular Saw', price: 229.99, category: 'Power Tools', image: '⚙️' },
+
+    // Sanders
+    { sku: 'sander-orbital-black-decker', name: 'Black+Decker 2A Orbital Sander', price: 29.99, category: 'Power Tools', image: '📐' },
+    { sku: 'sander-orbital-dewalt-5in', name: 'DeWalt 5" Random Orbit Sander 3A', price: 69.99, category: 'Power Tools', image: '📐' },
+    { sku: 'sander-belt-porter-cable', name: 'Porter-Cable 8A Belt Sander 3"x21"', price: 79.99, category: 'Power Tools', image: '📐' },
   ],
 }
 

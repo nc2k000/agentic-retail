@@ -150,16 +150,22 @@ export async function POST(request: NextRequest) {
       }
 
       // Check if query is a meal context that should be expanded
-      const expandedTerms = mealExpansions[lowerQuery] || [lowerQuery]
+      let expandedTerms = mealExpansions[lowerQuery]
+
+      if (!expandedTerms) {
+        // Not a meal query - tokenize into words for flexible matching
+        // This allows "TV 50 inch" to match products containing "tv" OR "50" OR "inch"
+        expandedTerms = lowerQuery.split(/\s+/).filter((word: string) => word.length > 0)
+      }
 
       filteredProducts = filteredProducts.filter(
         (p) => {
           const productText = `${p.name} ${p.category} ${p.tags?.join(' ')}`.toLowerCase()
-          // Match if product contains the original query OR any expanded terms
+          // Match if product contains ANY of the search terms (OR logic)
           return expandedTerms.some(term => productText.includes(term))
         }
       )
-      console.log(`   Filtered to ${filteredProducts.length} products matching: ${query}${expandedTerms.length > 1 ? ` (expanded to: ${expandedTerms.slice(0, 5).join(', ')}${expandedTerms.length > 5 ? '...' : ''})` : ''}`)
+      console.log(`   Filtered to ${filteredProducts.length} products matching: ${query}${expandedTerms.length > 1 ? ` (search terms: ${expandedTerms.slice(0, 5).join(', ')}${expandedTerms.length > 5 ? '...' : ''})` : ''}`)
     }
 
     if (filteredProducts.length === 0) {

@@ -19,12 +19,14 @@ interface CompareBlockProps {
     category: string
     recommendation: string
     options: CompareOption[]
+    suggestions?: Array<{ label: string; prompt: string }>
   }
   onAddToCart: (item: CartItem) => void
+  onSendMessage: (message: string) => void
 }
 
-export function CompareBlock({ data, onAddToCart }: CompareBlockProps) {
-  const { category, recommendation, options } = data
+export function CompareBlock({ data, onAddToCart, onSendMessage }: CompareBlockProps) {
+  const { category, recommendation, options, suggestions } = data
   const [selectedSku, setSelectedSku] = useState<string | null>(null)
 
   const handleAddToCart = (option: CompareOption) => {
@@ -141,11 +143,25 @@ export function CompareBlock({ data, onAddToCart }: CompareBlockProps) {
         })}
       </div>
 
-      {/* Footer */}
-      <div className="px-4 py-3 bg-stone-50 border-t border-stone-200 text-center">
-        <p className="text-xs text-stone-500">
-          Need help deciding? Ask me about specific features or use cases!
-        </p>
+      {/* Footer with Suggestion Chips */}
+      <div className="px-4 py-3 bg-stone-50 border-t border-stone-200">
+        {suggestions && suggestions.length > 0 ? (
+          <div className="flex flex-wrap gap-2 justify-center">
+            {suggestions.map((suggestion, index) => (
+              <button
+                key={index}
+                onClick={() => onSendMessage(suggestion.prompt)}
+                className="px-4 py-2 bg-white border border-stone-300 rounded-full text-sm font-medium text-stone-700 hover:bg-stone-100 hover:border-stone-400 transition-colors"
+              >
+                {suggestion.label}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-stone-500 text-center">
+            Need help deciding? Ask me about specific features or use cases!
+          </p>
+        )}
       </div>
     </div>
   )

@@ -36,6 +36,18 @@ export default function ProductCarousel({
   const [mounted, setMounted] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
+  // Safety check: if items is undefined, show error message
+  if (!items || items.length === 0) {
+    return (
+      <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p className="text-red-700 font-medium">Error: No products to display</p>
+        <p className="text-red-600 text-sm mt-1">
+          The product carousel data is missing. This is likely a bug in the system.
+        </p>
+      </div>
+    )
+  }
+
   const handleStartList = (product: RankedProduct) => {
     if (onSendMessage) {
       onSendMessage(`Build me an essentials list with ${product.name}`)

@@ -1,3 +1,6 @@
+// Decision Tree Types (re-export from decisions.ts)
+export type { DecisionTree, DecisionNode, DecisionOption, NodeType } from './decisions'
+
 // Product & Catalog Types
 export interface Product {
   sku: string
@@ -80,6 +83,7 @@ export type BlockType =
   | 'bulkdeal'
   | 'carousel'
   | 'category_carousel'
+  | 'tree'
 
 export interface Block {
   type: BlockType
@@ -298,6 +302,13 @@ export interface Mission {
   detectedAt: string
   detectionConfidence: number
   items?: CartItem[]
+
+  // Decision tree tracking (for resumption)
+  treeId?: string
+  treeAnswers?: Record<string, string>
+  treeFilters?: Record<string, any>
+  treeCompleted?: boolean
+  recommendedProducts?: string[] // Array of product SKUs to show on resume
 }
 
 // Subscription Types

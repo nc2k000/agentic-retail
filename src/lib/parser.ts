@@ -1,9 +1,10 @@
 import { Block } from '@/types'
+import { getAllProducts } from '@/lib/catalog'
 
 // Parse code blocks from Claude's response
 export function parseBlocks(content: string): Block[] {
   const blocks: Block[] = []
-  
+
   // Match both ``` and `` blocks (Claude sometimes uses 2 backticks)
   const blockRegex = /`{2,3}(\w+)\n([\s\S]*?)`{2,3}/g
   let match
@@ -14,7 +15,7 @@ export function parseBlocks(content: string): Block[] {
 
     try {
       const data = JSON.parse(blockContent)
-      
+
       // Map block types
       switch (blockType) {
         case 'shop':
@@ -54,7 +55,12 @@ export function parseBlocks(content: string): Block[] {
           blocks.push({ type: 'bulkdeal', data })
           break
         case 'carousel':
-          blocks.push({ type: 'carousel', data })
+          // Enrich carousel blocks: convert SKUs to full product objects
+          const enrichedData = enrichCarouselBlock(data)
+          blocks.push({ type: 'carousel', data: enrichedData })
+          break
+        case 'tree':
+          blocks.push({ type: 'tree', data })
           break
         default:
           // Unknown block type, skip
@@ -67,6 +73,37 @@ export function parseBlocks(content: string): Block[] {
   }
 
   return blocks
+}
+
+// Enrich carousel block data by converting SKUs to full product objects
+function enrichCarouselBlock(data: any): any {
+  // If data has SKUs but no items, enrich them
+  if (data.skus && Array.isArray(data.skus) && (!data.items || data.items.length === 0)) {
+    console.log('🔄 Enriching carousel block with SKUs:', data.skus)
+
+    const catalog = getAllProducts()
+    const skuSet = new Set(data.skus)
+
+    // Find all products matching the SKUs, preserving the original order
+    const enrichedItems = data.skus
+      .map((sku: string) => catalog.find(p => p.sku === sku))
+      .filter(Boolean) // Remove any undefined (SKUs not found in catalog)
+      .map((product: any, index: number) => ({
+        ...product,
+        rank: index + 1,
+        score: 1.0 - (index * 0.1), // Descending scores
+      }))
+
+    console.log(`   ✅ Enriched ${enrichedItems.length} products from ${data.skus.length} SKUs`)
+
+    return {
+      ...data,
+      items: enrichedItems,
+    }
+  }
+
+  // Data already has items, return as-is
+  return data
 }
 
 // Extract text content without blocks

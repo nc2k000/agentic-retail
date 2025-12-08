@@ -168,6 +168,32 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     return getTopReplenishmentSuggestions(orders, getAllProducts(), 3)
   }, [orders])
 
+  // Helper: Check if conversation is about high-consideration items (TVs, appliances, furniture)
+  // If true, DON'T show restock notification
+  const isHighConsiderationConversation = useCallback(() => {
+    const highConsiderationKeywords = ['tv', 'television', 'appliance', 'furniture', 'couch', 'sofa', 'bed', 'laptop', 'computer', 'phone', 'tablet', 'washer', 'dryer', 'fridge', 'refrigerator', 'dishwasher', 'mattress', 'electronics', 'desk', 'chair']
+
+    // Check last 5 messages for high-consideration keywords
+    const recentMessages = messages.slice(-5)
+    for (const msg of recentMessages) {
+      const content = msg.content.toLowerCase()
+      if (highConsiderationKeywords.some(keyword => content.includes(keyword))) {
+        return true
+      }
+    }
+
+    // Also check if there's a tree block in recent messages (indicates decision tree was used)
+    for (const msg of recentMessages) {
+      if (msg.role === 'assistant') {
+        const blocks = parseBlocks(msg.content)
+        if (blocks.some(block => block.type === 'tree')) {
+          return true
+        }
+      }
+    }
+
+    return false
+  }, [messages])
 
   // Helper: Calculate total with bulk discounts applied
   const calculateCartTotal = useCallback((cartItems: CartItem[]) => {
@@ -184,13 +210,20 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
   }, [])
 
   // Load active mission on mount
-  useEffect(() => {
-    const loadActiveMission = async () => {
-      const mission = await getActiveMission(user.id)
-      setActiveMission(mission)
-    }
-    loadActiveMission()
+  const loadActiveMission = useCallback(async () => {
+    const mission = await getActiveMission(user.id)
+    console.log('🔄 loadActiveMission completed:', {
+      id: mission?.id,
+      treeId: mission?.treeId,
+      treeCompleted: mission?.treeCompleted,
+      hasTreeAnswers: mission?.treeAnswers ? Object.keys(mission.treeAnswers).length > 0 : false
+    })
+    setActiveMission(mission)
   }, [user.id])
+
+  useEffect(() => {
+    loadActiveMission()
+  }, [loadActiveMission])
 
   // Initialize verbosity preference on mount
   useEffect(() => {
@@ -345,6 +378,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     multimodalContent?: MessageContent,
     apiContent?: string  // Optional: different content to send to API vs display to user
   ) => {
+    console.log('🎬 sendMessage CALLED with content:', content.slice(0, 100))
+
     const isSystemMessage = content.startsWith('[SYSTEM]')
     const displayContent = content
     const apiText = apiContent || content  // Use apiContent if provided, otherwise use display content
@@ -401,6 +436,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
     }
 
     // Add user message to UI (skip system messages)
+    let currentMission = activeMission // Start with current state
     if (!isSystemMessage) {
       const userMessage: Message = {
         id: Date.now().toString(),
@@ -414,7 +450,8 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
       // Find or create mission for this conversation
       const mission = await findOrCreateMission(user.id, content, messages.length + 1)
       if (mission) {
-        setActiveMission(mission)
+        currentMission = mission // Use the fresh mission immediately
+        setActiveMission(mission) // Also update state for future renders
         // Track message action on mission
         trackMissionAction(mission.id, 'message', user.id).catch(console.error)
 
@@ -477,13 +514,26 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
       apiMessages.push({ role: 'user', content: currentMessageContent })
 
+      // Debug: Log mission state before sending
+      console.log('📤 ABOUT TO CALL /api/chat')
+      console.log('   Current mission (FRESH):', {
+        id: currentMission?.id,
+        treeId: currentMission?.treeId,
+        treeCompleted: currentMission?.treeCompleted,
+        hasTreeAnswers: currentMission?.treeAnswers ? Object.keys(currentMission.treeAnswers).length > 0 : false
+      })
+      console.log('   API messages count:', apiMessages.length)
+      console.log('   Last message:', apiMessages[apiMessages.length - 1])
+
       // Call streaming API with memory context, weather, and active mission
+      // IMPORTANT: Use currentMission (fresh from findOrCreateMission) not activeMission (stale state)
+      console.log('🚀 CALLING fetch("/api/chat") NOW...')
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: apiMessages,
-          system: SYSTEM_PROMPT(profile, memoryContext, weather, activeMission, householdMap),
+          system: SYSTEM_PROMPT(profile, memoryContext, weather, currentMission, householdMap),
         }),
       })
 
@@ -535,6 +585,40 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
             : m
         )
       )
+
+      // Handle carousel blocks - save products to mission for decision trees
+      const carouselBlocks = blocks.filter(b => b.type === 'carousel')
+      // IMPORTANT: Use currentMission (fresh from findOrCreateMission), not activeMission (stale state)
+      if (carouselBlocks.length > 0 && currentMission?.treeId) {
+        const carouselData = carouselBlocks[carouselBlocks.length - 1].data
+        const productSkus = carouselData.items?.map((item: any) => item.sku) || []
+
+        if (productSkus.length > 0) {
+          console.log('💾 Saving carousel products to mission:', {
+            treeId: currentMission.treeId,
+            skuCount: productSkus.length,
+            skus: productSkus
+          })
+
+          // Save products to mission
+          fetch('/api/missions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              treeId: currentMission.treeId,
+              recommendedProducts: productSkus
+            })
+          }).then(res => {
+            if (res.ok) {
+              console.log('  ✅ Carousel products saved successfully')
+            } else {
+              console.error('  ❌ Failed to save carousel products:', res.status)
+            }
+          }).catch(err => {
+            console.error('  ❌ Error saving carousel products:', err)
+          })
+        }
+      }
 
       // Handle shop blocks - set as active list and save to DB
       const shopBlocks = blocks.filter(b => b.type === 'shop')
@@ -1167,9 +1251,9 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
-          {/* Restock Notification - Only show when there are messages (not on welcome screen) */}
-          {messages.length > 0 && (
-            <RestockNotification userId={user.id} onStartShopping={sendMessage} />
+          {/* Restock Notification - Only show for food/grocery conversations, NOT high-consideration items */}
+          {messages.length > 0 && !isHighConsiderationConversation() && (
+            <RestockNotification userId={user.id} onStartShopping={sendMessage} activeMission={activeMission} />
           )}
 
           {messages.length === 0 ? (
@@ -1196,6 +1280,7 @@ export function ChatInterface({ user, profile, initialOrders, initialLists }: Ch
                   cart={cart}
                   onSubscribe={handleSubscribe}
                   isProductSubscribed={isProductSubscribed}
+                  onMissionUpdate={loadActiveMission}
                 />
               ))}
               <div ref={messagesEndRef} />

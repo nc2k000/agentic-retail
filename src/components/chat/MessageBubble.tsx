@@ -8,6 +8,7 @@ import { OrderBlock } from '@/components/blocks/OrderBlock'
 import { UpsellBlock } from '@/components/blocks/UpsellBlock'
 import { BulkDealBlock } from '@/components/blocks/BulkDealBlock'
 import { CompareBlock } from '@/components/blocks/CompareBlock'
+import { TreeBlock } from '@/components/blocks/TreeBlock'
 import { SuggestionChips } from '@/components/blocks/SuggestionChips'
 import ProductCarousel from '@/components/chat/ProductCarousel'
 import { LoadingIndicator, SkeletonShopBlock } from '@/components/ui/LoadingIndicator'
@@ -27,6 +28,7 @@ interface MessageBubbleProps {
   cart: CartItem[]
   onSubscribe?: (product: Product, quantity: number, frequency: SubscriptionFrequency) => void
   isProductSubscribed?: (sku: string) => boolean
+  onMissionUpdate?: () => Promise<void>
 }
 
 export function MessageBubble({
@@ -43,6 +45,7 @@ export function MessageBubble({
   cart,
   onSubscribe,
   isProductSubscribed,
+  onMissionUpdate,
 }: MessageBubbleProps) {
   const isUser = message.role === 'user'
   const isStreaming = message.isStreaming
@@ -181,19 +184,29 @@ export function MessageBubble({
                         key={i}
                         data={block.data}
                         onAddToCart={onAddToCart}
+                        onSendMessage={onSendMessage}
                       />
                     )
                   case 'carousel':
                     return (
                       <ProductCarousel
                         key={i}
-                        title={block.data.title}
-                        items={block.data.items}
+                        title={block.data.title || 'Recommended Products'}
+                        items={block.data.items || []}
                         reasoning={block.data.reasoning}
                         category={block.data.category}
                         suggestions={block.data.suggestions}
                         onAddToCart={onAddToCart}
                         onSendMessage={onSendMessage}
+                      />
+                    )
+                  case 'tree':
+                    return (
+                      <TreeBlock
+                        key={i}
+                        data={block.data}
+                        onSendMessage={onSendMessage}
+                        onMissionUpdate={onMissionUpdate}
                       />
                     )
                   default:
