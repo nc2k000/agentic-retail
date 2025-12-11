@@ -57,13 +57,48 @@ export function detectMissionType(
   }
 
   // High-consideration items → research
+  // Includes decision tree categories (Phase 1 + Phase 2)
+  // CRITICAL: Check this BEFORE precision to prioritize research items
   if (
+    // General research keywords
+    lowerQuery.includes('compare') ||
+    lowerQuery.includes('best') ||
+    // Electronics
     lowerQuery.includes('tv') ||
+    lowerQuery.includes('television') ||
     lowerQuery.includes('laptop') ||
     lowerQuery.includes('phone') ||
+    // Appliances (tree category)
     lowerQuery.includes('appliance') ||
-    lowerQuery.includes('compare') ||
-    lowerQuery.includes('best')
+    lowerQuery.includes('washer') ||
+    lowerQuery.includes('dryer') ||
+    lowerQuery.includes('dishwasher') ||
+    lowerQuery.includes('refrigerator') ||
+    lowerQuery.includes('fridge') ||
+    // Coffee machines (tree category)
+    lowerQuery.includes('coffee machine') ||
+    lowerQuery.includes('coffee maker') ||
+    lowerQuery.includes('espresso') ||
+    // Furniture (tree category)
+    lowerQuery.includes('furniture') ||
+    lowerQuery.includes('couch') ||
+    lowerQuery.includes('sofa') ||
+    lowerQuery.includes('desk') ||
+    lowerQuery.includes('table') ||
+    lowerQuery.includes('mattress') ||
+    lowerQuery.includes('bed') ||  // Added standalone 'bed' keyword
+    // Home improvement (tree category)
+    lowerQuery.includes('paint') ||
+    lowerQuery.includes('stain') ||
+    // Power tools (tree category)
+    lowerQuery.includes('drill') ||
+    lowerQuery.includes('saw') ||
+    lowerQuery.includes('sander') ||
+    lowerQuery.includes('power tool') ||
+    lowerQuery.includes('impact driver') ||
+    // Beverages (AI tree category - Phase 2)
+    lowerQuery.includes('beverage') ||
+    lowerQuery.includes('drink')
   ) {
     return { type: 'research', confidence: 0.85 }
   }
@@ -84,7 +119,7 @@ export function detectMissionType(
     lowerQuery.includes('groceries') ||
     lowerQuery.includes('list') ||
     lowerQuery.includes('weekly') ||
-    lowerQuery.includes('stock up') ||
+    lowerQuery.includes('stock') ||  // Matches "stock up", "stocking up"
     lowerQuery.includes('shopping') ||
     messageCount >= 2
 
@@ -597,9 +632,19 @@ export async function findOrCreateMission(
         console.log('✅ Active tree mission - continuing:', activeMission.treeId)
         return activeMission
       } else {
-        // No tree detected in message - continue current mission
-        console.log('✅ Active tree mission - continuing:', activeMission.treeId)
-        return activeMission
+        // No tree detected in message - check if user is switching to a different mission type
+        const isDeviation = detectContextDeviation(activeMission, userMessage)
+        console.log('🔍 Context deviation from tree mission?', isDeviation)
+
+        if (isDeviation) {
+          console.log('⏸️ Pausing tree mission due to context switch:', activeMission.id)
+          await pauseMission(activeMission.id)
+          // Fall through to create new mission
+        } else {
+          // Continue current mission
+          console.log('✅ Active tree mission - continuing:', activeMission.treeId)
+          return activeMission
+        }
       }
     } else {
       // Not a tree mission - check for context deviation
