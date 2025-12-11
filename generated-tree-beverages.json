@@ -1,0 +1,142 @@
+{
+  "treeId": "beverages_1765414533422",
+  "category": "Beverages",
+  "questions": [
+    {
+      "id": "q1",
+      "text": "What type of beverage are you looking for?",
+      "sourceAttribute": "product_type",
+      "options": [
+        {
+          "id": "still_water",
+          "label": "Still Water",
+          "filters": {
+            "name_contains": [
+              "water"
+            ],
+            "name_excludes": [
+              "sparkling",
+              "soda",
+              "juice"
+            ]
+          },
+          "example": "Dasani Water 24pk"
+        },
+        {
+          "id": "sparkling_water",
+          "label": "Sparkling Water",
+          "filters": {
+            "name_contains": [
+              "sparkling"
+            ]
+          },
+          "example": "La Croix Sparkling Water"
+        },
+        {
+          "id": "other_beverages",
+          "label": "Other Beverages",
+          "filters": {
+            "name_excludes": [
+              "water"
+            ]
+          },
+          "example": "Sodas, juices, energy drinks"
+        },
+        {
+          "id": "any",
+          "label": "Any",
+          "filters": {},
+          "example": "Show all beverages"
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "text": "What size do you prefer?",
+      "sourceAttribute": "size",
+      "options": [
+        {
+          "id": "individual",
+          "label": "Individual Bottles/Cans",
+          "filters": {
+            "size_contains": [
+              "16.9oz",
+              "12oz",
+              "20oz"
+            ]
+          },
+          "example": "Single serving sizes"
+        },
+        {
+          "id": "multipack",
+          "label": "Multi-pack",
+          "filters": {
+            "size_contains": [
+              "12pk",
+              "24pk",
+              "6pk"
+            ]
+          },
+          "example": "Dasani Water 24pk"
+        },
+        {
+          "id": "bulk",
+          "label": "Bulk/Gallon",
+          "filters": {
+            "size_contains": [
+              "gallon",
+              "2L",
+              "liter"
+            ]
+          },
+          "example": "Spring Water Gallon"
+        },
+        {
+          "id": "any",
+          "label": "Any size",
+          "filters": {},
+          "example": "Show all sizes"
+        }
+      ]
+    },
+    {
+      "id": "q3",
+      "text": "Do you have a brand preference?",
+      "sourceAttribute": "brand_type",
+      "options": [
+        {
+          "id": "name_brand",
+          "label": "Name Brand",
+          "filters": {
+            "tags_exclude": [
+              "store-brand"
+            ]
+          },
+          "example": "Dasani, La Croix"
+        },
+        {
+          "id": "store_brand",
+          "label": "Store Brand (Great Value)",
+          "filters": {
+            "tags": [
+              "store-brand"
+            ]
+          },
+          "example": "GV Purified Water"
+        },
+        {
+          "id": "any",
+          "label": "Any brand",
+          "filters": {},
+          "example": "Show all brands"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "generatedAt": "2025-12-11T00:55:33.422Z",
+    "catalogSize": 89,
+    "confidenceScore": 0.5755056179775281,
+    "model": "claude-sonnet-4-20250514"
+  }
+}

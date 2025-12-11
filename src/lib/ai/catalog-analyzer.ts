@@ -49,7 +49,7 @@ export async function analyzeCatalog(
 
   // 2. Extract attributes from products
   const attributes = extractAttributes(products)
-  console.log(`  ✅ Extracted ${attributes.length} attributes`)
+  console.log(`  ✅ Extracted ${attributes.size} attributes`)
 
   // 3. Calculate coverage and discrimination power
   const analyzedAttributes = analyzeAttributes(attributes, products)
@@ -174,7 +174,7 @@ function analyzeAttributes(
   const analyses: AttributeAnalysis[] = []
   const totalProducts = products.length
 
-  for (const [attributeName, values] of attributeValues.entries()) {
+  for (const [attributeName, values] of Array.from(attributeValues.entries())) {
     // Calculate coverage (what % of products have this attribute)
     const productsWithAttribute = products.filter((p) => {
       if (p.tags) {

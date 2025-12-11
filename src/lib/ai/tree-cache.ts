@@ -4,10 +4,29 @@
  * Manages cached AI-generated decision trees in Supabase
  */
 
-import { createStandaloneClient } from '@/lib/supabase/standalone'
+import { createClient } from '@supabase/supabase-js'
 import { generateDecisionTree } from './tree-generator'
 import { GeneratedTree } from './types'
 import { CATALOG } from '@/lib/catalog'
+
+/**
+ * Get Supabase client with service role (for write operations)
+ */
+function getServiceClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error('Missing Supabase environment variables')
+  }
+
+  return createClient(supabaseUrl, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  })
+}
 
 /**
  * Cache duration in days
@@ -60,7 +79,7 @@ async function getCachedTree(category: string): Promise<{
   tree: GeneratedTree
   expiresAt: string
 } | null> {
-  const supabase = createStandaloneClient()
+  const supabase = getServiceClient()
 
   const { data, error } = await supabase
     .from('ai_decision_trees')
@@ -94,12 +113,12 @@ async function getCachedTree(category: string): Promise<{
  * Cache a generated tree
  */
 async function cacheTree(category: string, tree: GeneratedTree): Promise<void> {
-  const supabase = createStandaloneClient()
+  const supabase = getServiceClient()
 
   // Get products for snapshot
   const products = CATALOG[category] || []
   const sampleProducts = products.slice(0, 5).map((p) => ({
-    id: p.id,
+    sku: p.sku,
     name: p.name,
     price: p.price,
     tags: p.tags,
@@ -136,7 +155,7 @@ async function cacheTree(category: string, tree: GeneratedTree): Promise<void> {
  * Invalidate (delete) cached tree for a category
  */
 export async function invalidateCachedTree(category: string): Promise<void> {
-  const supabase = createStandaloneClient()
+  const supabase = getServiceClient()
 
   const { error } = await supabase
     .from('ai_decision_trees')
@@ -155,7 +174,7 @@ export async function invalidateCachedTree(category: string): Promise<void> {
  * Cleanup expired trees (can be run periodically)
  */
 export async function cleanupExpiredTrees(): Promise<number> {
-  const supabase = createStandaloneClient()
+  const supabase = getServiceClient()
 
   // Delete trees that expired more than 7 days ago
   const cutoffDate = new Date()
@@ -187,7 +206,7 @@ export async function getCacheStats(): Promise<{
   expiredTrees: number
   categoriesCached: string[]
 }> {
-  const supabase = createStandaloneClient()
+  const supabase = getServiceClient()
 
   const { data: allTrees, error } = await supabase
     .from('ai_decision_trees')
