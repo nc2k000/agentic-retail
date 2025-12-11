@@ -541,7 +541,7 @@ export async function findOrCreateMission(
         'tv-purchase': ['tv', 'television'],
         'appliance-purchase': ['washer', 'dryer', 'fridge', 'refrigerator', 'dishwasher', 'appliance'],
         'furniture-purchase': ['couch', 'sofa', 'desk', 'table', 'furniture'],
-        'coffee-machine-purchase': ['coffee machine', 'coffee maker', 'espresso machine', 'espresso maker', 'coffee'],
+        'coffee-machine-purchase': ['coffee machine', 'coffee maker', 'espresso machine', 'espresso maker'],
         'paint-purchase': ['paint', 'stain', 'primer', 'coating'],
         'mattress-purchase': ['mattress', 'bed'],
         'power-tool-purchase': ['drill', 'saw', 'sander', 'power tool', 'power tools', 'impact driver', 'impact wrench']
@@ -680,7 +680,7 @@ export async function findOrCreateMission(
         'tv-purchase': ['tv', 'television'],
         'appliance-purchase': ['washer', 'dryer', 'fridge', 'refrigerator', 'dishwasher', 'appliance'],
         'furniture-purchase': ['couch', 'sofa', 'desk', 'table', 'furniture'],
-        'coffee-machine-purchase': ['coffee machine', 'coffee maker', 'espresso machine', 'espresso maker', 'coffee'],
+        'coffee-machine-purchase': ['coffee machine', 'coffee maker', 'espresso machine', 'espresso maker'],
         'paint-purchase': ['paint', 'stain', 'primer', 'coating'],
         'mattress-purchase': ['mattress', 'bed'],
         'power-tool-purchase': ['drill', 'saw', 'sander', 'power tool', 'power tools', 'impact driver', 'impact wrench']

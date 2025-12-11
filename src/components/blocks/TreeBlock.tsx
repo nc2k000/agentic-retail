@@ -10,7 +10,7 @@
 import { useState, useEffect } from 'react'
 import { TreeQuestion } from '@/components/decisions/TreeQuestion'
 import { DecisionTreeExecutor, createExecutor } from '@/lib/decisions/executor'
-import { getTreeById } from '@/lib/decisions/trees'
+import { getTreeById, getTreeByIdAsync } from '@/lib/decisions/trees'
 
 interface TreeBlockProps {
   data: {
@@ -31,15 +31,37 @@ export function TreeBlock({ data, onSendMessage, onMissionUpdate }: TreeBlockPro
 
   // Initialize executor when component mounts and auto-start
   useEffect(() => {
-    const tree = getTreeById(data.treeId)
-    if (!tree) {
-      console.error(`Tree not found: ${data.treeId}`)
-      return
+    async function loadTree() {
+      // Try synchronous first (hardcoded trees)
+      let tree = getTreeById(data.treeId)
+
+      // If not found, fetch from API (AI-generated trees)
+      if (!tree) {
+        console.log(`🔍 Tree not in hardcoded list, fetching from API: ${data.treeId}`)
+        try {
+          const response = await fetch(`/api/trees/${data.treeId}`)
+          if (!response.ok) {
+            throw new Error(`Failed to fetch tree: ${response.statusText}`)
+          }
+          const result = await response.json()
+          tree = result.tree
+        } catch (error) {
+          console.error(`❌ Failed to load tree from API:`, error)
+        }
+      }
+
+      if (!tree) {
+        console.error(`Tree not found: ${data.treeId}`)
+        return
+      }
+
+      console.log(`✅ Tree loaded: ${tree.id} (${tree.name})`)
+      const exec = createExecutor(tree)
+      setExecutor(exec)
+      setCurrentStep(exec.getCurrentStep())
     }
 
-    const exec = createExecutor(tree)
-    setExecutor(exec)
-    setCurrentStep(exec.getCurrentStep())
+    loadTree()
   }, [data.treeId])
 
   const handleAnswer = async (answer: string) => {

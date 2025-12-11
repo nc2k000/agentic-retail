@@ -89,6 +89,12 @@ function detectTreeQuery(text: string): { treeId: string; treeName: string } | n
     return { treeId: 'furniture-purchase', treeName: 'Find Your Perfect Furniture' }
   }
 
+  // Beverages - AI Generated Tree (Phase 2)
+  if (lower.includes('beverage') || lower.includes('drink') ||
+      (lower.includes('water') && (lower.includes('buy') || lower.includes('need') || lower.includes('looking')))) {
+    return { treeId: 'beverages_1765421282160', treeName: 'Find Your Perfect Beverage' }
+  }
+
   return null
 }
 
