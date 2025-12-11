@@ -92,15 +92,16 @@ export async function inferVerbosityFromBehavior(
     const confidence = Math.min(0.85, 0.5 + quickAddRatio * 0.5)
     updateVerbosityPreference('concise', confidence, 'behavior')
 
-    // Save to memory system
-    await upsertPreference({
-      userId,
-      type: 'communication_style',
-      key: 'concise',
-      confidence,
-      reason: `Quick, direct interactions (${quickAdds}/${totalMessages} quick adds)`,
-      source: 'pattern',
-    })
+    // Note: Skipping database storage - verbosity is localStorage only for now
+    // TODO: Add 'communication_style' to allowed preference_type values in DB
+    // await upsertPreference({
+    //   userId,
+    //   type: 'communication_style',
+    //   key: 'concise',
+    //   confidence,
+    //   reason: `Quick, direct interactions (${quickAdds}/${totalMessages} quick adds)`,
+    //   source: 'pattern',
+    // })
 
     return 'concise'
   }
@@ -110,15 +111,16 @@ export async function inferVerbosityFromBehavior(
     const confidence = Math.min(0.85, 0.5 + questionRatio * 0.5)
     updateVerbosityPreference('detailed', confidence, 'behavior')
 
-    // Save to memory system
-    await upsertPreference({
-      userId,
-      type: 'communication_style',
-      key: 'detailed',
-      confidence,
-      reason: `Asks many questions, explores options (${questions}/${totalMessages} questions)`,
-      source: 'pattern',
-    })
+    // Note: Skipping database storage - verbosity is localStorage only for now
+    // TODO: Add 'communication_style' to allowed preference_type values in DB
+    // await upsertPreference({
+    //   userId,
+    //   type: 'communication_style',
+    //   key: 'detailed',
+    //   confidence,
+    //   reason: `Asks many questions, explores options (${questions}/${totalMessages} questions)`,
+    //   source: 'pattern',
+    // })
 
     return 'detailed'
   }
@@ -126,14 +128,16 @@ export async function inferVerbosityFromBehavior(
   // Balanced: Mixed behavior (default)
   updateVerbosityPreference('balanced', 0.6, 'behavior')
 
-  await upsertPreference({
-    userId,
-    type: 'communication_style',
-    key: 'balanced',
-    confidence: 0.6,
-    reason: 'Mixed interaction style',
-    source: 'pattern',
-  })
+  // Note: Skipping database storage - verbosity is localStorage only for now
+  // TODO: Add 'communication_style' to allowed preference_type values in DB
+  // await upsertPreference({
+  //   userId,
+  //   type: 'communication_style',
+  //   key: 'balanced',
+  //   confidence: 0.6,
+  //   reason: 'Mixed interaction style',
+  //   source: 'pattern',
+  // })
 
   return 'balanced'
 }
@@ -147,14 +151,16 @@ export async function setExplicitVerbosity(
 ): Promise<void> {
   updateVerbosityPreference(verbosity, 1.0, 'explicit')
 
-  await upsertPreference({
-    userId,
-    type: 'communication_style',
-    key: verbosity,
-    confidence: 1.0,
-    reason: 'User explicitly selected this preference',
-    source: 'explicit',
-  })
+  // Note: Skipping database storage - verbosity is localStorage only for now
+  // TODO: Add 'communication_style' to allowed preference_type values in DB
+  // await upsertPreference({
+  //   userId,
+  //   type: 'communication_style',
+  //   key: verbosity,
+  //   confidence: 1.0,
+  //   reason: 'User explicitly selected this preference',
+  //   source: 'explicit',
+  // })
 }
 
 /**
